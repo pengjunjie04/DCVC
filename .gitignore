@@ -1,0 +1,12 @@
+.venv/
+.env/
+.superpowers/
+vendor/
+tools/*.sh
+tools/*.whl
+__pycache__/
+.pytest_cache/
+reports/*.log
+checkpoints/
+runs/
+*.so

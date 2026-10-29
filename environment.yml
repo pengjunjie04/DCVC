@@ -1,0 +1,19 @@
+name: dcvc-jetson
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - numpy==1.26.4
+      - setuptools<81
+      - pybind11
+      - ninja
+      - psutil
+      - scipy
+      - tqdm
+      - pillow
+      - gradio==5.49.1
+      - opencv-python-headless==4.11.0.86
+      - socksio
+# Install NVIDIA's matching aarch64 cp310 CUDA wheel separately; do not use generic `pip install torch`.

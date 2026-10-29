@@ -1,0 +1,24 @@
+diff --git a/src/cpp/setup.py b/src/cpp/setup.py
+index a86631b..4e52d9b 100644
+--- a/src/cpp/setup.py
++++ b/src/cpp/setup.py
+@@ -27,5 +27,5 @@ setup(
+     ],
+     cmdclass={'build_ext': build_ext},
+     zip_safe=False,
+-    python_requires='>=3.12',
++    python_requires='>=3.10',
+ )
+diff --git a/src/layers/extensions/inference/setup.py b/src/layers/extensions/inference/setup.py
+index 3df5319..6f1fd08 100644
+--- a/src/layers/extensions/inference/setup.py
++++ b/src/layers/extensions/inference/setup.py
+@@ -53,7 +53,7 @@ py_rans_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+ mem = psutil.virtual_memory()
+ mem_gb = mem.available / 1024**3
+ if mem_gb < 32:
+-    os.environ['MAX_JOBS'] = '8'
++    os.environ.setdefault('MAX_JOBS', '2')
+ elif mem_gb < 64:
+     os.environ['MAX_JOBS'] = '16'
+ 
