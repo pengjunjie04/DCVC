@@ -107,4 +107,6 @@ PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s tests/browser_smoke.py
 
 `tools/check_restart.py` 使用正式模型检查三轮启停和 GPU 张量回收；`tools/smoke_independent_processes.py --pretrained` 先编码并退出，再在全新进程解码真实码流，适合在单台16GB设备上验证状态独立性。同一台设备同时启动两个独立 CUDA 进程曾出现内存不足，因此本机编解码采用单进程两组模型状态，双机仍各自独立运行。
 
+另用 [OpenCV 官方示例 vtest.avi](https://github.com/opencv/opencv/blob/master/samples/data/vtest.avi) 的行人场景完成纹理更复杂的补充测试：QP32、160个计量帧、640×360缩放补边，编码约148fps、解码约130fps，见 `reports/natural-clip-benchmark.json`。原片为10fps，未改写为摄像头30fps的验收结果；文件读取不计入编码耗时。可用 `tools/benchmark.py --input-video 文件路径 --output reports/自定义报告.json` 复现。
+
 参考：[DCVC 官方仓库](https://github.com/microsoft/DCVC)、[NVIDIA Jetson PyTorch 安装说明](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)、[用户提供的 Jetson 文档](https://github.com/MaxwellJay256/Jetson_Orin_NX_guide)、[Ponytail](https://github.com/dietrichgebert/ponytail)。

@@ -4,6 +4,7 @@
 vendor/
 tools/Miniforge3-*.sh
 tools/*.whl
+tools/testdata/
 __pycache__/
 .pytest_cache/
 reports/*.log

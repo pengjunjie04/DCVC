@@ -31,3 +31,5 @@ Repeated Engine restart exposed native buffer cache retention and occasional sec
 Final local verification: native pool cleanup3 cycles passed (0 CUDA tensor bytes after each stop/pause), fresh browser official-model session including resume17 frames passed, preview30.0fps. Timing samples ~0.4s to host reconstruction, not browser glass-to-glass. Launcher also started successfully from /tmp on alternate port7861. Test server will be shut down after verification so ./launch.sh can start cleanly.
 
 Extended final hardware regression:10 consecutive real HT-S cycles passed, each17 frames decoded; all10 returned CUDA tensor allocation to0. Browser latest session passed start/pause/resume/end plus stats-file export. UI now shows readable device status, current latency and dropped frames. Test services shut down; launch.sh ready for clean user startup.
+
+Additional natural-content check: official OpenCV vtest.avi (source10fps, not a30fps capture claim),160 measured frames rescaled/letterboxed640x360, QP32: encode147.89fps/decode129.75fps; recorded in reports/natural-clip-benchmark.json and natural-clip-source.json. Source clip kept outside git in tools/testdata.
