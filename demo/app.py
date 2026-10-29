@@ -170,17 +170,19 @@ def create_app(engine=None, mount_ui=True):
 def main():
     import uvicorn
     parser = argparse.ArgumentParser()
+    parser.add_argument('--host', default='127.0.0.1', help='默认本机；填写 Wi-Fi IP 可供同网电脑访问')
     parser.add_argument('--port', type=int, default=7860)
     parser.add_argument('--no-browser', action='store_true')
     args = parser.parse_args()
     engine = Engine()
     app = create_app(engine)
-    server = uvicorn.Server(uvicorn.Config(app, host='127.0.0.1', port=args.port, log_level='info', access_log=False))
+    server = uvicorn.Server(uvicorn.Config(app, host=args.host, port=args.port, log_level='info', access_log=False))
     def watch():
         while not server.started and not server.should_exit:
             time.sleep(.1)
         if not args.no_browser and server.started:
-            webbrowser.open(f'http://127.0.0.1:{args.port}')
+            browser_host = '127.0.0.1' if args.host == '0.0.0.0' else args.host
+            webbrowser.open(f'http://{browser_host}:{args.port}')
         while not server.should_exit:
             if app.state.exit_requested.wait(.2):
                 server.should_exit = True

@@ -9,6 +9,64 @@ index a86631b..4e52d9b 100644
 -    python_requires='>=3.12',
 +    python_requires='>=3.10',
  )
+diff --git a/src/layers/extensions/inference/dmc_hts_proxy.cpp b/src/layers/extensions/inference/dmc_hts_proxy.cpp
+index a78b8fc..24d6b07 100644
+--- a/src/layers/extensions/inference/dmc_hts_proxy.cpp
++++ b/src/layers/extensions/inference/dmc_hts_proxy.cpp
+@@ -504,6 +504,8 @@ void DMCHTSProxy::add_ref_feature_from_frame(const at::Tensor& frame, const bool
+ py::tuple DMCHTSProxy::compress(const at::Tensor& x, const int qp, const bool reset_feature_memory,
+                                 const int padding_b, const int padding_r)
+ {
++    // Let capture and UI threads run while native inference/entropy coding waits.
++    py::gil_scoped_release release;
+     m_result_ready = false;
+     m_qp = qp;
+ 
+@@ -578,6 +580,7 @@ py::tuple DMCHTSProxy::compress(const at::Tensor& x, const int qp, const bool re
+ 
+     std::unique_lock<std::mutex> lk(m_mutex_result);
+     m_cv_result.wait(lk, [this] { return m_result_ready || m_finish; });
++    py::gil_scoped_acquire acquire;
+     if (m_result_ready) {
+         return py::make_tuple(m_entropy_encoder.get_encoded_stream(), m_entropy_coder_parallel);
+     }
+@@ -594,6 +597,7 @@ std::vector<at::Tensor> DMCHTSProxy::decompress(const py::array_t<uint8_t>& bit_
+     py::buffer_info bit_stream_buf = bit_stream.request();
+     m_bit_stream = static_cast<uint8_t*>(bit_stream_buf.ptr);
+     m_bit_stream_size = static_cast<int>(bit_stream.size());
++    py::gil_scoped_release release;
+     m_z_height = (height + 63) / 64;
+     m_z_width = (width + 63) / 64;
+     m_qp = qp;
+diff --git a/src/layers/extensions/inference/dmci_proxy.cpp b/src/layers/extensions/inference/dmci_proxy.cpp
+index 416e776..d50e165 100644
+--- a/src/layers/extensions/inference/dmci_proxy.cpp
++++ b/src/layers/extensions/inference/dmci_proxy.cpp
+@@ -295,6 +295,8 @@ DMCIProxy::~DMCIProxy()
+ 
+ py::tuple DMCIProxy::compress(const at::Tensor& x, const int qp, const int padding_b, const int padding_r)
+ {
++    // Let capture and UI threads run while native inference/entropy coding waits.
++    py::gil_scoped_release release;
+     pre_allocate_tensors(x.size(2), x.size(3));
+     m_result_ready = false;
+     m_qp = qp;
+@@ -414,6 +416,7 @@ py::tuple DMCIProxy::compress(const at::Tensor& x, const int qp, const int paddi
+ 
+     std::unique_lock<std::mutex> lk(m_mutex_result);
+     m_cv_result.wait(lk, [this] { return m_result_ready || m_finish; });
++    py::gil_scoped_acquire acquire;
+     if (m_result_ready) {
+         return py::make_tuple(m_entropy_encoder.get_encoded_stream(), m_x_hat, m_entropy_coder_parallel);
+     }
+@@ -429,6 +432,7 @@ at::Tensor DMCIProxy::decompress(const py::array_t<uint8_t>& bit_stream, const i
+     py::buffer_info bit_stream_buf = bit_stream.request();
+     m_bit_stream = static_cast<uint8_t*>(bit_stream_buf.ptr);
+     m_bit_stream_size = static_cast<int>(bit_stream.size());
++    py::gil_scoped_release release;
+     m_z_height = (height + 63) / 64;
+     m_z_width = (width + 63) / 64;
+     m_qp = qp;
 diff --git a/src/layers/extensions/inference/setup.py b/src/layers/extensions/inference/setup.py
 index 3df5319..6f1fd08 100644
 --- a/src/layers/extensions/inference/setup.py

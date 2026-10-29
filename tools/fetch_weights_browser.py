@@ -24,10 +24,15 @@ with sync_playwright() as p:
             resolved = 'https://onedrive.live.com/?' + urllib.parse.urlencode({
                 'id': '2866592D5C55DF8C!sff36971acef74365bf46917c96d8fe4e',
                 'cid': '2866592D5C55DF8C',
+                'spopath': '2866592D5C55DF8C!sff36971acef74365bf46917c96d8fe4e',
+                'listurl': '/personal/2866592d5c55df8c/Documents', 'e': 'qyvMN6',
                 'redeem': base64.urlsafe_b64encode(URL.encode()).decode().rstrip('='),
                 'reauth': '1', 'ga': '1'})
-            page.goto(resolved, wait_until='commit', timeout=30000)
-            page.get_by_text(names[0], exact=True).wait_for(timeout=30000)
+            try:
+                page.goto(URL if attempt % 2 == 0 else resolved, wait_until='domcontentloaded', timeout=30000)
+            except Exception:
+                pass  # OneDrive redirects may interrupt navigation while the file table still loads.
+            page.get_by_text(names[0], exact=True).wait_for(timeout=60000)
             break
         except Exception:
             if attempt == 2:
