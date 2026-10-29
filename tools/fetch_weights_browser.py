@@ -6,6 +6,8 @@ import urllib.request
 import urllib.parse
 import shutil
 import base64
+import subprocess
+import tempfile
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +20,11 @@ with sync_playwright() as p:
     browser = p.chromium.launch(executable_path='/snap/bin/chromium', headless=True,
         args=['--no-sandbox', '--disable-gpu'], proxy={'server':'http://127.0.0.1:7897'})
     page = browser.new_page(accept_downloads=True)
+    download_requests = {}
+    def remember_download(request):
+        if 'download.aspx' in request.url:
+            download_requests[request.url] = (request.method, request.post_data, request.all_headers())
+    page.on('request', remember_download)
     for attempt in range(3):
         try:
             # Resolve the short URL with Python; Chromium's short-link navigation can stall.
@@ -34,7 +41,11 @@ with sync_playwright() as p:
                 pass  # OneDrive redirects may interrupt navigation while the file table still loads.
             page.get_by_text(names[0], exact=True).wait_for(timeout=60000)
             break
-        except Exception:
+        except Exception as exc:
+            try:
+                print(type(exc).__name__, page.title(), page.locator('body').inner_text(timeout=3000)[:1200], flush=True)
+            except Exception:
+                print(type(exc).__name__, 'OneDrive page unavailable', flush=True)
             if attempt == 2:
                 raise
             print('Retrying public OneDrive folder', flush=True)
@@ -51,10 +62,25 @@ with sync_playwright() as p:
             print(f'Official download endpoint: {link.scheme}://{link.hostname}', flush=True)
             if link.scheme == 'https':
                 download.cancel()
-                with urllib.request.urlopen(download.url, timeout=60) as response, part.open('wb') as output:
-                    if 'text/html' in response.headers.get('Content-Type', ''):
-                        raise RuntimeError('Official endpoint returned a web page rather than weights')
-                    shutil.copyfileobj(response, output, length=1024*1024)
+                with tempfile.NamedTemporaryFile(mode='w', prefix='dcvc-public-cookies-') as cookie_file:
+                    cookie_file.write('# Netscape HTTP Cookie File\n')
+                    for cookie in page.context.cookies():
+                        cookie_file.write('\t'.join([cookie['domain'], 'TRUE' if cookie['domain'].startswith('.') else 'FALSE',
+                            cookie['path'], 'TRUE' if cookie['secure'] else 'FALSE', '0', cookie['name'], cookie['value']]) + '\n')
+                    cookie_file.flush()
+                    method, body, headers = download_requests.get(download.url, ('GET', None, {}))
+                    print('Download request method:', method, 'body bytes:', len(body or ''), flush=True)
+                    args = ['curl', '--http1.1', '-fLsS', '--retry', '2', '--retry-all-errors',
+                        '--connect-timeout', '20', '--max-time', '600', '--cookie', cookie_file.name,
+                        '--referer', page.url, '--user-agent', page.evaluate('navigator.userAgent'),
+                        '--request', method, '--output', str(part)]
+                    if part.exists() and part.stat().st_size:
+                        args += ['--continue-at', '-']
+                    if body is not None:
+                        args += ['--data-binary', '@-']
+                    if 'content-type' in headers:
+                        args += ['--header', 'Content-Type: ' + headers['content-type']]
+                    subprocess.run(args + [download.url], input=body, text=True, check=True)
             else:
                 download.save_as(part)
                 if download.failure():

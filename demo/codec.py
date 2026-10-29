@@ -2,10 +2,19 @@
 from pathlib import Path
 import sys
 import struct
+import gc
 
 ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM = ROOT / 'vendor' / 'DCVC'
 CHECKPOINTS = ROOT / 'checkpoints'
+
+
+def release_workspace():
+    gc.collect()
+    native = sys.modules.get('inference_extensions_cuda')
+    if native is not None:
+        native.clear_tensor_pool()
+        sys.modules['torch'].cuda.empty_cache()
 
 
 def readiness():
@@ -43,6 +52,11 @@ def validate_packet(meta, payload):
 
 
 class Codec:
+    def close(self):
+        self.torch.cuda.synchronize()
+        self.i = self.p = self.stream = None
+        self.torch.cuda.empty_cache()
+
     def __init__(self):
         issues = readiness()
         if issues:

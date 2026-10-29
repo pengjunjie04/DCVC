@@ -1,0 +1,501 @@
+{
+  "scope": "Official pretrained HT-S local round-trip on generated input, Gradio browser lifecycle; not USB/dual-host acceptance",
+  "status": "passed",
+  "samples": [
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 118,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.013144,
+        "frames": 97,
+        "bytes": 7745
+      },
+      "decode": {
+        "fps": 32.0,
+        "mbps": 0.0,
+        "frames": 97,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 87,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 96.05501300029573,
+        "decode_group_ms": 77.02556900039781,
+        "oldest_to_host_ms": 411.7132510000374,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 29.5,
+        "mbps": 0.0,
+        "frames": 133,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.012312,
+        "frames": 113,
+        "bytes": 8369
+      },
+      "decode": {
+        "fps": 32.0,
+        "mbps": 0.0,
+        "frames": 113,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 103,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 87.04167900214088,
+        "decode_group_ms": 83.26169700012542,
+        "oldest_to_host_ms": 396.5195720011252,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 149,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.011596,
+        "frames": 129,
+        "bytes": 8979
+      },
+      "decode": {
+        "fps": 32.0,
+        "mbps": 0.0,
+        "frames": 129,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 118,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 74.36849200166762,
+        "decode_group_ms": 69.04908800061094,
+        "oldest_to_host_ms": 376.9524220006133,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 165,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.014752,
+        "frames": 145,
+        "bytes": 10584
+      },
+      "decode": {
+        "fps": 32.0,
+        "mbps": 0.0,
+        "frames": 145,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 134,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 81.71174800008885,
+        "decode_group_ms": 65.35307699959958,
+        "oldest_to_host_ms": 380.5708380023134,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 180,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.015076,
+        "frames": 161,
+        "bytes": 11514
+      },
+      "decode": {
+        "fps": 32.0,
+        "mbps": 0.0,
+        "frames": 161,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 149,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 70.68886600245605,
+        "decode_group_ms": 67.9125539973029,
+        "oldest_to_host_ms": 372.3459670000011,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 29.5,
+        "mbps": 0.0,
+        "frames": 195,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.015884,
+        "frames": 177,
+        "bytes": 12340
+      },
+      "decode": {
+        "fps": 28.0,
+        "mbps": 0.0,
+        "frames": 169,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 165,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 89.29788800014649,
+        "decode_group_ms": 71.3546730003145,
+        "oldest_to_host_ms": 394.78050799880293,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 211,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.01718,
+        "frames": 193,
+        "bytes": 13274
+      },
+      "decode": {
+        "fps": 28.0,
+        "mbps": 0.0,
+        "frames": 185,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 180,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 93.18644799714093,
+        "decode_group_ms": 78.69568700334639,
+        "oldest_to_host_ms": 405.6424620030157,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 227,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.014284,
+        "frames": 209,
+        "bytes": 14155
+      },
+      "decode": {
+        "fps": 28.0,
+        "mbps": 0.0,
+        "frames": 201,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 196,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 85.14935699713533,
+        "decode_group_ms": 86.60535400122171,
+        "oldest_to_host_ms": 405.46169499793905,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 242,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 32.0,
+        "mbps": 0.013328,
+        "frames": 225,
+        "bytes": 14846
+      },
+      "decode": {
+        "fps": 28.0,
+        "mbps": 0.0,
+        "frames": 217,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 211,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 104.69542000282672,
+        "decode_group_ms": 78.19363099770271,
+        "oldest_to_host_ms": 416.5346599984332,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    },
+    {
+      "state": "running",
+      "message": "HT-S 真实码流运行中",
+      "settings": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "qp": 32,
+        "mode": "local",
+        "source": "synthetic",
+        "camera": "/dev/video0",
+        "peer": "",
+        "bind": "",
+        "port": 9860
+      },
+      "capture": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 258,
+        "bytes": 0
+      },
+      "encode": {
+        "fps": 28.0,
+        "mbps": 0.011556,
+        "frames": 233,
+        "bytes": 15229
+      },
+      "decode": {
+        "fps": 28.0,
+        "mbps": 0.0,
+        "frames": 233,
+        "bytes": 0
+      },
+      "preview": {
+        "fps": 30.0,
+        "mbps": 0.0,
+        "frames": 227,
+        "bytes": 0
+      },
+      "dropped": 15,
+      "preview_dropped": 0,
+      "timing": {
+        "encode_group_ms": 83.81083399945055,
+        "decode_group_ms": 89.06582300187438,
+        "oldest_to_host_ms": 404.4658429993433,
+        "scope": "本机采集至本机解码完成"
+      },
+      "worker_alive": true
+    }
+  ],
+  "browser_fps": {
+    "original": "29.6 fps",
+    "decoded": "29.7 fps"
+  },
+  "browser_errors": []
+}

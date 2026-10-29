@@ -2,6 +2,8 @@
 
 两台 Jetson Orin NX 16GB 的 DCVC-UF HT-S 视频压缩演示。首期目标为 **640×360、30fps、端到端延迟 ≤500ms**；目标是否达标须以真实模型和双机测试为准。
 
+当前本机已完成：独立 Miniforge 环境、官方权重、两项原生扩展、Gradio 正式模型运行、独立进程码流解码和十轮启停资源回收。25 项自动化测试通过。合成移动图案 QP32 基准：编码约166fps、解码约141fps；Gradio 实际预览约30fps，本机采集至解码完成约370–420ms。图案内容简单，不能用其码率代表摄像头内容；USB 摄像头与双机硬件验收仍未完成。证据见 `reports/`。
+
 ## 打开软件
 
 ```bash
@@ -43,7 +45,7 @@ checkpoints/cvpr2026_image.pth.tar
 checkpoints/cvpr2026_video_hts.pth.tar
 ```
 
-需要两份权重。当前官方 OneDrive API 访问返回 401；若自动获取未成功，可在浏览器使用官方链接下载后放入该目录。请勿把其他变体的文件重命名为 HT-S。未提供权重时，界面仍可用于采集检查并显示缺失项。
+两份官方权重已下载并记录 SHA256，见 `reports/official-weight-downloads.json`。换设备时请一并复制，或从官方链接重新下载。请勿把其他变体的文件重命名为 HT-S。未提供权重时，界面仍可用于采集检查并显示缺失项。自动获取辅助脚本 `tools/fetch_weights_browser.py` 依赖 Playwright、系统 Chromium 和本机代理端口7897；无需在普通运行时使用。
 
 ```bash
 ./tools/build_codec.sh
@@ -56,7 +58,16 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 
 当前第二台尚未接入，以下为接入步骤，尚未完成硬件验收：
 
-1. 将项目源码、固定版本的 `vendor/DCVC` 和两份权重复制到第二台；使用 `environment.yml` 新建环境并安装相同 NVIDIA wheel、构建扩展。不要复制本机 `.env` 当作通用安装包。
+1. 将项目源码、固定版本的 `vendor/DCVC`（包含 CUTLASS）和两份权重复制到第二台。不要复制本机 `.env` 当作通用安装包。第二台安装 Miniforge 后，若也是相同 JetPack/CUDA12.6，在项目目录运行：
+
+   ```bash
+   ~/miniforge3/bin/conda env create -p ./.env -f environment.yml
+   PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s -m pip install \
+     'https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl'
+   ./tools/build_codec.sh
+   ```
+
+   若系统/CUDA 版本不同，先匹配环境，避免直接覆盖系统组件。
 2. 两台网线直接连接。有线网卡各设一个同网段静态地址，例如编码端 `192.168.50.1/24`、解码端 `192.168.50.2/24`。此网段应与现有 Wi-Fi 网段不同；有线连接不设置默认网关，保留 Wi-Fi 联网。程序不会自动修改系统网络。
 3. 用 `ip -4 addr` 核对有线地址；两端通过有线地址互相 ping。
 4. 在解码端运行：
@@ -93,5 +104,7 @@ PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s tests/browser_smoke.py
 ```
 
 `demo/codec.py` 封装上游模型；`engine.py` 管理采集、处理和预览线程；`transport.py` 处理有线数据；`receiver.py` 是独立解码入口；`app.py` 是 Gradio 界面。`docs/requirements.md` 保存确认需求，`docs/progress.md` 保存进度和限制，`reports/` 保存检查及测试证据。
+
+`tools/check_restart.py` 使用正式模型检查三轮启停和 GPU 张量回收；`tools/smoke_independent_processes.py --pretrained` 先编码并退出，再在全新进程解码真实码流，适合在单台16GB设备上验证状态独立性。同一台设备同时启动两个独立 CUDA 进程曾出现内存不足，因此本机编解码采用单进程两组模型状态，双机仍各自独立运行。
 
 参考：[DCVC 官方仓库](https://github.com/microsoft/DCVC)、[NVIDIA Jetson PyTorch 安装说明](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)、[用户提供的 Jetson 文档](https://github.com/MaxwellJay256/Jetson_Orin_NX_guide)、[Ponytail](https://github.com/dietrichgebert/ponytail)。

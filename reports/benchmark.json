@@ -1,0 +1,12 @@
+{
+  "encode_s": 0.9641941940062679,
+  "decode_s": 1.1308921630006807,
+  "frames": 160,
+  "bytes": 8894,
+  "mse_sum": 2623.248305844907,
+  "encode_fps": 165.94167543697102,
+  "decode_fps": 141.48121742700917,
+  "content_mbps_at_30fps": 0.013341,
+  "scope": "640x360 generated moving pattern, real bitstream, independent states, same Jetson, 3 warmup groups excluded; not dual-host acceptance",
+  "qp": 32
+}

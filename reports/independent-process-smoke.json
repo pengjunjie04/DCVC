@@ -1,0 +1,18 @@
+{
+  "scope": "UNTRAINED independent encoder and decoder processes, serialized genuine wire frames, sequential on one Jetson to fit memory; not dual-device or pretrained acceptance",
+  "status": "passed",
+  "records": [
+    {
+      "frames": 1,
+      "preview_bytes": 4309
+    },
+    {
+      "frames": 8,
+      "preview_bytes": 34472
+    },
+    {
+      "frames": 8,
+      "preview_bytes": 34472
+    }
+  ]
+}

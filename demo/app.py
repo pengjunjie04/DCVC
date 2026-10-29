@@ -30,9 +30,17 @@ def device_status():
         addresses = {row['ifname']: [entry['local'] for entry in row['addr_info']] for row in network if row['ifname'] != 'lo'}
     except (OSError, subprocess.SubprocessError, ValueError):
         addresses = '无法读取，请运行 ip -4 addr 查看'
-    return {'摄像头': cameras or ['未插入或尚未识别'], '本机 IPv4': addresses, 'HT-S': problems or ['权重和扩展已就绪；实际运行仍需验证'],
+    return {'摄像头': cameras or ['未插入或尚未识别'], '本机 IPv4': addresses, 'HT-S': problems or ['权重和扩展已就绪'],
             '第二台': '请先启动接收脚本并填写两端有线 IP；点击开始时检测连接',
             '验收目标': '640×360 / 30fps / ≤500ms，尚未完成双机实测'}
+
+
+def device_text():
+    status = device_status()
+    network = status['本机 IPv4']
+    addresses = '；'.join(f'{name}: {", ".join(values)}' for name, values in network.items()) if isinstance(network, dict) else network
+    return ('**摄像头**：' + '；'.join(status['摄像头']) + '\n\n**HT-S**：' + '；'.join(status['HT-S']) +
+            '\n\n**本机地址**：' + (addresses or '暂无') + '\n\n**解码端**：' + status['第二台'])
 
 
 def create_app(engine=None, mount_ui=True):
@@ -138,7 +146,7 @@ def create_app(engine=None, mount_ui=True):
                 <section><div class="preview-title">HT-S 解码画面 <span id="fps-decoded">0.0 fps</span></div>
                 <canvas id="preview-decoded" width="640" height="360" aria-label="解码视频画面"></canvas><p>右上角为浏览器实际绘制帧率，独立于解码 FPS。</p></section></div>''')
                 gr.HTML('''<div id="live-status" role="status">尚未运行</div><div class="metric-grid" id="live-metrics"></div>
-                <p class="metric-note">压缩 Mbps 仅统计模型码流载荷；不含协议、原始预览和返回预览开销。延迟范围见下方运行记录。</p>''')
+                <p class="metric-note">FPS 为最近 2 秒平均，组帧处理会有波动。Mbps 仅统计模型载荷。延迟不含浏览器显示；双机时显示往返耗时。</p>''')
                 with gr.Row():
                     start = gr.Button('▶ 开始', variant='primary')
                     pause = gr.Button('Ⅱ 暂停')
@@ -150,17 +158,17 @@ def create_app(engine=None, mount_ui=True):
                     export = gr.Button('保存本次统计')
                     quit_button = gr.Button('退出程序')
                 with gr.Accordion('设备就绪情况', open=True):
-                    device_json = gr.JSON(value=device_status())
+                    device_panel = gr.Markdown(value=device_text())
                 with gr.Accordion('详细指标与运行记录', open=False):
                     status = gr.JSON(value=engine.snapshot())
-                report = gr.File(label='统计报告（不含视频）', interactive=False)
+                report = gr.File(label='统计报告（不含视频）', interactive=False, visible=False)
         inputs = [mode, source, resolution, fps, qp, camera, bind, peer, port]
         for button, action in [(start, 'start'), (pause, 'pause'), (resume, 'resume'), (stop, 'stop'), (apply, 'apply'), (quit_button, 'quit')]:
             def callback(*args, action=action):
                 return operate(action, *args)
             button.click(callback, inputs=inputs, outputs=status, concurrency_limit=1, concurrency_id='controls')
-        refresh.click(device_status, outputs=device_json)
-        export.click(engine.export, outputs=report)
+        refresh.click(device_text, outputs=device_panel)
+        export.click(lambda: gr.update(value=engine.export(), visible=True), outputs=report)
         timer = gr.Timer(1)
         timer.tick(engine.snapshot, outputs=status, show_progress='hidden')
         gr.Markdown('本地研究演示 · 无音频 · 不自动录制 · 第二台与 USB 摄像头待接入验收')

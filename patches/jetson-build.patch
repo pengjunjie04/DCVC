@@ -9,6 +9,23 @@ index a86631b..4e52d9b 100644
 -    python_requires='>=3.12',
 +    python_requires='>=3.10',
  )
+diff --git a/src/layers/extensions/inference/bind.cpp b/src/layers/extensions/inference/bind.cpp
+index 3bf01f5..9c3c1ef 100644
+--- a/src/layers/extensions/inference/bind.cpp
++++ b/src/layers/extensions/inference/bind.cpp
+@@ -7,9 +7,12 @@
+ #include "dmc_hts_proxy.h"
+ #include "dmc_ld_proxy.h"
+ #include "dmci_proxy.h"
++#include "memory_pool.h"
+ 
+ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
+ {
++    // Call only after all codec proxies are closed and CUDA work has completed.
++    m.def("clear_tensor_pool", []() { g_tensor_pool.clear(0, 0); });
+     py::class_<DMCIProxy>(m, "DMCIProxy")
+         .def(py::init<>())
+         .def("set_param", &DMCIProxy::set_param)
 diff --git a/src/layers/extensions/inference/dmc_hts_proxy.cpp b/src/layers/extensions/inference/dmc_hts_proxy.cpp
 index a78b8fc..24d6b07 100644
 --- a/src/layers/extensions/inference/dmc_hts_proxy.cpp

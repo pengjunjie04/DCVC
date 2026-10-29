@@ -1,3 +1,13 @@
+# 当前状态（2026-10-30）
+
+本机版本可运行：启动 ./launch.sh 打开 Gradio。官方 HT-S 和图像权重已下载，Miniforge .env 独立环境、rANS 和 CUDA 扩展均已验证。25 项自动化测试通过，正式权重160帧合成图案基准约166fps编码/141fps解码。真实独立进程解码通过；Gradio 浏览器解码预览实测30.0fps、采集到解码完成约0.4秒。完整原始记录在 reports/。
+
+启停 GPU 缓存问题已修复：十轮正式模型启动/结束/暂停后 GPU 张量占用均回到0。暂停保留最后画面，继续重置模型状态。
+
+未验收：USB摄像头（尚未插入）、第二台Jetson（尚未接入）、两端有线传输及跨机/浏览器完整延迟。当前已交付两端代码和接入说明；本机合成图案结果不能替代双机摄像头验收。
+
+下方为历史工作记录。
+
 # Progress
 
 User authorized continuous work and all functional requirements. No additional hardware information is needed for local development. Second host and camera absent.
@@ -14,3 +24,10 @@ Independent review found no remaining Critical/Important blockers for trusted wi
 Official OneDrive public folder successfully rendered in fresh anonymous browser (direct API401). Two official filenames visible; browser download in progress.
 
 CUDA extension compiled and installed successfully (18MB .so). Import verified after importing torch (build check updated accordingly). CUDA/cuDNN FP16 convolution check passed. Random-weight architecture smoke: independent encoder/decoder correctly handled I(1 frame)+P(8)+P(8), genuine entropy bytes with3/3/1 parallel streams. No official performance/quality claim. Native GIL regression runtime check:27.18ms native call with25 heartbeat ticks, so capture/UI Python threads remain runnable. reports/untrained-smoke.json. Browser rerun:30.2 actual drawn FPS on synthetic capture, no JS errors. Official file fetching still being retried; a failed0-byte image artifact is rejected by readiness and will be replaced/deleted.
+
+Official OneDrive weight downloads completed via anonymous browser cookies + Referer/User-Agent replay: image168845375 bytes, HT-S324891626 bytes. SHA256 saved in reports/official-weight-downloads.json. Both weights loaded successfully. Official160-frame moving-pattern benchmark QP32 (3 warmup groups excluded): encode165.94fps, decode141.48fps, content0.013341Mbps at30fps. This easy generated pattern is not a camera/dual-host acceptance test. Pretrained independent encoder/decoder processes passed17-frame serialized-wire round trip. Concurrent separate CUDA processes on one16GB device hit OOM; sequential independent processes pass.
+Repeated Engine restart exposed native buffer cache retention and occasional second-start OOM. Added explicit Codec.close, garbage collection, native tensor pool release binding and cache emptying after both codecs close. Hardware3-cycle restart regression in progress;25 unit tests passing.
+
+Final local verification: native pool cleanup3 cycles passed (0 CUDA tensor bytes after each stop/pause), fresh browser official-model session including resume17 frames passed, preview30.0fps. Timing samples ~0.4s to host reconstruction, not browser glass-to-glass. Launcher also started successfully from /tmp on alternate port7861. Test server will be shut down after verification so ./launch.sh can start cleanly.
+
+Extended final hardware regression:10 consecutive real HT-S cycles passed, each17 frames decoded; all10 returned CUDA tensor allocation to0. Browser latest session passed start/pause/resume/end plus stats-file export. UI now shows readable device status, current latency and dropped frames. Test services shut down; launch.sh ready for clean user startup.

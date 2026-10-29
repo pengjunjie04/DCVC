@@ -3,6 +3,7 @@
   const controller = new AbortController();
   window.dcvcPreviewController = controller;
   const signal = controller.signal;
+  let running = false;
   const pause = ms => new Promise(r => setTimeout(r, ms));
   for (const kind of ['original', 'decoded']) {
     (async () => {
@@ -11,7 +12,7 @@
         const tick = performance.now();
         try {
           const canvas = document.getElementById('preview-' + kind);
-          if (canvas) {
+          if (canvas && (running || seq === -1)) {
             const response = await fetch('/api/frame/' + kind + '?after=' + seq, {cache:'no-store', signal});
             if (response.status === 200) {
               const image = await createImageBitmap(await response.blob());
@@ -20,6 +21,8 @@
               image.close();
               seq = Number(response.headers.get('X-Sequence'));
               drawn++;
+            } else if (response.status === 204 && !running) {
+              seq = 0;
             }
           }
         } catch (e) { if (signal.aborted) return; }
@@ -29,7 +32,7 @@
           if (label) label.textContent = (drawn * 1000 / (now - started)).toFixed(1) + ' fps';
           drawn = 0; started = now;
         }
-        await pause(Math.max(0, 30 - (performance.now() - tick)));
+        await pause(Math.max(0, (running ? 15 : 100) - (performance.now() - tick)));
       }
     })();
   }
@@ -38,19 +41,24 @@
       try {
         const res = await fetch('/api/state', {cache:'no-store', signal});
         const s = await res.json();
+        running = s.state === 'running' || s.state === 'starting';
         const text = document.getElementById('live-status');
         if (text) text.textContent = s.state.toUpperCase() + ' · ' + s.message;
         const el = document.getElementById('live-metrics');
-        const cards = [['采集 fps',s.capture.fps],['编码 fps',s.encode.fps],['解码 fps',s.decode.fps],['压缩 Mbps',s.encode.mbps]];
+        const cards = [['采集 fps',s.capture.fps,2],['编码 fps',s.encode.fps,2],['解码 fps',s.decode.fps,2],
+          ['压缩 Mbps',s.encode.mbps,3],
+          [s.settings.mode === 'send' ? '往返预览耗时 / ms' : '采集至解码完成 / ms',s.timing.oldest_to_host_ms,1],
+          ['采集丢帧 · 累计',s.dropped,0]];
         if (el) {
-          el.replaceChildren(...cards.map(([name,value]) => {
+          el.replaceChildren(...cards.map(([name,value,digits]) => {
             const card = document.createElement('div'); card.className = 'metric';
             const label = document.createElement('small'); label.textContent = name;
-            const num = document.createElement('b'); num.textContent = Number(value).toFixed(2);
+            const num = document.createElement('b'); num.textContent = value == null ? '—' : Number(value).toFixed(digits);
             card.append(label,num); return card;
           }));
         }
       } catch(e) {
+        running = false;
         const el = document.getElementById('live-status');
         if (el) el.textContent = '服务已退出或连接中断；重新运行启动脚本即可打开。';
       }

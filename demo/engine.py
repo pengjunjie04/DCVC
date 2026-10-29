@@ -197,13 +197,14 @@ class Engine:
         try:
             encoder = decoder = None
             if settings.mode != 'capture':
+                if settings.mode == 'send':
+                    ethernet_route(settings.bind, settings.peer)
                 encoder = self.codec_factory()
                 if stop.is_set():
                     return
                 if settings.mode == 'local':
                     decoder = self.codec_factory()
                 else:
-                    ethernet_route(settings.bind, settings.peer)
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     self.sock = sock
                     sock.settimeout(10)
@@ -270,6 +271,12 @@ class Engine:
             if sock:
                 sock.close()
             self.sock = None
+            for net in (encoder, decoder):
+                close = getattr(net, 'close', None)
+                if close is not None:
+                    close()
+            from .codec import release_workspace
+            release_workspace()
 
     def _play(self, playback, fps, stop):
         deadline = time.monotonic()
@@ -277,8 +284,11 @@ class Engine:
             frames = playback.take(1, stop)
             if not frames:
                 return
+            now = time.monotonic()
+            if now > deadline + 1 / fps:
+                deadline = now
             with self.lock:
                 self.decoded, self.decoded_seq = frames[0], self.decoded_seq + 1
             self.rates['preview'].add(frames=1)
-            deadline = max(deadline, time.monotonic()) + 1 / fps
+            deadline += 1 / fps
             stop.wait(max(0, deadline - time.monotonic()))

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "cvpr2026_image.pth.tar",
+    "bytes": 168845375,
+    "sha256": "b3b900de23f30e4fc437010ddffe6a5413a56d6cfd97fb6235adbcd2b6973302",
+    "source_folder": "https://1drv.ms/f/c/2866592d5c55df8c/IgAalzb_985lQ79GkXyW2P5OASPpZHHcrcGWEVQxO-mQCVg?e=qyvMN6"
+  },
+  {
+    "name": "cvpr2026_video_hts.pth.tar",
+    "bytes": 324891626,
+    "sha256": "565607d84943ee79072a5760d34a200d5724b4bb72c6bc24bfab41e8ae4f5f47",
+    "source_folder": "https://1drv.ms/f/c/2866592d5c55df8c/IgAalzb_985lQ79GkXyW2P5OASPpZHHcrcGWEVQxO-mQCVg?e=qyvMN6"
+  }
+]

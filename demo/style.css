@@ -13,7 +13,7 @@
 .previews canvas {width:100%;height:auto;aspect-ratio:16/9;background:#07130f;display:block}
 .previews p {font-size:11px;color:#9db1a7;padding:9px 14px;margin:0}
 #live-status {background:#edf4f0;padding:12px 16px;border-radius:10px;color:#315448;font-size:14px}
-.metric-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.metric-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
 .metric {border:1px solid #dce7e1;border-radius:10px;padding:12px;background:#fbfdfc}
 .metric small {color:#648276;font-size:11px}.metric b {display:block;color:#164a39;font-size:24px;font-variant-numeric:tabular-nums}
 .metric-note {font-size:11px;color:#6c7e73;margin:4px 0 12px}

@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "records": [
+    {
+      "cycle": 0,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 1,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "paused"
+    },
+    {
+      "cycle": 2,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 3,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 4,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 5,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 6,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 7,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 8,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    },
+    {
+      "cycle": 9,
+      "decoded": 17,
+      "cuda_allocated_after_end": 0,
+      "state": "idle"
+    }
+  ]
+}
