@@ -8,7 +8,7 @@ import time
 
 from .config import Settings
 from .metrics import WindowStats
-from .transport import send_packet, recv_packet
+from .transport import send_packet, recv_packet, ethernet_route, decode_preview
 
 
 class LatestFrames:
@@ -67,6 +67,7 @@ class Engine:
         self.lock = threading.RLock()
         self.control = threading.RLock()
         self.worker = None
+        self.capture_thread = None
         self.cancel = threading.Event()
         self.state = 'idle'
         self.message = '就绪：尚未开始采集'
@@ -80,7 +81,8 @@ class Engine:
         self.preview_dropped = 0
 
     def alive(self):
-        return self.worker is not None and self.worker.is_alive()
+        return ((self.worker is not None and self.worker.is_alive()) or
+                (self.capture_thread is not None and self.capture_thread.is_alive()))
 
     def start(self, settings):
         settings.validate()
@@ -201,11 +203,13 @@ class Engine:
                 if settings.mode == 'local':
                     decoder = self.codec_factory()
                 else:
+                    ethernet_route(settings.bind, settings.peer)
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     self.sock = sock
                     sock.settimeout(10)
                     sock.bind((settings.bind, 0))
                     sock.connect((settings.peer, settings.port))
+                    sock.settimeout(120)
                     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             if stop.is_set():
                 return
@@ -214,6 +218,7 @@ class Engine:
                     return
                 self.state, self.message = 'running', '采集检查中（不执行压缩）' if settings.mode == 'capture' else 'HT-S 真实码流运行中'
             cap_thread = threading.Thread(target=self._capture, args=(settings, stop, self.queue, errors), daemon=True)
+            self.capture_thread = cap_thread
             cap_thread.start()
             if settings.mode != 'capture':
                 play_thread = threading.Thread(target=self._play, args=(playback, settings.fps, stop), daemon=True)
@@ -236,23 +241,9 @@ class Engine:
                     output = decoder.decode(packet)
                     decode_ms = (time.monotonic() - encoded_at) * 1000
                 else:
-                    import cv2
-                    import numpy as np
                     send_packet(sock, packet[0], packet[1])
                     meta, jpeg_bytes = recv_packet(sock)
-                    if meta.get('type') != 'preview' or meta.get('count') != len(batch):
-                        raise ValueError('解码端返回了无效结果')
-                    sizes = meta.get('sizes')
-                    if not isinstance(sizes, list) or len(sizes) != len(batch) or any(type(n) is not int or n <= 0 for n in sizes) or sum(sizes) != len(jpeg_bytes):
-                        raise ValueError('解码预览长度不正确')
-                    output, offset = [], 0
-                    for size in sizes:
-                        bgr = cv2.imdecode(np.frombuffer(jpeg_bytes[offset:offset+size], dtype=np.uint8), cv2.IMREAD_COLOR)
-                        if bgr is None:
-                            raise ValueError('解码端预览损坏')
-                        output.append(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
-                        offset += size
-                    decode_ms = meta['decode_ms']
+                    output, decode_ms = decode_preview(meta, jpeg_bytes, len(batch), settings.width, settings.height)
                 self.rates['decode'].add(frames=len(output))
                 with self.lock:
                     self.timing = {'encode_group_ms': (encoded_at - start) * 1000,
@@ -289,5 +280,5 @@ class Engine:
             with self.lock:
                 self.decoded, self.decoded_seq = frames[0], self.decoded_seq + 1
             self.rates['preview'].add(frames=1)
-            deadline = max(deadline + 1 / fps, time.monotonic())
+            deadline = max(deadline, time.monotonic()) + 1 / fps
             stop.wait(max(0, deadline - time.monotonic()))

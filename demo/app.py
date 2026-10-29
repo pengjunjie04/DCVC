@@ -3,6 +3,8 @@ import glob
 import threading
 import time
 import webbrowser
+import subprocess
+import json
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -23,7 +25,12 @@ RESOLUTIONS = {'360p · 640 × 360': (640, 360), '240p · 416 × 240': (416, 240
 def device_status():
     cameras = glob.glob('/dev/video*')
     problems = readiness()
-    return {'摄像头': cameras or ['未插入或尚未识别'], 'HT-S': problems or ['权重和扩展已就绪；实际运行仍需验证'],
+    try:
+        network = json.loads(subprocess.check_output(['ip', '-j', '-4', 'addr'], text=True, timeout=3))
+        addresses = {row['ifname']: [entry['local'] for entry in row['addr_info']] for row in network if row['ifname'] != 'lo'}
+    except (OSError, subprocess.SubprocessError, ValueError):
+        addresses = '无法读取，请运行 ip -4 addr 查看'
+    return {'摄像头': cameras or ['未插入或尚未识别'], '本机 IPv4': addresses, 'HT-S': problems or ['权重和扩展已就绪；实际运行仍需验证'],
             '第二台': '请先启动接收脚本并填写两端有线 IP；点击开始时检测连接',
             '验收目标': '640×360 / 30fps / ≤500ms，尚未完成双机实测'}
 
@@ -168,7 +175,7 @@ def main():
     args = parser.parse_args()
     engine = Engine()
     app = create_app(engine)
-    server = uvicorn.Server(uvicorn.Config(app, host='127.0.0.1', port=args.port, log_level='info'))
+    server = uvicorn.Server(uvicorn.Config(app, host='127.0.0.1', port=args.port, log_level='info', access_log=False))
     def watch():
         while not server.started and not server.should_exit:
             time.sleep(.1)

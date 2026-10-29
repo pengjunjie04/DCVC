@@ -1,0 +1,12 @@
+{
+  "python_prefix": "/home/jetson/Desktop/dcvc-jetson-demo/.env",
+  "torch_path": "/home/jetson/Desktop/dcvc-jetson-demo/.env/lib/python3.10/site-packages/torch/__init__.py",
+  "torch_version": "2.5.0a0+872d972e41.nv24.08",
+  "cuda": "12.6",
+  "gpu": "Orin",
+  "capability": [
+    8,
+    7
+  ],
+  "cuda_available": true
+}

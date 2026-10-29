@@ -1,0 +1,49 @@
+{
+  "capture_state": {
+    "state": "running",
+    "message": "采集检查中（不执行压缩）",
+    "settings": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "qp": 32,
+      "mode": "capture",
+      "source": "synthetic",
+      "camera": "/dev/video0",
+      "peer": "",
+      "bind": "",
+      "port": 9860
+    },
+    "capture": {
+      "fps": 28.5,
+      "mbps": 0.0,
+      "frames": 62,
+      "bytes": 0
+    },
+    "encode": {
+      "fps": 0.0,
+      "mbps": 0.0,
+      "frames": 0,
+      "bytes": 0
+    },
+    "decode": {
+      "fps": 0.0,
+      "mbps": 0.0,
+      "frames": 0,
+      "bytes": 0
+    },
+    "preview": {
+      "fps": 0.0,
+      "mbps": 0.0,
+      "frames": 0,
+      "bytes": 0
+    },
+    "dropped": 0,
+    "preview_dropped": 0,
+    "timing": {},
+    "worker_alive": true
+  },
+  "browser_original_fps_during_capture": "30.2 fps",
+  "browser_errors": [],
+  "lifecycle": "start / pause / resume / stop succeeded"
+}

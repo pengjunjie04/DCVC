@@ -12,10 +12,19 @@ from demo.codec import validate_packet
 class ConfigTests(unittest.TestCase):
     def test_codec_rejects_bad_metadata_and_accepts_eight_entropy_streams(self):
         good = {'type': 'P', 'width': 640, 'height': 360, 'qp': 32, 'ec': 8, 'reset': 0, 'count': 8}
-        validate_packet(good, b'abc')
+        valid_stream = struct.pack('<iii', 4, 8, 12) + b'1234' * 4
+        validate_packet(good, valid_stream)
         for update in ({'count': 9}, {'width': 999999}, {'ec': 9}, {'qp': -1}):
             with self.subTest(update=update), self.assertRaises(ValueError):
                 validate_packet({**good, **update}, b'abc')
+
+    def test_invalid_rans_offsets_rejected_before_native_decode(self):
+        meta = {'type': 'I', 'width': 640, 'height': 360, 'qp': 32, 'ec': 3, 'reset': 0, 'count': 1}
+        for stream in (b'x', struct.pack('<i', 999999) + b'12345678',
+                       struct.pack('<i', -1) + b'12345678', struct.pack('<i', 2) + b'12345678'):
+            with self.subTest(stream=stream), self.assertRaises(ValueError):
+                validate_packet(meta, stream)
+        validate_packet(meta, struct.pack('<i', 4) + b'12345678')
 
     def test_reject_invalid_before_allocating_resources(self):
         for fields in ({'fps': 0}, {'fps': 121}, {'qp': 64}, {'width': 0},
@@ -92,8 +101,27 @@ class TransportTests(unittest.TestCase):
             a.close()
             b.close()
 
+    def test_deep_json_is_a_recoverable_protocol_error(self):
+        a, b = socket.socketpair()
+        try:
+            payload = b'[' * 1100 + b'0' + b']' * 1100
+            a.sendall(b'DCV1' + struct.pack('!II', len(payload), 0) + payload)
+            with self.assertRaises(ValueError):
+                recv_packet(b)
+        finally:
+            a.close()
+            b.close()
+
 
 class RateTests(unittest.TestCase):
+    def test_streaming_without_browser_keeps_bounded_history(self):
+        now = [0.0]
+        stats = WindowStats(seconds=2, clock=lambda: now[0])
+        for i in range(100):
+            now[0] = float(i)
+            stats.add(frames=1)
+        self.assertLessEqual(len(stats.events), 3)
+
     def test_rates_include_elapsed_time_and_decay_after_stall(self):
         now = [0.0]
         stats = WindowStats(seconds=2, clock=lambda: now[0])

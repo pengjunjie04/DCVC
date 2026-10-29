@@ -2,7 +2,7 @@
 .env/
 .superpowers/
 vendor/
-tools/*.sh
+tools/Miniforge3-*.sh
 tools/*.whl
 __pycache__/
 .pytest_cache/

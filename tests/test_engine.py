@@ -7,6 +7,30 @@ from demo.engine import Engine, LatestFrames
 
 
 class EngineTests(unittest.TestCase):
+    def test_playback_preserves_interval_after_input_starvation(self):
+        engine = Engine()
+        queue = LatestFrames()
+        stop = threading.Event()
+        thread = threading.Thread(target=engine._play, args=(queue, 30, stop))
+        thread.start()
+        try:
+            queue.put('warmup')
+            time.sleep(.2)
+            queue.put('a')
+            queue.put('b')
+            seen = {}
+            deadline = time.monotonic() + 1
+            while time.monotonic() < deadline and len(seen) < 2:
+                seq, frame = engine.image('decoded')
+                if frame in ('a', 'b') and frame not in seen:
+                    seen[frame] = time.monotonic()
+                time.sleep(.001)
+            self.assertEqual(set(seen), {'a', 'b'})
+            self.assertGreater(seen['b'] - seen['a'], .02)
+        finally:
+            stop.set()
+            thread.join(1)
+
     def test_preview_pacing_does_not_halve_codec_throughput(self):
         class FastCodec:
             first = True

@@ -4,18 +4,21 @@ import ipaddress
 import signal
 import socket
 import time
+import multiprocessing
 
 from .codec import Codec, validate_packet
 from .transport import recv_packet, send_packet
 
 
-def handle_connection(conn, codec):
+def handle_connection(conn, codec, progress=None):
     import cv2
     while True:
         packet = recv_packet(conn)
         validate_packet(*packet)
         started = time.monotonic()
         frames = codec.decode(packet)
+        if progress is not None:
+            progress.send(None)
         elapsed = (time.monotonic() - started) * 1000
         previews = []
         for rgb in frames:
@@ -26,6 +29,48 @@ def handle_connection(conn, codec):
         send_packet(conn, {'type': 'preview', 'count': len(frames), 'sizes': list(map(len, previews)),
                            'decode_ms': elapsed}, b''.join(previews))
         print(f'decoded={len(frames)}, decode_ms={elapsed:.2f}, compressed_bytes={len(packet[1])}', flush=True)
+
+
+def run_session(conn, progress=None):
+    # Native rANS cannot safely reject every corrupt entropy symbol; isolate its address space.
+    with conn:
+        conn.settimeout(120)
+        try:
+            codec = Codec()
+            if progress is not None:
+                progress.send(None)
+            handle_connection(conn, codec, progress)
+        except Exception as exc:
+            print(f'会话结束：{type(exc).__name__}: {exc}', flush=True)
+
+
+def serve_session(conn, context=None, silence_timeout=180):
+    context = context or multiprocessing.get_context('spawn')
+    receive_progress, send_progress = context.Pipe(duplex=False)
+    process = context.Process(target=run_session, args=(conn, send_progress))
+    process.start()
+    send_progress.close()
+    conn.close()
+    last_progress = time.monotonic()
+    try:
+        while process.is_alive():
+            process.join(timeout=min(.5, silence_timeout))
+            try:
+                while receive_progress.poll():
+                    receive_progress.recv()
+                    last_progress = time.monotonic()
+            except EOFError:
+                pass
+            if process.is_alive() and time.monotonic() - last_progress > silence_timeout:
+                print('解码会话长时间无进展，正在释放进程', flush=True)
+                process.terminate()
+                break
+    finally:
+        if process.is_alive():
+            process.terminate()
+            process.join(5)
+        receive_progress.close()
+    return process.exitcode
 
 
 def main():
@@ -44,14 +89,8 @@ def main():
         while True:
             conn, peer = server.accept()
             print(f'编码端连接：{peer}', flush=True)
-            with conn:
-                conn.settimeout(30)
-                try:
-                    # Each session owns new reference state, including after pause/reconnect.
-                    codec = Codec()
-                    handle_connection(conn, codec)
-                except (EOFError, OSError, ValueError, RuntimeError) as exc:
-                    print(f'会话结束：{exc}', flush=True)
+            code = serve_session(conn)
+            print(f'会话进程退出（{code}）；继续等待下一次连接', flush=True)
 
 
 if __name__ == '__main__':

@@ -14,7 +14,10 @@ class WindowStats:
 
     def add(self, frames=0, size=0):
         with self.lock:
-            self.events.append((self.clock(), frames, size))
+            now = self.clock()
+            while self.events and self.events[0][0] <= now - self.seconds:
+                self.events.popleft()
+            self.events.append((now, frames, size))
             self.frames += frames
             self.size += size
 

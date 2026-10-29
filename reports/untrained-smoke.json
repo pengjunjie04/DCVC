@@ -1,0 +1,27 @@
+{
+  "scope": "UNTRAINED random-weight architecture smoke. No pretrained quality/FPS acceptance.",
+  "status": "passed",
+  "records": [
+    {
+      "type": "I",
+      "count": 1,
+      "bytes": 186604,
+      "ec": 3
+    },
+    {
+      "type": "P",
+      "count": 8,
+      "bytes": 205753,
+      "ec": 3
+    },
+    {
+      "type": "P",
+      "count": 8,
+      "bytes": 13414,
+      "ec": 1
+    }
+  ],
+  "torch": "2.5.0a0+872d972e41.nv24.08",
+  "native_call_ms": 27.18430799905036,
+  "heartbeat_ticks_during_native": 25
+}

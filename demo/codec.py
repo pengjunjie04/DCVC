@@ -1,6 +1,7 @@
 """Thin adapter around Microsoft's real HT-S entropy-coded bitstream API."""
 from pathlib import Path
 import sys
+import struct
 
 ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM = ROOT / 'vendor' / 'DCVC'
@@ -14,8 +15,9 @@ def readiness():
         if importlib.util.find_spec(name) is None:
             issues.append(f'缺少 {name}，请运行 tools/build_codec.sh')
     for name in ('cvpr2026_image.pth.tar', 'cvpr2026_video_hts.pth.tar'):
-        if not (CHECKPOINTS / name).is_file():
-            issues.append(f'缺少模型权重 checkpoints/{name}')
+        path = CHECKPOINTS / name
+        if not path.is_file() or path.stat().st_size < 1024:
+            issues.append(f'缺少或无效的模型权重 checkpoints/{name}')
     return issues
 
 
@@ -29,6 +31,15 @@ def validate_packet(meta, payload):
     count = 1 if meta['type'] == 'I' else 8
     if meta.get('count') != count or not payload:
         raise ValueError('帧数或载荷无效')
+    streams = meta['ec']
+    offsets_count = max(0, streams // 2 - 1 + streams % 2) if streams >= 3 else 0
+    header = offsets_count * 4
+    if len(payload) < header + 4:
+        raise ValueError('rANS 码流缺少状态或偏移头')
+    offsets = list(struct.unpack_from('<' + 'i' * offsets_count, payload)) if offsets_count else []
+    boundaries = [0, *offsets, len(payload) - header]
+    if any(end - start < 4 for start, end in zip(boundaries, boundaries[1:])):
+        raise ValueError('rANS 子码流偏移越界或过短')
 
 
 class Codec:
@@ -59,6 +70,7 @@ class Codec:
         self.i.proxy.set_param(self.i.add_cdf_to_state_dict(self.i.state_dict()), .15)
         self.first = True
         self.decoded_first = False
+        self.decode_dimensions = None
         self.groups = 0
 
     def encode(self, frames, qp):
@@ -102,9 +114,12 @@ class Codec:
                 self.p.clear_dpb()
                 self.p.add_ref_feature_from_frame(result['x_hat'], apply_feature_adaptor=False)
                 self.decoded_first = True
+                self.decode_dimensions = (meta['width'], meta['height'])
             else:
                 if not self.decoded_first:
                     raise ValueError('P 帧前必须收到 I 帧')
+                if (meta['width'], meta['height']) != self.decode_dimensions:
+                    raise ValueError('分辨率修改后必须重启流并发送 I 帧')
                 result = self.p.decompress(payload, sps, meta['qp'], meta['ec'], meta['reset'])
             frames = result['x_hat']
             if not isinstance(frames, list):

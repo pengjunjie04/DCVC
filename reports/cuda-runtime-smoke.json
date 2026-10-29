@@ -1,0 +1,11 @@
+{
+  "scope": "CUDA/cuDNN FP16 convolution environment check, not DCVC performance",
+  "finite": true,
+  "shape": [
+    1,
+    8,
+    30,
+    30
+  ],
+  "cudnn": 92000
+}
