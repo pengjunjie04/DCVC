@@ -225,7 +225,7 @@ class Engine:
             with self.lock:
                 if stop.is_set():
                     return
-                self.state, self.message = 'running', '采集检查中（不执行压缩）' if settings.mode == 'capture' else 'HT-S 真实码流运行中'
+                self.state, self.message = 'running', '采集检查中（不执行压缩）' if settings.mode == 'capture' else '视频传输运行中'
             cap_thread = threading.Thread(target=self._capture, args=(settings, stop, self.queue, errors), daemon=True)
             self.capture_thread = cap_thread
             cap_thread.start()

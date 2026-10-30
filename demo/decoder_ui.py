@@ -113,7 +113,7 @@ class DecoderMonitor:
 
 
 def create_decoder_app(monitor, mount_ui=True):
-    api = FastAPI(title='DCVC Lab · Decoder')
+    api = FastAPI(title='视频解码端')
 
     @api.get('/api/state')
     def state():
@@ -137,14 +137,14 @@ def create_decoder_app(monitor, mount_ui=True):
         return api
     import gradio as gr
     from .ui_parts import header_html, monitor_html
-    with gr.Blocks(title='DCVC Lab · 解码端', theme=gr.themes.Soft(primary_hue='emerald'),
+    with gr.Blocks(title='视频解码端', theme=gr.themes.Soft(primary_hue='emerald'),
                    css=(ROOT/'demo/style.css').read_text(), js=(ROOT/'demo/preview.js').read_text()) as ui:
         gr.HTML(header_html('解码端 · 第二台 Jetson'))
         with gr.Column(elem_id='decoder-console'):
             gr.HTML('<div class="session-bar"><div id="live-status" role="status">等待编码端连接</div><span class="session-role">DECODER / DISPLAY</span></div>')
             with gr.Row(elem_id='decoder-workspace'):
                 with gr.Column(scale=2, min_width=360):
-                    gr.HTML(monitor_html('decoded', '解码输出', '第二台 Jetson · HT-S 重建画面'))
+                    gr.HTML(monitor_html('decoded', '解码输出', '第二台 Jetson · 重建画面'))
                 with gr.Column(scale=1, min_width=280):
                     gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>实时吞吐 / 处理速度</span></div><div class="metric-grid" id="live-metrics"></div>')
             gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。最近 2 秒更新，初始包含预热。与论文对照还需匹配硬件、输入、QP 和计时方法。', elem_classes=['metric-note'])
@@ -157,5 +157,5 @@ def create_decoder_app(monitor, mount_ui=True):
             with gr.Accordion('详细指标与计时范围', open=False):
                 detail = gr.JSON()
                 gr.Timer(1).tick(monitor.snapshot, outputs=detail, show_progress='hidden')
-        gr.HTML('<div class="app-footer"><span>DCVC-UF HT-S · 第二台独立解码</span><span>在编码端点击开始 / 暂停 / 结束 · 不自动录制</span></div>')
+        gr.HTML('<div class="app-footer"><span>在编码端点击开始 / 暂停 / 结束 · 不自动录制</span></div>')
     return gr.mount_gradio_app(api, ui, path='/', show_error=True)

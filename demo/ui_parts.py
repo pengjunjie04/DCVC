@@ -1,9 +1,9 @@
 """Shared static console markup; live values always come from the running session."""
 
 def header_html(role='编码端 · 第一台 Jetson'):
-    return f'''<div class="masthead"><div class="brand"><div class="brand-mark" aria-hidden="true">D<span>↗</span></div>
-    <div><div class="eyebrow">NEURAL VIDEO WORKSPACE</div><h1>DCVC <span>Lab</span></h1><p>双机神经视频压缩实验台</p></div></div>
-    <div class="header-meta"><span class="role-chip">{role}</span><div class="target"><small>第一阶段目标 · 实测验收</small><b>360p <span>/</span> 30 fps</b><small>DCVC-UF HT-S · 延迟目标 ≤500ms</small></div></div></div>'''
+    return f'''<div class="masthead"><div></div>
+    <div class="header-meta"><span class="role-chip">{role}</span><div class="target"><small>第一阶段目标 · 实测验收</small><b>360p <span>/</span> 30 fps</b><small>延迟目标 ≤500ms</small></div></div></div>'''
+
 
 
 def monitor_html(kind, title, subtitle):

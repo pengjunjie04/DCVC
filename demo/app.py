@@ -16,7 +16,7 @@ from .engine import Engine
 from .ui_parts import header_html, monitor_html
 
 ROOT = Path(__file__).resolve().parents[1]
-MODES = {'本机编解码 · HT-S': 'local', '双机发送 · HT-S': 'send', '仅检查采集 · 不压缩': 'capture'}
+MODES = {'本机编解码': 'local', '双机发送': 'send', '仅检查采集 · 不压缩': 'capture'}
 SOURCES = {'测试图案（无需摄像头）': 'synthetic', 'USB 摄像头': 'camera'}
 RESOLUTIONS = {'360p · 640 × 360': (640, 360), '240p · 416 × 240': (416, 240),
                '480p · 832 × 480': (832, 480), '720p · 1280 × 720': (1280, 720),
@@ -31,7 +31,7 @@ def device_status():
         addresses = {row['ifname']: [entry['local'] for entry in row['addr_info']] for row in network if row['ifname'] != 'lo'}
     except (OSError, subprocess.SubprocessError, ValueError):
         addresses = '无法读取，请运行 ip -4 addr 查看'
-    return {'摄像头': cameras or ['未插入或尚未识别'], '本机 IPv4': addresses, 'HT-S': problems or ['权重和扩展已就绪'],
+    return {'摄像头': cameras or ['未插入或尚未识别'], '本机 IPv4': addresses, '模型': problems or ['权重和扩展已就绪'],
             '第二台': '请先启动接收脚本并填写两端有线 IP；点击开始时检测连接',
             '验收目标': '640×360 / 30fps / ≤500ms；完整显示延迟仍需单独测量'}
 
@@ -40,13 +40,13 @@ def device_text():
     status = device_status()
     network = status['本机 IPv4']
     addresses = '；'.join(f'{name}: {", ".join(values)}' for name, values in network.items()) if isinstance(network, dict) else network
-    return ('**摄像头**：' + '；'.join(status['摄像头']) + '\n\n**HT-S**：' + '；'.join(status['HT-S']) +
+    return ('**摄像头**：' + '；'.join(status['摄像头']) + '\n\n**模型**：' + '；'.join(status['模型']) +
             '\n\n**本机地址**：' + (addresses or '暂无') + '\n\n**解码端**：' + status['第二台'])
 
 
 def create_app(engine=None, mount_ui=True):
     engine = engine or Engine()
-    api = FastAPI(title='Jetson DCVC Lab')
+    api = FastAPI(title='视频传输控制台')
     api.state.engine = engine
     api.state.exit_requested = threading.Event()
 
@@ -123,7 +123,7 @@ def create_app(engine=None, mount_ui=True):
 
     css = (ROOT / 'demo' / 'style.css').read_text()
     js = (ROOT / 'demo' / 'preview.js').read_text()
-    with gr.Blocks(title='Jetson DCVC Lab', theme=gr.themes.Soft(primary_hue='emerald'), css=css, js=js) as ui:
+    with gr.Blocks(title='视频传输控制台', theme=gr.themes.Soft(primary_hue='emerald'), css=css, js=js) as ui:
         gr.HTML(header_html())
         with gr.Row(elem_id='workspace'):
             with gr.Column(scale=1, min_width=280, elem_id='settings-panel'):
@@ -147,7 +147,7 @@ def create_app(engine=None, mount_ui=True):
                     resume = gr.Button('▷ 继续')
                     stop = gr.Button('■ 结束', variant='stop')
                 gr.HTML('<div class="previews">' + monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案') +
-                        monitor_html('decoded', 'HT-S 解码画面', '输出 · 真实压缩码流重建') + '</div>')
+                        monitor_html('decoded', '解码画面', '输出 · 真实压缩码流重建') + '</div>')
                 gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>最近 2 秒 · 实际测量</span></div><div class="metric-grid" id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。Mbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
                 with gr.Row(elem_classes=['utility-actions']):
                     apply = gr.Button('应用并重启')
@@ -168,7 +168,7 @@ def create_app(engine=None, mount_ui=True):
         export.click(lambda: gr.update(value=engine.export(), visible=True), outputs=report)
         timer = gr.Timer(1)
         timer.tick(engine.snapshot, outputs=status, show_progress='hidden')
-        gr.HTML('<div class="app-footer"><span>DCVC-UF HT-S · 双 Jetson Orin NX 16GB</span><span>本地运行 · 不自动录制 · 性能以实测为准</span></div>')
+        gr.HTML('<div class="app-footer"><span>本地运行 · 不自动录制 · 性能以实测为准</span></div>')
     return gr.mount_gradio_app(api, ui, path='/', show_error=True)
 
 
