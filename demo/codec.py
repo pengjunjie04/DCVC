@@ -141,6 +141,7 @@ class Codec:
             output = []
             for frame in frames:
                 rgb = ycbcr2rgb(frame[:, :, :meta['height'], :meta['width']] + .5)
-                output.append(rgb.mul(255).round().clamp(0, 255).byte().squeeze(0).permute(1, 2, 0).cpu().numpy())
+                # Pack HWC on the GPU so OpenCV need not copy a planar CPU view per preview.
+                output.append(rgb.mul(255).round().clamp(0, 255).byte().squeeze(0).permute(1, 2, 0).contiguous().cpu().numpy())
             torch.cuda.synchronize()
             return output

@@ -2,7 +2,7 @@
 
 两台 Jetson Orin NX 16GB 的 DCVC-UF HT-S 视频压缩演示。首期目标为 **640×360、30fps、端到端延迟 ≤500ms**；目标是否达标须以真实模型和双机测试为准。
 
-当前本机已完成：独立 Miniforge 环境、官方权重、两项原生扩展、Gradio 正式模型运行、独立进程码流解码和十轮启停资源回收。25 项自动化测试通过。合成移动图案 QP32 基准：编码约166fps、解码约141fps；Gradio 实际预览约30fps，本机采集至解码完成约370–420ms。图案内容简单，不能用其码率代表摄像头内容；USB 摄像头与双机硬件验收仍未完成。证据见 `reports/`。
+两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。30项自动化测试通过。最新性能与限制见下方“实机结果”及 `reports/dual-host-camera-browser.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
 
 ## 打开软件
 
@@ -56,7 +56,7 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 
 ## 第二台接入
 
-当前第二台尚未接入，以下为接入步骤，尚未完成硬件验收：
+本次两台设备已完成部署：编码端192.168.50.1、解码端192.168.50.2。解码端可直接从第4步启动接收服务；第1–3步供重新部署参考：
 
 1. 将项目源码、固定版本的 `vendor/DCVC`（包含 CUTLASS）和两份权重复制到第二台。不要复制本机 `.env` 当作通用安装包。第二台安装 Miniforge 后，若也是相同 JetPack/CUDA12.6，在项目目录运行：
 
@@ -80,7 +80,7 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 
 接收端断开后会等待下一次连接；暂停/继续会创建新会话。每个接收会话使用独立进程，原生解码崩溃不会关闭监听服务；连续 180 秒没有解码进展会回收会话。初版 TCP 可靠传输和预览返回会占用额外时间；断线不自动恢复为旧参考状态，重新点击开始即可。接收服务仅绑定指定地址；请用于两机直连或可信实验网。
 
-摄像头驱动若卡在底层读取调用，线程无法强制中断。程序会拒绝在旧采集线程仍存活时重新占用摄像头；这种情况需拔插摄像头或退出程序，真实 USB 稳定性仍待设备接入验证。
+摄像头驱动若卡在底层读取调用，线程无法强制中断。程序会拒绝在旧采集线程仍存活时重新占用摄像头；这种情况需拔插摄像头或退出程序，当前摄像头已通过双机短时运行，长时间及拔插稳定性仍需另测。
 
 ## 指标含义
 
@@ -111,4 +111,12 @@ PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s tests/browser_smoke.py
 
 参考：[DCVC 官方仓库](https://github.com/microsoft/DCVC)、[NVIDIA Jetson PyTorch 安装说明](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)、[用户提供的 Jetson 文档](https://github.com/MaxwellJay256/Jetson_Orin_NX_guide)、[Ponytail](https://github.com/dietrichgebert/ponytail)。
 
-摄像头接入更新：icspring `/dev/video0` 已测真实采集30fps及640×360 HT-S编码，UVC缓冲设为2以避免降至15fps。当前内存占用下单机同时编解码遇到OOM，独立编码正常，下一步由第二台独立解码。详见 `reports/camera-final-test.json`。
+## 实机结果
+
+640×360、30fps、QP32，真实USB摄像头→本机编码→有线TCP→第二台解码→返回JPEG→Gradio浏览器。编码、远端解码和预览采用有界流水线。摄像头原生640×480 YUYV30，保持比例补边到640×360。
+
+实机一分钟稳态测试：采集29.99fps，编码29.94fps，解码29.94fps，后端预览29.99fps；期间新增采集丢帧0、预览丢帧1。采集至收到返回预览的时延中位数490.5ms，采样最大567.1ms，仍未达到所有采样≤500ms。未测浏览器完整显示时延。
+
+完整数值见 `reports/dual-host-camera-browser.json`；原始串行基线及中间优化结果也保存在 `reports/`。功能验收包含开始、暂停、继续后实际解码新帧、结束、统计导出。稳态测量排除首次模型加载及GPU预热，初始化时仍会丢弃尚未编码的过期采集帧。
+
+当前实际场景的模型码率很低，不能据此代表复杂动态场景。30fps吞吐与≤500ms完整显示时延须分别验收；采集到返回预览的时延不包含浏览器绘制和摄像头内部延迟。

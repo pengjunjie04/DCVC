@@ -4,6 +4,8 @@
 vendor/
 tools/Miniforge3-*.sh
 tools/*.whl
+tools/runtime-wheels/
+tools/jetson-wheels/
 tools/testdata/
 __pycache__/
 .pytest_cache/

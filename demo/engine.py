@@ -2,6 +2,7 @@ from collections import deque
 from dataclasses import asdict
 import json
 from pathlib import Path
+from queue import Queue, Empty
 import socket
 import threading
 import time
@@ -192,6 +193,9 @@ class Engine:
     def _run(self, settings, stop):
         cap_thread = None
         play_thread = None
+        response_thread = None
+        pending = Queue(maxsize=2)
+        slots = threading.BoundedSemaphore(2)
         playback = LatestFrames(limit=16)
         sock = None
         errors = []
@@ -225,11 +229,20 @@ class Engine:
             if settings.mode != 'capture':
                 play_thread = threading.Thread(target=self._play, args=(playback, settings.fps, stop), daemon=True)
                 play_thread.start()
+            if settings.mode == 'send':
+                response_thread = threading.Thread(
+                    target=self._receive, args=(sock, pending, slots, playback, settings, stop, errors), daemon=True)
+                response_thread.start()
             first = True
             while not stop.is_set():
                 if settings.mode == 'capture':
                     stop.wait(.05)
                     continue
+                if settings.mode == 'send':
+                    while not stop.is_set() and not slots.acquire(timeout=.05):
+                        pass
+                    if stop.is_set():
+                        break
                 batch = self.queue.take(1 if first else 8, stop)
                 if not batch:
                     break
@@ -239,22 +252,15 @@ class Engine:
                 self.rates['encode'].add(frames=len(batch), size=len(packet[1]))
                 if stop.is_set():
                     break
+                encode_ms = (encoded_at - start) * 1000
                 if decoder:
                     output = decoder.decode(packet)
                     decode_ms = (time.monotonic() - encoded_at) * 1000
+                    self._publish(output, playback, batch[0][0], encode_ms, decode_ms, remote=False)
                 else:
+                    # FIFO metadata precedes the wire write; one reader owns all replies.
+                    pending.put((batch[0][0], encode_ms, len(batch)))
                     send_packet(sock, packet[0], packet[1])
-                    meta, jpeg_bytes = recv_packet(sock)
-                    output, decode_ms = decode_preview(meta, jpeg_bytes, len(batch), settings.width, settings.height)
-                self.rates['decode'].add(frames=len(output))
-                with self.lock:
-                    self.timing = {'encode_group_ms': (encoded_at - start) * 1000,
-                                   'decode_group_ms': decode_ms,
-                                   'oldest_to_host_ms': (time.monotonic() - batch[0][0]) * 1000,
-                                   'scope': '本机采集至本机解码完成' if decoder else '编码端采集至返回解码预览（往返，非单向）'}
-                for frame in output:
-                    playback.put(frame)
-                self.preview_dropped = playback.dropped
                 first = False
             if errors:
                 raise errors[0]
@@ -262,9 +268,17 @@ class Engine:
             with self.lock:
                 # A user-requested cancellation is not a transport failure.
                 if not stop.is_set() or errors:
-                    self.state, self.message = 'error', f'{type(exc).__name__}: {exc}'
+                    cause = errors[0] if errors else exc
+                    self.state, self.message = 'error', f'{type(cause).__name__}: {cause}'
         finally:
             stop.set()
+            if sock:
+                try:
+                    sock.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
+            if response_thread:
+                response_thread.join()
             if cap_thread:
                 cap_thread.join(timeout=2)
             if play_thread:
@@ -278,6 +292,41 @@ class Engine:
                     close()
             from .codec import release_workspace
             release_workspace()
+
+    def _receive(self, sock, pending, slots, playback, settings, stop, errors):
+        try:
+            while not stop.is_set():
+                try:
+                    captured, encode_ms, count = pending.get(timeout=.05)
+                except Empty:
+                    continue
+                meta, jpeg_bytes = recv_packet(sock)
+                output, decode_ms = decode_preview(meta, jpeg_bytes, count, settings.width, settings.height)
+                if stop.is_set():
+                    return
+                self._publish(output, playback, captured, encode_ms, decode_ms, remote=True)
+                slots.release()
+        except Exception as exc:
+            if not stop.is_set():
+                errors.append(exc)
+                stop.set()
+                # A peer rejecting a reply may also stop reading our next group.
+                # Interrupt sendall so the worker reports this original error promptly.
+                try:
+                    sock.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
+
+    def _publish(self, output, playback, captured, encode_ms, decode_ms, remote):
+        self.rates['decode'].add(frames=len(output))
+        with self.lock:
+            self.timing = {'encode_group_ms': encode_ms,
+                           'decode_group_ms': decode_ms,
+                           'oldest_to_host_ms': (time.monotonic() - captured) * 1000,
+                           'scope': '编码端采集至返回解码预览（往返，非单向）' if remote else '本机采集至本机解码完成'}
+        for frame in output:
+            playback.put(frame)
+        self.preview_dropped = playback.dropped
 
     def _play(self, playback, fps, stop):
         deadline = time.monotonic()

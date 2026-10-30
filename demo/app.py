@@ -32,7 +32,7 @@ def device_status():
         addresses = '无法读取，请运行 ip -4 addr 查看'
     return {'摄像头': cameras or ['未插入或尚未识别'], '本机 IPv4': addresses, 'HT-S': problems or ['权重和扩展已就绪'],
             '第二台': '请先启动接收脚本并填写两端有线 IP；点击开始时检测连接',
-            '验收目标': '640×360 / 30fps / ≤500ms，尚未完成双机实测'}
+            '验收目标': '640×360 / 30fps / ≤500ms；完整显示延迟仍需单独测量'}
 
 
 def device_text():
@@ -171,7 +171,7 @@ def create_app(engine=None, mount_ui=True):
         export.click(lambda: gr.update(value=engine.export(), visible=True), outputs=report)
         timer = gr.Timer(1)
         timer.tick(engine.snapshot, outputs=status, show_progress='hidden')
-        gr.Markdown('本地研究演示 · 无音频 · 不自动录制 · 第二台与 USB 摄像头待接入验收')
+        gr.Markdown('本地研究演示 · 无音频 · 不自动录制 · 性能以当前实际帧率和注明范围的延迟为准')
     return gr.mount_gradio_app(api, ui, path='/', show_error=True)
 
 

@@ -1,0 +1,3489 @@
+{
+  "scope": "USB camera -> official DCVC-UF HT-S encoder on 192.168.50.1 -> TCP eno1 -> independent decoder on 192.168.50.2 -> JPEG preview -> encoder browser. No video or screenshots saved. Latency is camera capture to returned preview, excluding browser rendering; not one-way glass-to-glass.",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "qp": 32
+  },
+  "samples": [
+    {
+      "elapsed": 1.0129293729987694,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 405,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003188,
+          "frames": 153,
+          "bytes": 2851
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 145,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 137,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 114.98681800730992,
+          "decode_group_ms": 113.21285800022451,
+          "oldest_to_host_ms": 518.6738689953927,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 2.0685670629900414,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 437,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003484,
+          "frames": 185,
+          "bytes": 3100
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 185,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 168,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 70.47577599587385,
+          "decode_group_ms": 90.40602799996122,
+          "oldest_to_host_ms": 460.5413020035485,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.4 fps",
+        "decoded": "30.6 fps"
+      }
+    },
+    {
+      "elapsed": 3.100680260991794,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 29.5,
+          "mbps": 0.0,
+          "frames": 467,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001968,
+          "frames": 217,
+          "bytes": 3343
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 209,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 199,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 85.85285300796386,
+          "decode_group_ms": 92.66708199993445,
+          "oldest_to_host_ms": 464.7380179958418,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 4.135195491995546,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 499,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001908,
+          "frames": 249,
+          "bytes": 3577
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 241,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 230,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 98.27914700144902,
+          "decode_group_ms": 108.98078499985786,
+          "oldest_to_host_ms": 508.16359199234284,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 5.1639778789976845,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 529,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003448,
+          "frames": 281,
+          "bytes": 4205
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 273,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 261,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 106.28035299305338,
+          "decode_group_ms": 116.7837769999096,
+          "oldest_to_host_ms": 516.1793190054595,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.7 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 6.183043921992066,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 560,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003504,
+          "frames": 313,
+          "bytes": 4453
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 305,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 292,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 95.7793230045354,
+          "decode_group_ms": 88.99478400007865,
+          "oldest_to_host_ms": 480.095322986017,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.7 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 7.209832420994644,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 591,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001732,
+          "frames": 337,
+          "bytes": 4638
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 337,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 323,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 89.6616499958327,
+          "decode_group_ms": 97.91572599988285,
+          "oldest_to_host_ms": 476.4959260064643,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.7 fps",
+        "decoded": "30.4 fps"
+      }
+    },
+    {
+      "elapsed": 8.243538251990685,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 622,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001696,
+          "frames": 369,
+          "bytes": 4877
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 361,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 354,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 99.08752499904949,
+          "decode_group_ms": 108.2661239997833,
+          "oldest_to_host_ms": 493.14501699700486,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "29.7 fps"
+      }
+    },
+    {
+      "elapsed": 9.283297504996881,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 653,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.00326,
+          "frames": 401,
+          "bytes": 5513
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 393,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 385,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 131.92090298980474,
+          "decode_group_ms": 107.55171599976165,
+          "oldest_to_host_ms": 535.7499750098214,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.6 fps",
+        "decoded": "30.4 fps"
+      }
+    },
+    {
+      "elapsed": 10.312951279003755,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 684,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.0036,
+          "frames": 433,
+          "bytes": 5777
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 425,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 416,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 72.1048260020325,
+          "decode_group_ms": 95.21717699999499,
+          "oldest_to_host_ms": 455.98820100713056,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 11.345084914995823,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 715,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.002024,
+          "frames": 465,
+          "bytes": 6019
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 457,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 447,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 76.21879399812315,
+          "decode_group_ms": 90.47205100023348,
+          "oldest_to_host_ms": 455.0237660005223,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.7 fps",
+        "decoded": "30.2 fps"
+      }
+    },
+    {
+      "elapsed": 12.380668052996043,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 746,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00192,
+          "frames": 497,
+          "bytes": 6257
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 489,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 478,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 90.21564900467638,
+          "decode_group_ms": 114.62538900013897,
+          "oldest_to_host_ms": 496.435291992384,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 13.415955317992484,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 777,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.002532,
+          "frames": 521,
+          "bytes": 6652
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 521,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 509,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 126.76751799881458,
+          "decode_group_ms": 111.34616800018193,
+          "oldest_to_host_ms": 541.233170995838,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 14.447091950991307,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 808,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003228,
+          "frames": 553,
+          "bytes": 7064
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 553,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 540,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 96.14690599846654,
+          "decode_group_ms": 98.1477730001643,
+          "oldest_to_host_ms": 476.1903379985597,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "28.9 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 15.48065503599355,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 839,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.00182,
+          "frames": 585,
+          "bytes": 7311
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 585,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 571,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 79.40183499886189,
+          "decode_group_ms": 117.977831999724,
+          "oldest_to_host_ms": 479.25759499776177,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.2 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 16.519539414992323,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 870,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001696,
+          "frames": 617,
+          "bytes": 7549
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 617,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 602,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 93.31689300597645,
+          "decode_group_ms": 100.083240999993,
+          "oldest_to_host_ms": 487.6901050010929,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 17.57981108900276,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 29.5,
+          "mbps": 0.0,
+          "frames": 901,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.002604,
+          "frames": 649,
+          "bytes": 8023
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 649,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 634,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 102.24405699409544,
+          "decode_group_ms": 95.79445899998973,
+          "oldest_to_host_ms": 503.0145269993227,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "29.6 fps"
+      }
+    },
+    {
+      "elapsed": 18.611620818992378,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.5,
+          "mbps": 0.0,
+          "frames": 933,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00364,
+          "frames": 681,
+          "bytes": 8459
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 673,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 665,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 80.89133400062565,
+          "decode_group_ms": 98.94074700014244,
+          "oldest_to_host_ms": 470.75346000201534,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 19.64292081000167,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 964,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00274,
+          "frames": 713,
+          "bytes": 8708
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 705,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 696,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 69.33243699313607,
+          "decode_group_ms": 97.43432699997356,
+          "oldest_to_host_ms": 476.4276440109825,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.4 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 20.66825604600308,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 994,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001964,
+          "frames": 745,
+          "bytes": 8950
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 737,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 726,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 116.42315299832262,
+          "decode_group_ms": 103.84082700011277,
+          "oldest_to_host_ms": 521.1868909973418,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.7 fps"
+      }
+    },
+    {
+      "elapsed": 21.69225661199016,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1025,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.002828,
+          "frames": 777,
+          "bytes": 9415
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 769,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 757,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 89.32823300710879,
+          "decode_group_ms": 87.65509800014115,
+          "oldest_to_host_ms": 471.985609998228,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "30.7 fps"
+      }
+    },
+    {
+      "elapsed": 22.72457066399511,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1056,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003348,
+          "frames": 801,
+          "bytes": 9787
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 801,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 788,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 111.67245000251569,
+          "decode_group_ms": 109.9365250001938,
+          "oldest_to_host_ms": 514.1750180046074,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 23.755061834992375,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1087,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.002444,
+          "frames": 833,
+          "bytes": 10026
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 833,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 819,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 84.11952799360733,
+          "decode_group_ms": 113.71535900025265,
+          "oldest_to_host_ms": 497.08941399876494,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "28.5 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 24.795595524992677,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1118,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001664,
+          "frames": 865,
+          "bytes": 10264
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 857,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 850,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 114.72959999809973,
+          "decode_group_ms": 103.80546600026719,
+          "oldest_to_host_ms": 515.5345139937708,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.9 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 25.832266148994677,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1149,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001648,
+          "frames": 897,
+          "bytes": 10498
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 897,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 881,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 94.5441289950395,
+          "decode_group_ms": 100.14641599991592,
+          "oldest_to_host_ms": 479.53312601021025,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 26.864465617996757,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1180,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00356,
+          "frames": 929,
+          "bytes": 11154
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 921,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 912,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 85.03885699610692,
+          "decode_group_ms": 123.10039200019673,
+          "oldest_to_host_ms": 491.20977499114815,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 27.89458987499529,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1211,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00362,
+          "frames": 961,
+          "bytes": 11403
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 953,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 943,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 95.13704699929804,
+          "decode_group_ms": 121.00901199983127,
+          "oldest_to_host_ms": 503.18797198997345,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "30.3 fps"
+      }
+    },
+    {
+      "elapsed": 28.92912873100431,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1242,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001724,
+          "frames": 985,
+          "bytes": 11585
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 985,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 974,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 119.94523700559512,
+          "decode_group_ms": 118.70178099979967,
+          "oldest_to_host_ms": 544.9456770002143,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 29.95988212499651,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1273,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00194,
+          "frames": 1025,
+          "bytes": 11888
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1017,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1005,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 78.27046800230164,
+          "decode_group_ms": 100.43523300009838,
+          "oldest_to_host_ms": 485.5811869929312,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.4 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 30.988581138997688,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1304,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003372,
+          "frames": 1049,
+          "bytes": 12490
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1049,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1036,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 75.94710499688517,
+          "decode_group_ms": 91.93466600027023,
+          "oldest_to_host_ms": 457.8140759986127,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "30.6 fps"
+      }
+    },
+    {
+      "elapsed": 32.0230163459928,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1335,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003388,
+          "frames": 1081,
+          "bytes": 12735
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1081,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1067,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 79.5895609917352,
+          "decode_group_ms": 98.32554799959325,
+          "oldest_to_host_ms": 460.77070500177797,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 33.06501786899753,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1366,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001672,
+          "frames": 1113,
+          "bytes": 12973
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1105,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1098,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 111.57268099486828,
+          "decode_group_ms": 92.75455200031502,
+          "oldest_to_host_ms": 489.99632299819496,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.5 fps",
+        "decoded": "29.4 fps"
+      }
+    },
+    {
+      "elapsed": 34.10610653400363,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1397,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001892,
+          "frames": 1145,
+          "bytes": 13208
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1145,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1130,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 80.84285999939311,
+          "decode_group_ms": 97.96978500025944,
+          "oldest_to_host_ms": 476.1094830028014,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 35.14539164399321,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1428,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003584,
+          "frames": 1177,
+          "bytes": 13869
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1169,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1161,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 80.92311800282914,
+          "decode_group_ms": 92.05841699986195,
+          "oldest_to_host_ms": 469.7584840032505,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "30.7 fps"
+      }
+    },
+    {
+      "elapsed": 36.174070683991886,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1459,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003644,
+          "frames": 1209,
+          "bytes": 14119
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1201,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1192,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 100.51815600309055,
+          "decode_group_ms": 121.6134010001042,
+          "oldest_to_host_ms": 521.5410909877392,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.4 fps",
+        "decoded": "29.7 fps"
+      }
+    },
+    {
+      "elapsed": 37.19598749600118,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1490,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001952,
+          "frames": 1241,
+          "bytes": 14357
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1233,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1222,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 124.93147900386248,
+          "decode_group_ms": 119.28991300010239,
+          "oldest_to_host_ms": 559.0579690033337,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 38.22168921800039,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 29.5,
+          "mbps": 0.0,
+          "frames": 1520,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001668,
+          "frames": 1265,
+          "bytes": 14536
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1265,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1253,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 73.46868499007542,
+          "decode_group_ms": 89.99977599978592,
+          "oldest_to_host_ms": 451.06697699520737,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.5 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 39.250603248001426,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1552,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003268,
+          "frames": 1297,
+          "bytes": 15174
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1297,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1284,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 119.57870300102513,
+          "decode_group_ms": 106.27268000007462,
+          "oldest_to_host_ms": 528.6008779949043,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "30.1 fps"
+      }
+    },
+    {
+      "elapsed": 40.28476848900027,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 29.5,
+          "mbps": 0.0,
+          "frames": 1582,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.0034,
+          "frames": 1329,
+          "bytes": 15445
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1321,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1315,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 85.74549100012518,
+          "decode_group_ms": 93.21646800026429,
+          "oldest_to_host_ms": 479.70299000735395,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 41.323272580993944,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1614,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001708,
+          "frames": 1361,
+          "bytes": 15687
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1361,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1346,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 97.26152899384033,
+          "decode_group_ms": 91.848519999985,
+          "oldest_to_host_ms": 505.0601479888428,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.5 fps",
+        "decoded": "29.5 fps"
+      }
+    },
+    {
+      "elapsed": 42.365046103994246,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1645,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001928,
+          "frames": 1393,
+          "bytes": 15927
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1385,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1377,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 74.96935100061819,
+          "decode_group_ms": 118.67823200009298,
+          "oldest_to_host_ms": 495.2344780031126,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "28.9 fps"
+      }
+    },
+    {
+      "elapsed": 43.39952396899753,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1676,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003396,
+          "frames": 1425,
+          "bytes": 16536
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1417,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1408,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 91.92520400392823,
+          "decode_group_ms": 87.12195399994016,
+          "oldest_to_host_ms": 467.6235069928225,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.5 fps",
+        "decoded": "29.7 fps"
+      }
+    },
+    {
+      "elapsed": 44.43295220300206,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1707,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003548,
+          "frames": 1457,
+          "bytes": 16814
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1449,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1439,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 109.70560199348256,
+          "decode_group_ms": 110.40955099997518,
+          "oldest_to_host_ms": 527.4580270051956,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.7 fps",
+        "decoded": "30.4 fps"
+      }
+    },
+    {
+      "elapsed": 45.461711866999394,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1738,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001856,
+          "frames": 1481,
+          "bytes": 17000
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1481,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1470,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 129.32345300214365,
+          "decode_group_ms": 119.784503000119,
+          "oldest_to_host_ms": 558.390396006871,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 46.48649489499803,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 29.5,
+          "mbps": 0.0,
+          "frames": 1768,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001704,
+          "frames": 1513,
+          "bytes": 17240
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1513,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1501,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 75.3879859985318,
+          "decode_group_ms": 101.2484670000049,
+          "oldest_to_host_ms": 473.3232379949186,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.7 fps"
+      }
+    },
+    {
+      "elapsed": 47.518960404995596,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1799,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.002572,
+          "frames": 1545,
+          "bytes": 17703
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1545,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1532,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 85.86618700064719,
+          "decode_group_ms": 95.08626999968328,
+          "oldest_to_host_ms": 476.65091999806464,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "30.5 fps"
+      }
+    },
+    {
+      "elapsed": 48.566708300000755,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1831,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003392,
+          "frames": 1577,
+          "bytes": 18146
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1577,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1563,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 121.73313900711946,
+          "decode_group_ms": 102.14986199980558,
+          "oldest_to_host_ms": 526.110086007975,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.9 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 49.59497077600099,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1862,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001772,
+          "frames": 1609,
+          "bytes": 18383
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1601,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1594,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 94.37790400988888,
+          "decode_group_ms": 98.8721449998593,
+          "oldest_to_host_ms": 493.72868200589437,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.6 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 50.62868123900262,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 29.5,
+          "mbps": 0.0,
+          "frames": 1892,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.00216,
+          "frames": 1641,
+          "bytes": 18686
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1633,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1625,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 61.65232800412923,
+          "decode_group_ms": 96.4405849999821,
+          "oldest_to_host_ms": 449.4924699974945,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.4 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 51.66247667800053,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1924,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003452,
+          "frames": 1673,
+          "bytes": 19246
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1665,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1656,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 82.43186000618152,
+          "decode_group_ms": 111.0979430000043,
+          "oldest_to_host_ms": 493.4322649933165,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.7 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 52.68924290499126,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1954,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.004128,
+          "frames": 1705,
+          "bytes": 19718
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1697,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1687,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 119.98441700416151,
+          "decode_group_ms": 111.5176150001389,
+          "oldest_to_host_ms": 538.7571080063935,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "30.6 fps"
+      }
+    },
+    {
+      "elapsed": 53.72134367299441,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1985,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.002844,
+          "frames": 1737,
+          "bytes": 19957
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1729,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1718,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 93.64228099002503,
+          "decode_group_ms": 97.53421499999604,
+          "oldest_to_host_ms": 505.39914799446706,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 54.74659107699699,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2016,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001668,
+          "frames": 1761,
+          "bytes": 20135
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1761,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1749,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 106.25951401016209,
+          "decode_group_ms": 110.5198330001258,
+          "oldest_to_host_ms": 524.2137549939798,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.7 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 55.78372497900273,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2047,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001676,
+          "frames": 1793,
+          "bytes": 20376
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1793,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1780,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 91.48157900199294,
+          "decode_group_ms": 97.67204699983267,
+          "oldest_to_host_ms": 483.6090600001626,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.6 fps",
+        "decoded": "29.8 fps"
+      }
+    },
+    {
+      "elapsed": 56.81943553699239,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2078,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.003216,
+          "frames": 1825,
+          "bytes": 21002
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1817,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1811,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 109.91716900025494,
+          "decode_group_ms": 105.11527700009538,
+          "oldest_to_host_ms": 519.774607004365,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.9 fps",
+        "decoded": "30.5 fps"
+      }
+    },
+    {
+      "elapsed": 57.8802692439931,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2110,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.002452,
+          "frames": 1857,
+          "bytes": 21262
+        },
+        "decode": {
+          "fps": 32.0,
+          "mbps": 0.0,
+          "frames": 1857,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1843,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 89.17578200635035,
+          "decode_group_ms": 101.93452400017122,
+          "oldest_to_host_ms": 485.32175400760025,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "29.4 fps"
+      }
+    },
+    {
+      "elapsed": 58.91932009499578,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2141,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 28.0,
+          "mbps": 0.001756,
+          "frames": 1889,
+          "bytes": 21504
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1881,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1874,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 83.48062999721151,
+          "decode_group_ms": 92.8843900001084,
+          "oldest_to_host_ms": 478.9159079955425,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.8 fps",
+        "decoded": "30.5 fps"
+      }
+    },
+    {
+      "elapsed": 59.95628821499122,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2172,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.001936,
+          "frames": 1921,
+          "bytes": 21746
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1913,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1905,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 79.14575799077284,
+          "decode_group_ms": 119.19765999982701,
+          "oldest_to_host_ms": 497.8158620069735,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.0 fps",
+        "decoded": "30.0 fps"
+      }
+    },
+    {
+      "elapsed": 60.98342521500308,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2203,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003688,
+          "frames": 1953,
+          "bytes": 22426
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1945,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1936,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 111.65236899978481,
+          "decode_group_ms": 114.19933400020454,
+          "oldest_to_host_ms": 546.8111270020017,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "30.4 fps",
+        "decoded": "29.9 fps"
+      }
+    },
+    {
+      "elapsed": 62.0166807249916,
+      "state": {
+        "state": "running",
+        "message": "HT-S 真实码流运行中",
+        "settings": {
+          "width": 640,
+          "height": 360,
+          "fps": 30,
+          "qp": 32,
+          "mode": "send",
+          "source": "camera",
+          "camera": "/dev/video0",
+          "peer": "192.168.50.2",
+          "bind": "192.168.50.1",
+          "port": 9860
+        },
+        "capture": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 2234,
+          "bytes": 0
+        },
+        "encode": {
+          "fps": 32.0,
+          "mbps": 0.003688,
+          "frames": 1985,
+          "bytes": 22668
+        },
+        "decode": {
+          "fps": 28.0,
+          "mbps": 0.0,
+          "frames": 1977,
+          "bytes": 0
+        },
+        "preview": {
+          "fps": 30.0,
+          "mbps": 0.0,
+          "frames": 1967,
+          "bytes": 0
+        },
+        "dropped": 245,
+        "preview_dropped": 1,
+        "timing": {
+          "encode_group_ms": 87.86253700964153,
+          "decode_group_ms": 92.7478390003671,
+          "oldest_to_host_ms": 475.11588300403673,
+          "scope": "编码端采集至返回解码预览（往返，非单向）"
+        },
+        "worker_alive": true
+      },
+      "browser_fps": {
+        "original": "29.7 fps",
+        "decoded": "29.9 fps"
+      }
+    }
+  ],
+  "browser_errors": [],
+  "steady_start": {
+    "state": "running",
+    "message": "HT-S 真实码流运行中",
+    "settings": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "qp": 32,
+      "mode": "send",
+      "source": "camera",
+      "camera": "/dev/video0",
+      "peer": "192.168.50.2",
+      "bind": "192.168.50.1",
+      "port": 9860
+    },
+    "capture": {
+      "fps": 30.0,
+      "mbps": 0.0,
+      "frames": 375,
+      "bytes": 0
+    },
+    "encode": {
+      "fps": 28.0,
+      "mbps": 0.001644,
+      "frames": 121,
+      "bytes": 2229
+    },
+    "decode": {
+      "fps": 32.0,
+      "mbps": 0.0,
+      "frames": 121,
+      "bytes": 0
+    },
+    "preview": {
+      "fps": 30.0,
+      "mbps": 0.0,
+      "frames": 106,
+      "bytes": 0
+    },
+    "dropped": 245,
+    "preview_dropped": 1,
+    "timing": {
+      "encode_group_ms": 80.97603899659589,
+      "decode_group_ms": 107.71088999990752,
+      "oldest_to_host_ms": 468.7788930023089,
+      "scope": "编码端采集至返回解码预览（往返，非单向）"
+    },
+    "worker_alive": true
+  },
+  "steady_summary": {
+    "seconds": 62.0446824440005,
+    "capture_fps": 29.978395032947024,
+    "encode_fps": 30.042864699684543,
+    "decode_fps": 29.913925366209504,
+    "preview_fps": 30.010629866315785,
+    "model_mbps": 0.002635391036896362,
+    "input_drops": 0,
+    "preview_drops": 0,
+    "latency_median_ms": 492.1773959940765,
+    "latency_max_sample_ms": 559.0579690033337
+  },
+  "resumed_state": {
+    "state": "running",
+    "message": "HT-S 真实码流运行中",
+    "settings": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "qp": 32,
+      "mode": "send",
+      "source": "camera",
+      "camera": "/dev/video0",
+      "peer": "192.168.50.2",
+      "bind": "192.168.50.1",
+      "port": 9860
+    },
+    "capture": {
+      "fps": 30.0,
+      "mbps": 0.0,
+      "frames": 286,
+      "bytes": 0
+    },
+    "encode": {
+      "fps": 12.0,
+      "mbps": 0.0017,
+      "frames": 33,
+      "bytes": 1601
+    },
+    "decode": {
+      "fps": 16.5,
+      "mbps": 0.0,
+      "frames": 33,
+      "bytes": 0
+    },
+    "preview": {
+      "fps": 10.0,
+      "mbps": 0.0,
+      "frames": 20,
+      "bytes": 0
+    },
+    "dropped": 243,
+    "preview_dropped": 0,
+    "timing": {
+      "encode_group_ms": 98.09723199578002,
+      "decode_group_ms": 101.02401800031657,
+      "oldest_to_host_ms": 494.9667019973276,
+      "scope": "编码端采集至返回解码预览（往返，非单向）"
+    },
+    "worker_alive": true
+  },
+  "target_checks": {
+    "steady_decode_at_least_29_5fps": true,
+    "all_sampled_return_latencies_at_most_500ms": false,
+    "glass_to_glass_latency": "not measured"
+  },
+  "status": "passed",
+  "lifecycle": "start / pause / resume with fresh decoded frames / end / export succeeded"
+}
