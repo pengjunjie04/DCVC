@@ -13,6 +13,7 @@ from fastapi.responses import Response
 from .codec import readiness
 from .config import Settings
 from .engine import Engine
+from .ui_parts import header_html, monitor_html
 
 ROOT = Path(__file__).resolve().parents[1]
 MODES = {'本机编解码 · HT-S': 'local', '双机发送 · HT-S': 'send', '仅检查采集 · 不压缩': 'capture'}
@@ -123,41 +124,37 @@ def create_app(engine=None, mount_ui=True):
     css = (ROOT / 'demo' / 'style.css').read_text()
     js = (ROOT / 'demo' / 'preview.js').read_text()
     with gr.Blocks(title='Jetson DCVC Lab', theme=gr.themes.Soft(primary_hue='emerald'), css=css, js=js) as ui:
-        gr.HTML('''<div class="masthead"><div><div class="eyebrow">JETSON ORIN NX · NEURAL VIDEO COMPRESSION</div>
-        <h1>DCVC <span>Lab</span></h1><p>双机神经视频压缩实验台 · DCVC-UF HT-S</p></div>
-        <div class="target">第一阶段目标<b>360p / 30 fps</b><small>延迟目标 ≤ 500 ms · 实测验证中</small></div></div>''')
-        with gr.Row():
-            with gr.Column(scale=1, min_width=280):
-                gr.Markdown('### 运行设置')
-                mode = gr.Dropdown(list(MODES), value=list(MODES)[0], label='运行模式')
-                source = gr.Dropdown(list(SOURCES), value=list(SOURCES)[0], label='视频源')
+        gr.HTML(header_html())
+        with gr.Row(elem_id='workspace'):
+            with gr.Column(scale=1, min_width=280, elem_id='settings-panel'):
+                gr.HTML('<div class="panel-heading"><span class="eyebrow">CONFIGURATION</span><h2>运行设置</h2><p>设置视频源与本次实验参数</p></div>')
+                mode = gr.Dropdown(list(MODES), value=list(MODES)[1], label='运行模式')
+                source = gr.Dropdown(list(SOURCES), value=list(SOURCES)[1], label='视频源')
                 resolution = gr.Dropdown(list(RESOLUTIONS), value=list(RESOLUTIONS)[0], label='处理分辨率')
                 fps = gr.Slider(1, 60, value=30, step=1, label='目标帧率 / fps')
                 qp = gr.Slider(0, 63, value=32, step=1, label='量化参数 QP（非目标 Mbps）')
                 with gr.Accordion('设备与有线网络', open=False):
                     camera = gr.Textbox('/dev/video0', label='摄像头节点')
-                    bind = gr.Textbox(label='本机有线 IPv4', placeholder='例如 192.168.50.1')
-                    peer = gr.Textbox(label='解码端有线 IPv4', placeholder='例如 192.168.50.2')
+                    bind = gr.Textbox('192.168.50.1', label='本机有线 IPv4', placeholder='例如 192.168.50.1')
+                    peer = gr.Textbox('192.168.50.2', label='解码端有线 IPv4', placeholder='例如 192.168.50.2')
                     port = gr.Number(9860, precision=0, label='码流端口')
                 gr.Markdown('参数修改后，点击 **应用并重启**。暂停期间不保存或积压画面。')
-            with gr.Column(scale=3):
-                gr.HTML('''<div class="previews"><section><div class="preview-title">采集原始画面 <span id="fps-original">0.0 fps</span></div>
-                <canvas id="preview-original" width="640" height="360" aria-label="原始视频画面"></canvas><p>未开始时不采集；测试图案会显示 TEST 标记。</p></section>
-                <section><div class="preview-title">HT-S 解码画面 <span id="fps-decoded">0.0 fps</span></div>
-                <canvas id="preview-decoded" width="640" height="360" aria-label="解码视频画面"></canvas><p>右上角为浏览器实际绘制帧率，独立于解码 FPS。</p></section></div>''')
-                gr.HTML('''<div id="live-status" role="status">尚未运行</div><div class="metric-grid" id="live-metrics"></div>
-                <p class="metric-note">FPS 为最近 2 秒平均，组帧处理会有波动。Mbps 仅统计模型载荷。延迟不含浏览器显示；双机时显示往返耗时。</p>''')
-                with gr.Row():
+            with gr.Column(scale=3, elem_id='main-console'):
+                gr.HTML('<div class="session-bar"><div id="live-status" role="status">尚未运行</div><span class="session-role">ENCODER / CONTROL</span></div><div class="session-path" id="session-path">设置参数后点击开始，画面与指标将自动更新</div>')
+                with gr.Row(elem_classes=['primary-actions']):
                     start = gr.Button('▶ 开始', variant='primary')
                     pause = gr.Button('Ⅱ 暂停')
                     resume = gr.Button('▷ 继续')
                     stop = gr.Button('■ 结束', variant='stop')
-                with gr.Row():
+                gr.HTML('<div class="previews">' + monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案') +
+                        monitor_html('decoded', 'HT-S 解码画面', '输出 · 真实压缩码流重建') + '</div>')
+                gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>最近 2 秒 · 实际测量</span></div><div class="metric-grid" id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。Mbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
+                with gr.Row(elem_classes=['utility-actions']):
                     apply = gr.Button('应用并重启')
                     refresh = gr.Button('重新检测设备')
                     export = gr.Button('保存本次统计')
                     quit_button = gr.Button('退出程序')
-                with gr.Accordion('设备就绪情况', open=True):
+                with gr.Accordion('设备就绪情况', open=False):
                     device_panel = gr.Markdown(value=device_text())
                 with gr.Accordion('详细指标与运行记录', open=False):
                     status = gr.JSON(value=engine.snapshot())
@@ -171,7 +168,7 @@ def create_app(engine=None, mount_ui=True):
         export.click(lambda: gr.update(value=engine.export(), visible=True), outputs=report)
         timer = gr.Timer(1)
         timer.tick(engine.snapshot, outputs=status, show_progress='hidden')
-        gr.Markdown('本地研究演示 · 无音频 · 不自动录制 · 性能以当前实际帧率和注明范围的延迟为准')
+        gr.HTML('<div class="app-footer"><span>DCVC-UF HT-S · 双 Jetson Orin NX 16GB</span><span>本地运行 · 不自动录制 · 性能以实测为准</span></div>')
     return gr.mount_gradio_app(api, ui, path='/', show_error=True)
 
 

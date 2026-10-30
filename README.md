@@ -2,7 +2,7 @@
 
 两台 Jetson Orin NX 16GB 的 DCVC-UF HT-S 视频压缩演示。首期目标为 **640×360、30fps、端到端延迟 ≤500ms**；目标是否达标须以真实模型和双机测试为准。
 
-两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。30项自动化测试通过。最新性能与限制见下方“实机结果”及 `reports/dual-host-camera-browser.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
+两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。36项自动化测试通过。最新性能与限制见下方“实机结果”及 `reports/dual-host-camera-browser.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
 
 ## 打开软件
 
@@ -11,7 +11,9 @@ cd ~/Desktop/dcvc-jetson-demo
 ./launch.sh
 ```
 
-脚本启动本地服务并打开浏览器 `http://127.0.0.1:7860`。打开页面不会自动采集。若未自动打开，手动访问该地址。也可运行 `./launch.sh --no-browser`。
+解码端先运行 `./launch_decoder.sh`，会打开本机 `http://127.0.0.1:7861`，等待连接并在第二台屏幕显示解码画面与实时速度。需要无界面接收时使用 `./receiver.sh --bind 192.168.50.2 --headless`。
+
+编码端脚本启动本地服务并打开浏览器 `http://127.0.0.1:7860`。界面默认双机发送、USB摄像头及两端有线地址。打开页面不会自动采集。若未自动打开，手动访问该地址。也可运行 `./launch.sh --no-browser`。
 
 若要从同一 Wi-Fi 的电脑集中操作，先用 `ip -4 addr` 查看编码端 Wi-Fi IP，再运行 `./launch.sh --host 编码端WiFi地址 --no-browser`，电脑访问 `http://编码端WiFi地址:7860`。此方式没有账号登录，只用于可信局域网。视频压缩码流仍绑定有线地址传输；浏览器预览和控制走 Wi-Fi。
 
@@ -73,7 +75,7 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 4. 在解码端运行：
 
    ```bash
-   ./receiver.sh --bind 192.168.50.2 --port 9860
+   ./launch_decoder.sh --port 9860
    ```
 
 5. 编码端打开界面，选择“双机发送”，填写本机有线 IP `192.168.50.1` 和解码端 `192.168.50.2`。点击开始。程序检查路由并拒绝 Wi-Fi/回环路由。
@@ -86,6 +88,7 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 
 - **采集 FPS**：实际获得的帧数；摄像头未必支持请求的采集模式，处理画面会保持比例缩放/补边。
 - **编码/解码 FPS**：实际处理帧数除以墙钟时间，使用滚动 2 秒窗口，包含等待和停滞。
+- **编码/解码处理速度**：编解码方法内的实际处理帧数÷耗时，同时显示ms/帧；排除采集等待和网络。计时范围比论文核心模型更宽，详细说明见 [速度对照](docs/metrics-comparison.md)。
 - **画面角落 FPS**：浏览器完成图像解码和 canvas 绘制后的计数，不用目标 FPS 或后端推送次数代替。
 - **压缩 Mbps**：模型实际码流载荷的在线吞吐，**不包含**分包头、原始预览或返回 JPEG 预览；不是总网卡流量，也不是承诺的恒定码率。初版 QP 调节，尚无目标 Mbps 自动控制。
 - **丢帧**：分别统计尚未编码的采集帧和展示队列丢帧。已编码的 P 帧不随意丢弃。
@@ -115,8 +118,10 @@ PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s tests/browser_smoke.py
 
 640×360、30fps、QP32，真实USB摄像头→本机编码→有线TCP→第二台解码→返回JPEG→Gradio浏览器。编码、远端解码和预览采用有界流水线。摄像头原生640×480 YUYV30，保持比例补边到640×360。
 
-实机一分钟稳态测试：采集29.99fps，编码29.94fps，解码29.94fps，后端预览29.99fps；期间新增采集丢帧0、预览丢帧1。采集至收到返回预览的时延中位数490.5ms，采样最大567.1ms，仍未达到所有采样≤500ms。未测浏览器完整显示时延。
+最新双屏功能测试中，编码端摄像头→有线独立解码→第二台实际桌面Chromium显示已验证：约68秒稳态内编码/解码29.92fps，解码端浏览器实际绘制中位数29.9fps，两类稳态丢帧均为0。处理速度中位数约56.1fps编码、75.4fps解码；该口径包含转换/拷贝，不直接等同论文核心模型计时。采集到收到返回预览时延中位数551.1ms、采样最大622.9ms，未达到≤500ms，完整显示时延仍未测。报告为 `reports/dual-display-camera-browser-maxn.json`。
 
-完整数值见 `reports/dual-host-camera-browser.json`；原始串行基线及中间优化结果也保存在 `reports/`。功能验收包含开始、暂停、继续后实际解码新帧、结束、统计导出。稳态测量排除首次模型加载及GPU预热，初始化时仍会丢弃尚未编码的过期采集帧。
+随后编码端出现过流提示。用户选择25W后，短测OC3由0增至6，测试自动停止；进一步发现编码端模式名称为25W但实际GPU/CPU上限仍未应用，开机nvpmodel服务要求重启而失败。解码端25W限制已生效且OC计数为0。故当前没有有效的25W稳态结果，先前MAXN结果只证明功能与吞吐，不作为无功率限制的论文基准。短测报告为 `reports/dual-display-camera-browser-25w-incomplete.json`；`reports/dual-host-camera-browser.json`保存最近一次验收尝试，需同时查看status/error字段。
+
+功能验收包含开始、暂停、继续后实际解码新帧、结束、统计导出。稳态测量排除首次模型加载及GPU预热，初始化时仍会丢弃尚未编码的过期采集帧。重测脚本现在同时检查模式名称、实际CPU/GPU上限与TPC/FBP掩码，运行中新增OC即停止。
 
 当前实际场景的模型码率很低，不能据此代表复杂动态场景。30fps吞吐与≤500ms完整显示时延须分别验收；采集到返回预览的时延不包含浏览器绘制和摄像头内部延迟。

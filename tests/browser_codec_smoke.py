@@ -12,6 +12,10 @@ with sync_playwright() as p:
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.goto('http://127.0.0.1:7860/', wait_until='domcontentloaded')
+    page.get_by_label('运行模式',exact=True).click()
+    page.get_by_role('option').filter(has_text='本机编解码').click()
+    page.get_by_label('视频源',exact=True).click()
+    page.get_by_role('option').filter(has_text='测试图案').click()
     page.get_by_role('button', name='▶ 开始', exact=True).click()
     def wait_frames(count):
         deadline = time.monotonic() + 60

@@ -8,7 +8,7 @@ import threading
 import time
 
 from .config import Settings
-from .metrics import WindowStats
+from .metrics import WindowStats, ProcessingStats
 from .transport import send_packet, recv_packet, ethernet_route, decode_preview
 
 
@@ -77,6 +77,7 @@ class Engine:
         self.original_seq = self.decoded_seq = 0
         self.queue = LatestFrames()
         self.rates = {key: WindowStats() for key in ('capture', 'encode', 'decode', 'preview')}
+        self.processing = {key: ProcessingStats() for key in ('encode', 'decode')}
         self.timing = {}
         self.sock = None
         self.preview_dropped = 0
@@ -97,6 +98,7 @@ class Engine:
                 self.state, self.message = 'starting', '正在初始化；首次模型加载可能较慢'
                 self.queue = LatestFrames()
                 self.rates = {key: WindowStats() for key in self.rates}
+                self.processing = {key: ProcessingStats() for key in ('encode', 'decode')}
                 self.timing = {}
                 self.preview_dropped = 0
                 self.original = self.decoded = None
@@ -133,7 +135,8 @@ class Engine:
             return {'state': self.state, 'message': self.message, 'settings': asdict(self.settings),
                     **{key: value.snapshot() for key, value in self.rates.items()},
                     'dropped': self.queue.dropped, 'preview_dropped': self.preview_dropped,
-                    'timing': dict(self.timing), 'worker_alive': self.alive()}
+                    'timing': dict(self.timing), 'processing': {key: value.snapshot() for key, value in self.processing.items()},
+                    'worker_alive': self.alive()}
 
     def image(self, kind):
         with self.lock:
@@ -253,6 +256,7 @@ class Engine:
                 if stop.is_set():
                     break
                 encode_ms = (encoded_at - start) * 1000
+                self.processing['encode'].add(len(batch), encode_ms)
                 if decoder:
                     output = decoder.decode(packet)
                     decode_ms = (time.monotonic() - encoded_at) * 1000
@@ -260,7 +264,9 @@ class Engine:
                 else:
                     # FIFO metadata precedes the wire write; one reader owns all replies.
                     pending.put((batch[0][0], encode_ms, len(batch)))
-                    send_packet(sock, packet[0], packet[1])
+                    metadata = {**packet[0], 'fps': settings.fps, 'encode_ms': encode_ms,
+                                'encode_fps': self.rates['encode'].snapshot()['fps']}
+                    send_packet(sock, metadata, packet[1])
                 first = False
             if errors:
                 raise errors[0]
@@ -319,6 +325,7 @@ class Engine:
 
     def _publish(self, output, playback, captured, encode_ms, decode_ms, remote):
         self.rates['decode'].add(frames=len(output))
+        self.processing['decode'].add(len(output), decode_ms)
         with self.lock:
             self.timing = {'encode_group_ms': encode_ms,
                            'decode_group_ms': decode_ms,

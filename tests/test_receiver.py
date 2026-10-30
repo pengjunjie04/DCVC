@@ -23,7 +23,27 @@ class HungCodec:
         time.sleep(10)
 
 
+class FailedCodec:
+    def decode(self, packet):
+        raise RuntimeError('model unavailable')
+
+
 class ReceiverTests(unittest.TestCase):
+    def test_model_error_is_visible_in_decoder_monitor(self):
+        from demo.decoder_ui import DecoderMonitor
+        monitor = DecoderMonitor()
+        a, b = socket.socketpair()
+        send_packet(b, {'type':'I','width':640,'height':360,'qp':32,'ec':1,'reset':0,'count':1}, b'1234')
+        try:
+            with patch('demo.receiver.Codec', FailedCodec):
+                code = serve_session(a, context=multiprocessing.get_context('fork'), monitor=monitor)
+            self.assertNotEqual(code, 0)
+            self.assertEqual(monitor.snapshot()['state'], 'error')
+        finally:
+            a.close()
+            b.close()
+            monitor.close()
+
     def test_hung_native_session_is_terminated(self):
         a, b = socket.socketpair()
         send_packet(b, {'type': 'I', 'width': 640, 'height': 360, 'qp': 32, 'ec': 1, 'reset': 0, 'count': 1}, b'1234')

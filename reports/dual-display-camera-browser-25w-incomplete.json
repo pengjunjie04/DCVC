@@ -1,0 +1,28 @@
+{
+  "scope": "Encoder USB camera -> official DCVC-UF HT-S encoder on 192.168.50.1 -> TCP eno1 -> independent decoder on 192.168.50.2 -> JPEG preview -> encoder browser; second Jetson also plays decoded frames on its own Gradio page. No video or screenshots saved. Latency is camera capture to returned preview, excluding browser rendering; not one-way glass-to-glass.",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "qp": 32
+  },
+  "samples": [],
+  "browser_errors": [],
+  "encoder_hardware": {
+    "power_mode": "NV Power Mode: 25W\n3",
+    "overcurrent_before": {
+      "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+      "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+      "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+    },
+    "overcurrent_after": {
+      "/sys/class/hwmon/hwmon3/oc3_event_cnt": 6,
+      "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+      "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+    }
+  },
+  "decoder_browser_location": "actual second Jetson desktop Chromium via CDP",
+  "decoder_samples": [],
+  "status": "failed",
+  "error": "New overcurrent event detected; stopping the hardware test"
+}

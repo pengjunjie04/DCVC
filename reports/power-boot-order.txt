@@ -1,0 +1,7 @@
+[   10.725982] yahboom systemd[1]: Starting Refresh NVIDIA CDI specification file...
+[   10.815281] yahboom sh[853]: /bin/sh: 1: /usr/bin/nvidia-smi: not found
+[   11.136561] yahboom systemd[1]: Starting nvpmodel service...
+[   11.148088] yahboom nvpmodel.sh[1079]: NVPM WARN: Golden image context is already created
+[   11.148088] yahboom nvpmodel.sh[1079]: NVPM WARN: Reboot required for changing to this power mode: 3
+[   11.148925] yahboom systemd[1]: Failed to start nvpmodel service.
+[   11.216060] yahboom sh[855]: GPU 0: Orin (nvgpu) (UUID: 6e8075d4-d74b-565e-82b4-ffd7003be2e1)

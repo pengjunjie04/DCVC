@@ -14,6 +14,8 @@ with sync_playwright() as playwright:
     page.get_by_text('运行设置', exact=True).wait_for()
     page.get_by_label('运行模式', exact=True).click()
     page.get_by_role('option').filter(has_text='仅检查采集').click()
+    page.get_by_label('视频源',exact=True).click()
+    page.get_by_role('option').filter(has_text='测试图案').click()
     page.get_by_role('button', name='▶ 开始', exact=True).click()
     page.wait_for_function("document.getElementById('fps-original').textContent !== '0.0 fps'")
     page.wait_for_timeout(2000)

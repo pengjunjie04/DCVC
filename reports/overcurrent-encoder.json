@@ -1,0 +1,9 @@
+{
+  "time": "2026-10-30 16:07:00",
+  "action": "Capture/codec stopped; no power/clock/current-limit changes",
+  "/sys/class/hwmon/hwmon3/oc3_event_cnt": "271",
+  "/sys/class/hwmon/hwmon3/oc1_event_cnt": "0",
+  "/sys/class/hwmon/hwmon3/oc2_event_cnt": "0",
+  "/sys/class/hwmon/hwmon1/curr1_crit": "2112",
+  "/sys/class/hwmon/hwmon1/curr1_max": "2112"
+}

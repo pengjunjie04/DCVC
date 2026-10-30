@@ -1,0 +1,9 @@
+Oct 30 16:12:55 yahboom systemd[1]: Starting nvpmodel service...
+Oct 30 16:12:55 yahboom nvpmodel.sh[1062]: NVPM WARN: Golden image context is already created
+Oct 30 16:12:55 yahboom nvpmodel.sh[1062]: NVPM WARN: Reboot required for changing to this power mode: 3
+Oct 30 16:12:55 yahboom nvpmodel.sh[1062]: NVPM WARN: DO YOU WANT TO REBOOT NOW? enter YES/yes to confirm:
+Oct 30 16:12:55 yahboom nvpmodel.sh[1062]: NVPM ERROR: bad input!
+Oct 30 16:12:55 yahboom nvpmodel.sh[1062]: NVPM ERROR: optMask is 2, no request for power mode
+Oct 30 16:12:55 yahboom systemd[1]: nvpmodel.service: Main process exited, code=exited, status=234/n/a
+Oct 30 16:12:55 yahboom systemd[1]: nvpmodel.service: Failed with result 'exit-code'.
+Oct 30 16:12:55 yahboom systemd[1]: Failed to start nvpmodel service.
