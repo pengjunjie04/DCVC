@@ -5,6 +5,7 @@ if [[ ! -x .env/bin/python ]]; then
   echo '尚未配置项目环境，请阅读 README.md。' >&2
   exit 1
 fi
+source ./tools/runtime_env.sh
 export PYTHONNOUSERSITE=1
 export PYTHONPATH="$PWD"
 export GRADIO_ANALYTICS_ENABLED=False

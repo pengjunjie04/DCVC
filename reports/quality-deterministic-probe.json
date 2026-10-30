@@ -1,0 +1,126 @@
+{
+  "scope": "Public OpenCV prerecorded clip; independent wired decoder; RGB PSNR includes JPEG75 preview; no camera images saved",
+  "groups": [
+    {
+      "qp": 32,
+      "group": 0,
+      "first_frame": 0,
+      "psnr_rgb": 31.50399392553169,
+      "bytes": 4090
+    },
+    {
+      "qp": 32,
+      "group": 1,
+      "first_frame": 1,
+      "psnr_rgb": 26.396778188417688,
+      "bytes": 6883
+    },
+    {
+      "qp": 32,
+      "group": 2,
+      "first_frame": 9,
+      "psnr_rgb": 24.24315749039777,
+      "bytes": 4964
+    },
+    {
+      "qp": 32,
+      "group": 3,
+      "first_frame": 17,
+      "psnr_rgb": 22.825826563174196,
+      "bytes": 1930
+    },
+    {
+      "qp": 32,
+      "group": 4,
+      "first_frame": 25,
+      "psnr_rgb": 23.226201638535166,
+      "bytes": 1138
+    },
+    {
+      "qp": 32,
+      "group": 5,
+      "first_frame": 33,
+      "psnr_rgb": 22.274504311414344,
+      "bytes": 1034
+    },
+    {
+      "qp": 32,
+      "group": 6,
+      "first_frame": 41,
+      "psnr_rgb": 21.04372177958132,
+      "bytes": 1052
+    },
+    {
+      "qp": 32,
+      "group": 7,
+      "first_frame": 49,
+      "psnr_rgb": 20.590387399721514,
+      "bytes": 1008
+    },
+    {
+      "qp": 32,
+      "group": 8,
+      "first_frame": 57,
+      "psnr_rgb": 20.87255633154235,
+      "bytes": 961
+    },
+    {
+      "qp": 32,
+      "group": 9,
+      "first_frame": 65,
+      "psnr_rgb": 21.15540467606916,
+      "bytes": 915
+    },
+    {
+      "qp": 32,
+      "group": 10,
+      "first_frame": 73,
+      "psnr_rgb": 21.211561522794025,
+      "bytes": 834
+    },
+    {
+      "qp": 32,
+      "group": 11,
+      "first_frame": 81,
+      "psnr_rgb": 20.655824011697707,
+      "bytes": 816
+    },
+    {
+      "qp": 32,
+      "group": 12,
+      "first_frame": 89,
+      "psnr_rgb": 20.002314011817084,
+      "bytes": 814
+    },
+    {
+      "qp": 32,
+      "group": 13,
+      "first_frame": 97,
+      "psnr_rgb": 19.87642237748589,
+      "bytes": 803
+    },
+    {
+      "qp": 32,
+      "group": 14,
+      "first_frame": 105,
+      "psnr_rgb": 19.646990807681682,
+      "bytes": 783
+    },
+    {
+      "qp": 32,
+      "group": 15,
+      "first_frame": 113,
+      "psnr_rgb": 19.404540438056937,
+      "bytes": 883
+    },
+    {
+      "qp": 32,
+      "group": 16,
+      "first_frame": 121,
+      "psnr_rgb": 20.22461771948498,
+      "bytes": 778
+    }
+  ],
+  "status": "passed",
+  "quality_assessment": "failed: predictive reconstruction drifts; status only records diagnostic completion"
+}

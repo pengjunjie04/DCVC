@@ -68,6 +68,9 @@ class Codec:
         from src.utils.common import get_state_dict, ModelStructure
         if not torch.cuda.is_available():
             raise RuntimeError('PyTorch 无法使用 CUDA')
+        self.runtime = {'torch':str(torch.__version__), 'cuda':torch.version.cuda,
+                        'cudnn':torch.backends.cudnn.version(),
+                        'gpu':list(torch.cuda.get_device_capability())}
         self.torch = torch
         torch.set_num_threads(2)
         self.stream = torch.cuda.Stream()
@@ -111,6 +114,8 @@ class Codec:
             torch.cuda.synchronize()
             meta = {'type': 'I' if self.first else 'P', 'width': width, 'height': height,
                     'qp': qp, 'ec': int(result['ec_parallel']), 'reset': reset, 'count': len(frames)}
+            if self.first:
+                meta['runtime'] = dict(self.runtime)
             self.first = False
             self.groups += 1
             return meta, result['bit_stream']
@@ -118,6 +123,9 @@ class Codec:
     def decode(self, packet):
         meta, payload = packet
         validate_packet(meta, payload)
+        if meta['type'] == 'I':
+            from .runtime import validate_runtime
+            validate_runtime(meta.get('runtime'), self.runtime)
         torch = self.torch
         from src.utils.transforms import ycbcr2rgb
         torch.cuda.set_stream(self.stream)

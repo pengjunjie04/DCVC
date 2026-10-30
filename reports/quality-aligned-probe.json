@@ -1,0 +1,125 @@
+{
+  "scope": "Public OpenCV prerecorded clip; independent wired decoder; RGB PSNR includes JPEG75 preview; no camera images saved",
+  "groups": [
+    {
+      "qp": 32,
+      "group": 0,
+      "first_frame": 0,
+      "psnr_rgb": 31.507138311426925,
+      "bytes": 4090
+    },
+    {
+      "qp": 32,
+      "group": 1,
+      "first_frame": 1,
+      "psnr_rgb": 31.989213984026115,
+      "bytes": 6883
+    },
+    {
+      "qp": 32,
+      "group": 2,
+      "first_frame": 9,
+      "psnr_rgb": 31.919359935771602,
+      "bytes": 4964
+    },
+    {
+      "qp": 32,
+      "group": 3,
+      "first_frame": 17,
+      "psnr_rgb": 31.61681779370671,
+      "bytes": 1930
+    },
+    {
+      "qp": 32,
+      "group": 4,
+      "first_frame": 25,
+      "psnr_rgb": 32.186188583815664,
+      "bytes": 1138
+    },
+    {
+      "qp": 32,
+      "group": 5,
+      "first_frame": 33,
+      "psnr_rgb": 32.01802833132449,
+      "bytes": 1034
+    },
+    {
+      "qp": 32,
+      "group": 6,
+      "first_frame": 41,
+      "psnr_rgb": 31.794056756017703,
+      "bytes": 1052
+    },
+    {
+      "qp": 32,
+      "group": 7,
+      "first_frame": 49,
+      "psnr_rgb": 31.90192065930015,
+      "bytes": 1008
+    },
+    {
+      "qp": 32,
+      "group": 8,
+      "first_frame": 57,
+      "psnr_rgb": 31.910612952109393,
+      "bytes": 961
+    },
+    {
+      "qp": 32,
+      "group": 9,
+      "first_frame": 65,
+      "psnr_rgb": 32.03282139650525,
+      "bytes": 915
+    },
+    {
+      "qp": 32,
+      "group": 10,
+      "first_frame": 73,
+      "psnr_rgb": 32.19561015109524,
+      "bytes": 834
+    },
+    {
+      "qp": 32,
+      "group": 11,
+      "first_frame": 81,
+      "psnr_rgb": 31.982834351365486,
+      "bytes": 816
+    },
+    {
+      "qp": 32,
+      "group": 12,
+      "first_frame": 89,
+      "psnr_rgb": 31.822012903529036,
+      "bytes": 814
+    },
+    {
+      "qp": 32,
+      "group": 13,
+      "first_frame": 97,
+      "psnr_rgb": 31.895268172505418,
+      "bytes": 803
+    },
+    {
+      "qp": 32,
+      "group": 14,
+      "first_frame": 105,
+      "psnr_rgb": 31.845345986976735,
+      "bytes": 783
+    },
+    {
+      "qp": 32,
+      "group": 15,
+      "first_frame": 113,
+      "psnr_rgb": 31.274470216763977,
+      "bytes": 883
+    },
+    {
+      "qp": 32,
+      "group": 16,
+      "first_frame": 121,
+      "psnr_rgb": 31.395350918506008,
+      "bytes": 778
+    }
+  ],
+  "status": "passed"
+}

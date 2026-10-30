@@ -1,0 +1,260 @@
+{
+  "scope": "Prerecorded clip -> genuine HT-S -> wired independent decoder -> JPEG75. RGB PSNR includes preview JPEG. Not camera FPS or paper-quality acceptance. No video or images saved.",
+  "input": "/home/jetson/Desktop/dcvc-jetson-demo/tools/testdata/vtest.avi",
+  "qp": 32,
+  "groups": [
+    {
+      "group": 0,
+      "frames": 1,
+      "psnr_rgb": 31.507138311426925,
+      "min_frame_psnr": 31.507138311426925,
+      "bytes": 4090
+    },
+    {
+      "group": 1,
+      "frames": 8,
+      "psnr_rgb": 31.989213782627992,
+      "min_frame_psnr": 31.25865293095742,
+      "bytes": 6883
+    },
+    {
+      "group": 2,
+      "frames": 8,
+      "psnr_rgb": 31.919360034863928,
+      "min_frame_psnr": 30.857007585393873,
+      "bytes": 4964
+    },
+    {
+      "group": 3,
+      "frames": 8,
+      "psnr_rgb": 31.616817839918816,
+      "min_frame_psnr": 30.80347661669338,
+      "bytes": 1930
+    },
+    {
+      "group": 4,
+      "frames": 8,
+      "psnr_rgb": 32.1861886891871,
+      "min_frame_psnr": 31.2351106769708,
+      "bytes": 1138
+    },
+    {
+      "group": 5,
+      "frames": 8,
+      "psnr_rgb": 32.01802833132449,
+      "min_frame_psnr": 31.26893829223361,
+      "bytes": 1034
+    },
+    {
+      "group": 6,
+      "frames": 8,
+      "psnr_rgb": 31.79405699670309,
+      "min_frame_psnr": 31.00543637892484,
+      "bytes": 1052
+    },
+    {
+      "group": 7,
+      "frames": 8,
+      "psnr_rgb": 31.901920560604932,
+      "min_frame_psnr": 31.146981543827398,
+      "bytes": 1008
+    },
+    {
+      "group": 8,
+      "frames": 8,
+      "psnr_rgb": 31.910612803769965,
+      "min_frame_psnr": 31.246743969909154,
+      "bytes": 961
+    },
+    {
+      "group": 9,
+      "frames": 8,
+      "psnr_rgb": 32.03282134564761,
+      "min_frame_psnr": 31.522613742907396,
+      "bytes": 915
+    },
+    {
+      "group": 10,
+      "frames": 8,
+      "psnr_rgb": 32.19560993989469,
+      "min_frame_psnr": 31.773538446917634,
+      "bytes": 834
+    },
+    {
+      "group": 11,
+      "frames": 8,
+      "psnr_rgb": 31.98283425081424,
+      "min_frame_psnr": 31.416459369414383,
+      "bytes": 816
+    },
+    {
+      "group": 12,
+      "frames": 8,
+      "psnr_rgb": 31.822013048872865,
+      "min_frame_psnr": 31.23083739456218,
+      "bytes": 814
+    },
+    {
+      "group": 13,
+      "frames": 8,
+      "psnr_rgb": 31.895268418865804,
+      "min_frame_psnr": 31.359998134521444,
+      "bytes": 803
+    },
+    {
+      "group": 14,
+      "frames": 8,
+      "psnr_rgb": 31.845346084394603,
+      "min_frame_psnr": 31.22167014364665,
+      "bytes": 783
+    },
+    {
+      "group": 15,
+      "frames": 8,
+      "psnr_rgb": 31.274470216763977,
+      "min_frame_psnr": 30.54876104285873,
+      "bytes": 883
+    },
+    {
+      "group": 16,
+      "frames": 8,
+      "psnr_rgb": 31.395350874591387,
+      "min_frame_psnr": 30.71732028874054,
+      "bytes": 778
+    },
+    {
+      "group": 17,
+      "frames": 8,
+      "psnr_rgb": 31.699035092873675,
+      "min_frame_psnr": 31.20380392055165,
+      "bytes": 4762
+    },
+    {
+      "group": 18,
+      "frames": 8,
+      "psnr_rgb": 31.583834186370655,
+      "min_frame_psnr": 30.878685261892294,
+      "bytes": 3604
+    },
+    {
+      "group": 19,
+      "frames": 8,
+      "psnr_rgb": 31.733321611600324,
+      "min_frame_psnr": 31.159560617237254,
+      "bytes": 1524
+    },
+    {
+      "group": 20,
+      "frames": 8,
+      "psnr_rgb": 31.717236518868738,
+      "min_frame_psnr": 31.083911738464668,
+      "bytes": 1294
+    },
+    {
+      "group": 21,
+      "frames": 8,
+      "psnr_rgb": 31.787391037877867,
+      "min_frame_psnr": 30.933368835496033,
+      "bytes": 1248
+    },
+    {
+      "group": 22,
+      "frames": 8,
+      "psnr_rgb": 31.54832757268324,
+      "min_frame_psnr": 30.48411899714438,
+      "bytes": 1153
+    },
+    {
+      "group": 23,
+      "frames": 8,
+      "psnr_rgb": 31.544198176119632,
+      "min_frame_psnr": 30.932502189597454,
+      "bytes": 1222
+    },
+    {
+      "group": 24,
+      "frames": 8,
+      "psnr_rgb": 31.437737700683883,
+      "min_frame_psnr": 30.65355836400306,
+      "bytes": 1180
+    },
+    {
+      "group": 25,
+      "frames": 8,
+      "psnr_rgb": 31.6127509068423,
+      "min_frame_psnr": 30.63040220483633,
+      "bytes": 1147
+    },
+    {
+      "group": 26,
+      "frames": 8,
+      "psnr_rgb": 31.538117014310867,
+      "min_frame_psnr": 30.92771159694252,
+      "bytes": 1122
+    },
+    {
+      "group": 27,
+      "frames": 8,
+      "psnr_rgb": 31.97549533734143,
+      "min_frame_psnr": 31.466930652005843,
+      "bytes": 944
+    },
+    {
+      "group": 28,
+      "frames": 8,
+      "psnr_rgb": 31.841902559097637,
+      "min_frame_psnr": 31.193070200596434,
+      "bytes": 913
+    },
+    {
+      "group": 29,
+      "frames": 8,
+      "psnr_rgb": 31.481260121301425,
+      "min_frame_psnr": 30.496452549702603,
+      "bytes": 997
+    },
+    {
+      "group": 30,
+      "frames": 8,
+      "psnr_rgb": 31.729635247967902,
+      "min_frame_psnr": 31.20232507386516,
+      "bytes": 866
+    },
+    {
+      "group": 31,
+      "frames": 8,
+      "psnr_rgb": 31.540370099790437,
+      "min_frame_psnr": 30.52347195909323,
+      "bytes": 792
+    },
+    {
+      "group": 32,
+      "frames": 8,
+      "psnr_rgb": 31.341414344394735,
+      "min_frame_psnr": 30.7987098148852,
+      "bytes": 736
+    }
+  ],
+  "minimum_required_psnr": 30.0,
+  "encoder_runtime": {
+    "torch": "2.5.0a0+872d972e41.nv24.08",
+    "cuda": "12.6",
+    "cudnn": 92000,
+    "gpu": [
+      8,
+      7
+    ]
+  },
+  "minimum_frame_psnr": 30.48411899714438,
+  "status": "passed",
+  "overcurrent_before": {
+    "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+  },
+  "overcurrent_after": {
+    "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+  }
+}

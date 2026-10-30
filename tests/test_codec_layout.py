@@ -18,12 +18,13 @@ class CodecLayoutTests(unittest.TestCase):
         codec.torch = SimpleNamespace(
             inference_mode=torch.inference_mode,
             cuda=SimpleNamespace(set_stream=lambda _: None, synchronize=lambda: None))
+        codec.runtime = {'cudnn':92000}
         codec.stream = None
         codec.i = SimpleNamespace(decompress=lambda *args: {'x_hat': reconstruction})
         codec.p = SimpleNamespace(clear_dpb=lambda: None, add_ref_feature_from_frame=lambda *a, **kw: None)
         transforms = ModuleType('src.utils.transforms')
         transforms.ycbcr2rgb = lambda tensor: tensor
-        metadata = dict(type='I', width=64, height=64, qp=32, ec=1, reset=0, count=1)
+        metadata = dict(runtime=codec.runtime, type='I', width=64, height=64, qp=32, ec=1, reset=0, count=1)
         with patch.dict(sys.modules, {'src.utils.transforms': transforms}):
             frames = codec.decode((metadata, b'1234'))
         self.assertEqual(frames[0].shape, (64, 64, 3))

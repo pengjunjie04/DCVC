@@ -1,0 +1,15 @@
+{
+  "version": "9.20.0",
+  "scope": "Existing encoder NVIDIA runtime, copied into decoder user cache; no system libraries replaced",
+  "decoder_directory": "/home/jetson/.cache/dcvc-runtime/cudnn-9.20",
+  "sha256": {
+    "libcudnn.so.9.20.0": "5485a13e06cad92bf0a6ce518f6c8caacb04ca6807a64b201040ad69f1a85038",
+    "libcudnn_adv.so.9.20.0": "9dbebc636fb1bd4febd9e8c810acff0951abb9ec2e3351cab05e23e06f51805f",
+    "libcudnn_cnn.so.9.20.0": "3bf43c75f93bd6384cfff6d644c9391c02a7f9b5e7fd0ffcd45e033a21026c2c",
+    "libcudnn_engines_precompiled.so.9.20.0": "300ed3f16fadd100b980df63a40fb1d3263a03c28e97a080d63da52fa39e4f47",
+    "libcudnn_engines_runtime_compiled.so.9.20.0": "f42d37267968eac3457ab070f58fcd87f3abe02cf96d1048d3ccdab79ecea124",
+    "libcudnn_graph.so.9.20.0": "494b28abf96362f1ec0c9067623946e261734c3eb476b507338c0d93df41c86a",
+    "libcudnn_heuristic.so.9.20.0": "a70b39d8d51fc40bafbaa2f62cb33daf58614c6d41bbf8e72dfd35e2eb303a3c",
+    "libcudnn_ops.so.9.20.0": "5d502e29947280d08d740a844403355e42b1838500d3ddd518db3d930debd62e"
+  }
+}

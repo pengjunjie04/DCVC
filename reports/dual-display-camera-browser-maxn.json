@@ -7272,5 +7272,6 @@
     "glass_to_glass_latency": "not measured"
   },
   "status": "passed",
-  "lifecycle": "start / pause / resume with fresh decoded frames / end / export succeeded"
+  "lifecycle": "start / pause / resume with fresh decoded frames / end / export succeeded",
+  "quality_acceptance": "not evaluated in this historical FPS/lifecycle run; see subsequent quality drift diagnosis and quality-wired-fixed.json"
 }

@@ -6,11 +6,11 @@
 
 两端均为Orin NX16GB、CUDA12.6、SM87，使用独立Miniforge和项目`.env` Python3.10、NVIDIA Torch2.5.0a0+872d972e41.nv24.08。没有替换系统Torch/CUDA，也没有修改解码端原有Miniconda环境或其他DCVC目录。
 
-编码端L4T R36.4.7/cuDNN9.2，解码端R36.4.3/cuDNN9.6。此次差异已通过实际FP16 CUDA卷积、CPU/CUDA原生扩展导入及官方模型真实摄像头码流解码验证；不把它推广为任意JetPack版本兼容承诺。
+编码端L4T R36.4.7、系统cuDNN9.20.0；解码端R36.4.3、系统cuDNN9.6.0。原先仅检查出帧及速度遗漏了画质漂移。现已在解码端项目私有目录部署同版cuDNN9.20.0，两个启动器按项目设置加载，未替换系统库；首I帧会拒绝不一致的推理环境。257帧公开片段画质回归通过，详情见 [画质记录](quality-consistency.md)。
 
 解码端安装了新的`~/miniforge3`，使用明确的conda包清单新建`.env`，再离线安装匹配的Python wheels。未直接搬移编码端的整个环境。两项原生扩展在确认两端架构、Torch、CUDA及SM87匹配后复用已构建二进制，SHA256与官方权重均核对一致，再做实际GPU测试；完整源码及构建补丁保留，其他设备不应跳过匹配检查直接复用。
 
-实际conda清单与pip版本分别保存在`reports/decoder-conda-explicit-aarch64.txt`、`reports/decoder-runtime-pins.txt`。解码端`pip check`通过。安装后磁盘约剩7.5GiB，项目含环境约4.1GiB。最初两端为MAXN_SUPER；编码端出现OC3限速后，用户已将两端模式名称设为25W（nvpmodel模式3）；但进一步verbose核查发现编码端硬件限制未应用，nvpmodel开机服务失败、要求重启；解码端限制已正确应用。未锁定时钟，未修改保护阈值。
+实际conda清单与pip版本分别保存在`reports/decoder-conda-explicit-aarch64.txt`、`reports/decoder-runtime-pins.txt`。解码端`pip check`通过。安装后磁盘约剩7.5GiB，项目含环境约4.1GiB。最初两端为MAXN_SUPER；编码端出现OC3限速后，两端现已验证25W（nvpmodel模式3）实际限制生效，编码端启动顺序问题通过文末补丁修复。未锁定时钟，未修改保护阈值。
 
 ## 日常启动
 
@@ -54,7 +54,7 @@ RGB解码张量先在GPU排列为连续HWC，再拷贝CPU供JPEG预览，避免�
 
 编码端的原有DCVC-Direct配置未设置自动连接；重启后如果eno1没有192.168.50.1，运行 `nmcli connection up DCVC-Direct`，再ping解码端。该操作不更改Wi-Fi。第二台的有线地址也应先确认。页面中的速度口径与论文差异见 [指标说明](metrics-comparison.md)。
 
-## 编码端25W启动顺序修复（待安装及重启验证）
+## 编码端25W启动顺序修复（已安装并验证）
 
 第二次重启后仍发生相同错误。`reports/power-boot-order.txt`显示CDI刷新服务10.726秒开始，通过`nvidia-smi -L`探测GPU；功耗服务11.137秒才开始，随即报告golden context已创建而失败。该顺序很可能抢先初始化GPU，使TPC/FBP掩码无法设置。准备了独立systemd drop-in，使CDI刷新在nvpmodel之后运行；`systemd-analyze verify`返回0，无排序环，未禁用容器或修改功率阈值。
 
@@ -67,4 +67,4 @@ sudo systemctl daemon-reload
 sudo reboot
 ```
 
-重启后用`nvpmodel -q --verbose`核对CPU MAX_FREQ=1497600、GPU MAX_FREQ=408000000、TPC mask=240、FBP mask=2，与配置一致。`nvpmodel.service`为oneshot，完成后可能是inactive；看`systemctl show nvpmodel -p Result -p ExecMainStatus`应success/0。当前补丁尚未安装，不能宣称已修复。撤销时删除这一个drop-in文件、daemon-reload后重启即可。
+重启后用`nvpmodel -q --verbose`核对CPU MAX_FREQ=1497600、GPU MAX_FREQ=408000000、TPC mask=240、FBP mask=2，与配置一致。`nvpmodel.service`为oneshot，完成后可能是inactive；看`systemctl show nvpmodel -p Result -p ExecMainStatus`应success/0。用户已安装补丁并重启，核查Result=success、ExecMainStatus=0，实际CPU/GPU上限和TPC/FBP掩码均匹配25W配置。新的日志显示12.968秒功耗服务完成，12.996秒CDI刷新才开始；启动顺序问题已解决。证据见`reports/encoder-power-mode-fixed.txt`及`reports/power-boot-order-fixed.txt`。撤销时删除这一个drop-in文件、daemon-reload后重启即可。
