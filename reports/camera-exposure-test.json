@@ -1,0 +1,10 @@
+[
+  {
+    "manual_10ms": false,
+    "actual_capture_fps": 29.99498767259608
+  },
+  {
+    "manual_10ms": true,
+    "actual_capture_fps": 30.045299628753327
+  }
+]

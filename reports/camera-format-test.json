@@ -1,0 +1,18 @@
+[
+  {
+    "explicit_720p_mjpg": false,
+    "width": 640.0,
+    "height": 480.0,
+    "fps_requested_result": 30.0,
+    "fourcc": 1448695129,
+    "actual_fps": 30.010336685443296
+  },
+  {
+    "explicit_720p_mjpg": true,
+    "width": 1280.0,
+    "height": 720.0,
+    "fps_requested_result": 30.0,
+    "fourcc": 1196444237,
+    "actual_fps": 29.933110991347355
+  }
+]

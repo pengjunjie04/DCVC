@@ -1,0 +1,45 @@
+{
+  "state": "idle",
+  "message": "就绪：尚未开始采集",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "qp": 32,
+    "mode": "local",
+    "source": "camera",
+    "camera": "/dev/video0",
+    "peer": "",
+    "bind": "",
+    "port": 9860
+  },
+  "capture": {
+    "fps": 30.0,
+    "mbps": 0.0,
+    "frames": 318,
+    "bytes": 0
+  },
+  "encode": {
+    "fps": 32.0,
+    "mbps": 0.005432,
+    "frames": 313,
+    "bytes": 6939
+  },
+  "decode": {
+    "fps": 0.0,
+    "mbps": 0.0,
+    "frames": 0,
+    "bytes": 0
+  },
+  "preview": {
+    "fps": 0.0,
+    "mbps": 0.0,
+    "frames": 0,
+    "bytes": 0
+  },
+  "dropped": 3,
+  "preview_dropped": 0,
+  "timing": {},
+  "worker_alive": false,
+  "scope": "USB actual encode-only, no decoder/browser"
+}

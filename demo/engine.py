@@ -156,7 +156,8 @@ class Engine:
                 cap.set(cv2.CAP_PROP_FRAME_WIDTH, settings.width)
                 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, settings.height)
                 cap.set(cv2.CAP_PROP_FPS, settings.fps)
-                cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                # Two buffers allow USB transfer and frame reading to overlap on UVC cameras.
+                cap.set(cv2.CAP_PROP_BUFFERSIZE, 2)
                 if not cap.isOpened():
                     raise RuntimeError(f'无法打开 {settings.camera}，请插入 USB 摄像头后重新检测')
             index, deadline = 0, time.monotonic()

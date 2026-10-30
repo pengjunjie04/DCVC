@@ -1,0 +1,228 @@
+{
+  "scope": "USB camera -> 640x360 HT-S real bitstream encode only; no receiver/browser acceptance",
+  "records": [
+    {
+      "frames": 8,
+      "codec_seconds": 0.09759059800126124,
+      "bytes": 263,
+      "capture_fps": 13.0,
+      "encode_pipeline_fps": 12.5,
+      "capture_to_encode_ms": 560.9769450093154
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.10317825099627953,
+      "bytes": 131,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.5,
+      "capture_to_encode_ms": 570.8786460018018
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.08087317598983645,
+      "bytes": 81,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 20.0,
+      "capture_to_encode_ms": 549.9240100034513
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09032088000094518,
+      "bytes": 72,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 555.4215809970628
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09671031699690502,
+      "bytes": 64,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 565.1849099958781
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09452781999425497,
+      "bytes": 66,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 563.324342991109
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.07563538900285494,
+      "bytes": 63,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 540.553844999522
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09272539900848642,
+      "bytes": 61,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 560.9046559984563
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.12635634500475135,
+      "bytes": 62,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 531.6058689932106
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.11401028399995994,
+      "bytes": 60,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 583.057566997013
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.08188971799972933,
+      "bytes": 300,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 546.9803720043274
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09113424799579661,
+      "bytes": 212,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 560.1726339955349
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.10690485799568705,
+      "bytes": 835,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 574.412415997358
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.11000357400916982,
+      "bytes": 302,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 575.0451710046036
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.08672787799150683,
+      "bytes": 826,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 519.6795649972046
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.13572980799654033,
+      "bytes": 420,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 604.2749320040457
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09800094699312467,
+      "bytes": 152,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 566.2592470034724
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09588488400913775,
+      "bytes": 95,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 560.9422899869969
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09314848399662878,
+      "bytes": 75,
+      "capture_fps": 15.0,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 561.6615750041092
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.08679216800373979,
+      "bytes": 66,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 491.56791900168173
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.09498370600340422,
+      "bytes": 89,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 563.6826920090243
+    },
+    {
+      "frames": 8,
+      "codec_seconds": 0.10233368299668655,
+      "bytes": 85,
+      "capture_fps": 15.5,
+      "encode_pipeline_fps": 16.0,
+      "capture_to_encode_ms": 569.1232050012331
+    }
+  ],
+  "codec_fps": 81.65301272538639,
+  "mean_capture_fps": 15.204545454545455,
+  "final": {
+    "state": "idle",
+    "message": "就绪：尚未开始采集",
+    "settings": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "qp": 32,
+      "mode": "local",
+      "source": "synthetic",
+      "camera": "/dev/video0",
+      "peer": "",
+      "bind": "",
+      "port": 9860
+    },
+    "capture": {
+      "fps": 15.5,
+      "mbps": 0.0,
+      "frames": 194,
+      "bytes": 0
+    },
+    "encode": {
+      "fps": 16.0,
+      "mbps": 0.00126,
+      "frames": 193,
+      "bytes": 6804
+    },
+    "decode": {
+      "fps": 0.0,
+      "mbps": 0.0,
+      "frames": 0,
+      "bytes": 0
+    },
+    "preview": {
+      "fps": 0.0,
+      "mbps": 0.0,
+      "frames": 0,
+      "bytes": 0
+    },
+    "dropped": 0,
+    "preview_dropped": 0,
+    "timing": {},
+    "worker_alive": false
+  },
+  "dropped": 0
+}
