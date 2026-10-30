@@ -132,7 +132,7 @@ def create_app(engine=None, mount_ui=True):
                 source = gr.Dropdown(list(SOURCES), value=list(SOURCES)[1], label='视频源')
                 resolution = gr.Dropdown(list(RESOLUTIONS), value=list(RESOLUTIONS)[0], label='处理分辨率')
                 fps = gr.Slider(1, 60, value=30, step=1, label='目标帧率 / fps')
-                qp = gr.Slider(0, 63, value=32, step=1, label='量化参数 QP（非目标 Mbps）')
+                qp = gr.Slider(0, 63, value=32, step=1, label='量化参数 QP（非目标 kbps）')
                 with gr.Accordion('设备与有线网络', open=False):
                     camera = gr.Textbox('/dev/video0', label='摄像头节点')
                     bind = gr.Textbox('192.168.50.1', label='本机有线 IPv4', placeholder='例如 192.168.50.1')
@@ -148,7 +148,7 @@ def create_app(engine=None, mount_ui=True):
                     stop = gr.Button('■ 结束', variant='stop')
                 gr.HTML('<div class="previews">' + monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案') +
                         monitor_html('decoded', '解码画面', '输出 · 真实压缩码流重建') + '</div>')
-                gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>最近 2 秒 · 实际测量</span></div><div class="metric-grid" id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。Mbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
+                gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>最近 2 秒 · 实际测量</span></div><div class="metric-grid" id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。kbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
                 with gr.Row(elem_classes=['utility-actions']):
                     apply = gr.Button('应用并重启')
                     refresh = gr.Button('重新检测设备')

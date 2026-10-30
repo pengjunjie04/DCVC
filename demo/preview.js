@@ -64,7 +64,7 @@
         const processing = s.processing || {};
         const cards = [
           [remote ? '显示吞吐' : '采集吞吐', remote ? s.preview.fps : s.capture.fps, 2, 'fps'],
-          ['编码吞吐',s.encode.fps,2,'fps'],['解码吞吐',s.decode.fps,2,'fps'],['模型码率',s.encode.mbps,3,'Mbps'],
+          ['编码吞吐',s.encode.fps,2,'fps'],['解码吞吐',s.decode.fps,2,'fps'],['模型码率',s.encode.mbps == null ? null : s.encode.mbps * 1000,2,'kbps'],
           ['编码处理速度',processing.encode?.fps,1,'fps','compute'],['解码处理速度',processing.decode?.fps,1,'fps','compute'],
           remote ? ['画面尺寸',`${s.settings.width}×${s.settings.height}`,null,'px'] :
             [s.settings.mode === 'send' ? '往返预览耗时' : '采集至解码',s.timing.oldest_to_host_ms,1,'ms'],
