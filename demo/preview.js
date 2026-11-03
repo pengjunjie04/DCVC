@@ -4,6 +4,8 @@
   window.dcvcPreviewController = controller;
   const signal = controller.signal;
   let running = false;
+  const pendingDraws = [];
+  let staleDropped = 0;
   const pause = ms => new Promise(r => setTimeout(r, ms));
   for (const kind of ['original', 'decoded']) {
     (async () => {
@@ -15,16 +17,30 @@
           if (canvas) {
             const response = await fetch('/api/frame/' + kind + '?after=' + seq, {cache:'no-store', signal});
             if (response.status === 200) {
-              const image = await createImageBitmap(await response.blob());
-              if (canvas.width !== image.width || canvas.height !== image.height) {
-                canvas.width = image.width; canvas.height = image.height;
+              const frameSeq = Number(response.headers.get('X-Sequence'));
+              const captureUs = Math.round(Number(response.headers.get('X-Capture-Unix-Ns')) / 1e3);
+              seq = frameSeq;
+              const receivedUs = Math.round((performance.timeOrigin + performance.now()) * 1e3);
+              const stale = kind === 'decoded' && Number.isSafeInteger(captureUs) && captureUs > 0 &&
+                            receivedUs - captureUs > 475_000;
+              if (stale) {
+                staleDropped++;
+              } else {
+                const image = await createImageBitmap(await response.blob());
+                if (canvas.width !== image.width || canvas.height !== image.height) {
+                  canvas.width = image.width; canvas.height = image.height;
+                }
+                canvas.getContext('2d').drawImage(image, 0, 0);
+                const drawUs = Math.round((performance.timeOrigin + performance.now()) * 1e3);
+                image.close();
+                const empty = document.getElementById('empty-' + kind);
+                if (empty) empty.hidden = true;
+                drawn++;
+                if (kind === 'decoded' && Number.isSafeInteger(captureUs) && captureUs > 0 &&
+                    Number.isSafeInteger(drawUs) && drawUs > captureUs) {
+                  pendingDraws.push([frameSeq, captureUs, drawUs]);
+                }
               }
-              canvas.getContext('2d').drawImage(image, 0, 0);
-              image.close();
-              const empty = document.getElementById('empty-' + kind);
-              if (empty) empty.hidden = true;
-              seq = Number(response.headers.get('X-Sequence'));
-              drawn++;
             } else if (response.status === 204 && !running) {
               seq = 0;
             }
@@ -34,9 +50,16 @@
         if (now - started >= 1000) {
           const label = document.getElementById('fps-' + kind);
           if (label) label.textContent = (drawn * 1000 / (now - started)).toFixed(1) + ' fps';
+          if (kind === 'decoded' && (pendingDraws.length || staleDropped)) {
+            const samples = pendingDraws.splice(0, 120);
+            fetch('/api/preview/drawn', {method:'POST', cache:'no-store', signal,
+              headers:{'Content-Type':'application/json', 'X-Demo-Request':'1'},
+              body:JSON.stringify({samples, dropped:staleDropped})}).catch(() => {});
+            staleDropped = 0;
+          }
           drawn = 0; started = now;
         }
-        await pause(Math.max(0, (running ? 15 : 100) - (performance.now() - tick)));
+        await pause(Math.max(0, (running ? 8 : 100) - (performance.now() - tick)));
       }
     })();
   }
@@ -66,7 +89,7 @@
           [remote ? '显示吞吐' : '采集吞吐', remote ? s.preview.fps : s.capture.fps, 2, 'fps'],
           ['编码吞吐',s.encode.fps,2,'fps'],['解码吞吐',s.decode.fps,2,'fps'],['模型码率',s.encode.mbps == null ? null : s.encode.mbps * 1000,2,'kbps'],
           ['编码处理速度',processing.encode?.fps,1,'fps','compute'],['解码处理速度',processing.decode?.fps,1,'fps','compute'],
-          remote ? ['画面尺寸',`${s.settings.width}×${s.settings.height}`,null,'px'] :
+          remote ? ['采集→canvas 中位数',s.timing.capture_to_canvas_median_ms,1,'ms'] :
             [s.settings.mode === 'send' ? '往返预览耗时' : '采集至解码',s.timing.oldest_to_host_ms,1,'ms'],
           [remote ? '展示丢帧 · 累计' : '采集丢帧 · 累计',remote ? s.preview_dropped : s.dropped,0,'帧']
         ];

@@ -1,6 +1,9 @@
 """Decoder-local monitor: JPEG-only parent process, no additional CUDA model."""
+from collections import deque
 import json
+import math
 from pathlib import Path
+import statistics
 import threading
 import time
 
@@ -20,7 +23,9 @@ class DecoderMonitor:
         self.exit_requested = threading.Event()
         self.queue = LatestFrames(limit=16)
         self.jpeg = None
+        self.capture_unix_ns = None
         self.seq = self.epoch = 0
+        self.draw_samples = deque(maxlen=1800)
         self.state, self.message = 'waiting', '等待编码端连接；请在第一台点击开始'
         self.settings = {'mode':'send', 'width':640, 'height':360, 'fps':30, 'qp':32}
         self._reset_rates()
@@ -32,8 +37,10 @@ class DecoderMonitor:
         self.preview = WindowStats()
         self.processing = {name:ProcessingStats() for name in ('encode', 'decode')}
         self.ipc_dropped = 0
+        self.stale_dropped = 0
         self.encode_fps = 0.
         self.totals = {'frames':0, 'bytes':0, 'encode_ms':0., 'decode_ms':0.}
+        self.draw_samples.clear()
 
     def begin_session(self):
         with self.lock:
@@ -45,6 +52,13 @@ class DecoderMonitor:
                 self.queue.dropped = 0
 
     def accept(self, info, previews):
+        capture_times = info.get('capture_times_ns')
+        if capture_times is None:
+            capture_times = [None] * len(previews)
+        if (not isinstance(capture_times, list) or len(capture_times) != len(previews) or
+                any(value is not None and (type(value) is not int or value <= 0)
+                    for value in capture_times)):
+            raise ValueError('解码预览的采集时间戳无效')
         with self.lock:
             self.settings = {name:info[name] for name in ('width','height','fps','qp')} | {'mode':'send'}
             frames = info['total_frames'] - self.totals['frames']
@@ -59,8 +73,9 @@ class DecoderMonitor:
             self.encode_fps = info.get('encode_fps', 0.)
             self.ipc_dropped += max(0, frames - len(previews))
             self.state, self.message = 'running', '正在第二台解码并显示 · 编码速度由第一台实时传入'
-            for jpeg in previews:
-                self.queue.put((self.epoch, jpeg, self.settings['fps']))
+            display_fps = max(60, self.settings['fps'])
+            for jpeg, capture_ns in zip(previews, capture_times):
+                self.queue.put((self.epoch, jpeg, display_fps, capture_ns))
 
     def end_session(self, code):
         with self.lock:
@@ -74,7 +89,7 @@ class DecoderMonitor:
             items = self.queue.take(1, self.closed)
             if not items:
                 return
-            epoch, jpeg, fps = items[0]
+            epoch, jpeg, fps, capture_ns = items[0]
             now = time.monotonic()
             if now > deadline + 1 / fps:
                 deadline = now
@@ -83,23 +98,62 @@ class DecoderMonitor:
             with self.lock:
                 if epoch != self.epoch:
                     continue
-                self.jpeg, self.seq = jpeg, self.seq + 1
+                self.jpeg, self.seq, self.capture_unix_ns = jpeg, self.seq + 1, capture_ns
                 self.preview.add(frames=1)
             deadline += 1 / fps
+
+    def record_draws(self, samples, dropped=0):
+        accepted = 0
+        with self.lock:
+            self.stale_dropped += dropped
+            current = self.seq
+            for item in samples:
+                if not isinstance(item, list) or len(item) != 3:
+                    continue
+                sequence, capture_us, draw_us = item
+                if any(type(value) is not int or value <= 0 for value in item):
+                    continue
+                if not 0 < sequence <= current or sequence < current - 120:
+                    continue
+                latency_us = draw_us - capture_us
+                if not 0 <= latency_us <= 120_000_000:
+                    continue
+                self.draw_samples.append({'sequence':sequence, 'capture_unix_us':capture_us,
+                                          'draw_unix_us':draw_us, 'latency_ms':latency_us / 1000})
+                accepted += 1
+        return accepted
+
+    def latency_summary(self):
+        with self.lock:
+            values = sorted(sample['latency_ms'] for sample in self.draw_samples)
+        if not values:
+            return {'count':0, 'median_ms':None, 'p95_ms':None, 'min_ms':None, 'max_ms':None}
+        return {'count':len(values), 'median_ms':statistics.median(values),
+                'p95_ms':values[math.ceil(len(values) * .95) - 1],
+                'min_ms':values[0], 'max_ms':values[-1]}
+
+    def latency_report(self):
+        with self.lock:
+            return {'summary':self.latency_summary(), 'samples':list(self.draw_samples)}
 
     def snapshot(self):
         with self.lock:
             decode = self.decode.snapshot()
+            latency = self.latency_summary()
             return {'role':'decoder', 'state':self.state, 'message':self.message,
                     'settings':dict(self.settings), 'capture':{'fps':0},
                     'encode':{'fps':self.encode_fps if decode['fps'] else 0., 'mbps':decode['mbps']},
                     'decode':decode, 'preview':self.preview.snapshot(),
                     'processing':{key:value.snapshot() for key,value in self.processing.items()},
-                    'timing':{}, 'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped}
+                    'timing':{'capture_to_canvas_median_ms':latency['median_ms'],
+                              'capture_to_canvas_p95_ms':latency['p95_ms'],
+                              'capture_to_canvas_max_ms':latency['max_ms'],
+                              'capture_to_canvas_samples':latency['count']},
+                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped}
 
     def image(self):
         with self.lock:
-            return self.seq, self.jpeg
+            return self.seq, self.jpeg, self.capture_unix_ns
 
     def export(self):
         path = ROOT / 'runs' / f'decoder-report-{time.time_ns()}.json'
@@ -121,10 +175,34 @@ def create_decoder_app(monitor, mount_ui=True):
 
     @api.get('/api/frame/decoded')
     def frame(after: int = -1):
-        seq, jpeg = monitor.image()
+        seq, jpeg, capture_ns = monitor.image()
         if jpeg is None or seq == after:
             return Response(status_code=204, headers={'Cache-Control':'no-store'})
-        return Response(jpeg, media_type='image/jpeg', headers={'X-Sequence':str(seq), 'Cache-Control':'no-store'})
+        headers = {'X-Sequence':str(seq), 'Cache-Control':'no-store'}
+        if capture_ns is not None:
+            headers['X-Capture-Unix-Ns'] = str(capture_ns)
+        return Response(jpeg, media_type='image/jpeg', headers=headers)
+
+    @api.get('/api/latency')
+    def latency():
+        return monitor.latency_report()
+
+    @api.post('/api/preview/drawn')
+    async def preview_drawn(request: Request):
+        if request.headers.get('X-Demo-Request') != '1':
+            raise HTTPException(403)
+        try:
+            data = await request.json()
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(400, '无效的绘制上报') from exc
+        samples = data.get('samples') if isinstance(data, dict) else None
+        dropped = data.get('dropped', 0)
+        if type(dropped) is not int or not 0 <= dropped <= 120:
+            raise HTTPException(400, '过期绘制数量无效')
+        if not isinstance(samples, list) or len(samples) > 120 or (not samples and not dropped):
+            raise HTTPException(400, '绘制上报数量无效')
+        accepted = monitor.record_draws(samples, dropped)
+        return {'accepted':accepted, 'summary':monitor.latency_summary()}
 
     @api.post('/api/control/quit')
     def quit_receiver(request: Request):
@@ -147,7 +225,7 @@ def create_decoder_app(monitor, mount_ui=True):
                     gr.HTML(monitor_html('decoded', '解码输出', '第二台 Jetson · 重建画面'))
                 with gr.Column(scale=1, min_width=280):
                     gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>实时吞吐 / 处理速度</span></div><div class="metric-grid" id="live-metrics"></div>')
-            gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。最近 2 秒更新，初始包含预热。与论文对照还需匹配硬件、输入、QP 和计时方法。', elem_classes=['metric-note'])
+            gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。**采集→canvas** 由本机浏览器绘制完成后回报，仅在本机打开本页有效；不是物理屏幕光电测量。最近 2 秒更新，初始包含预热。', elem_classes=['metric-note'])
             with gr.Row(elem_classes=['utility-actions']):
                 export = gr.Button('保存本次统计')
                 quit_button = gr.Button('退出接收程序')

@@ -60,7 +60,7 @@ def letterbox(rgb, width, height):
 
 
 class Engine:
-    def __init__(self, codec_factory=None):
+    def __init__(self, codec_factory=None, clock_sync=False):
         if codec_factory is None:
             from .codec import Codec
             codec_factory = Codec
@@ -81,6 +81,9 @@ class Engine:
         self.timing = {}
         self.sock = None
         self.preview_dropped = 0
+        self.clock_sync_enabled = clock_sync
+        self.clock_offset_ns = 0
+        self.clock_sync = {}
 
     def alive(self):
         return ((self.worker is not None and self.worker.is_alive()) or
@@ -101,6 +104,8 @@ class Engine:
                 self.processing = {key: ProcessingStats() for key in ('encode', 'decode')}
                 self.timing = {}
                 self.preview_dropped = 0
+                self.clock_offset_ns = 0
+                self.clock_sync = {}
                 self.original = self.decoded = None
                 self.worker = threading.Thread(target=self._run, args=(settings, self.cancel), daemon=True)
                 self.worker.start()
@@ -135,7 +140,8 @@ class Engine:
             return {'state': self.state, 'message': self.message, 'settings': asdict(self.settings),
                     **{key: value.snapshot() for key, value in self.rates.items()},
                     'dropped': self.queue.dropped, 'preview_dropped': self.preview_dropped,
-                    'timing': dict(self.timing), 'processing': {key: value.snapshot() for key, value in self.processing.items()},
+                    'timing': dict(self.timing), 'clock_sync': dict(self.clock_sync),
+                    'processing': {key: value.snapshot() for key, value in self.processing.items()},
                     'worker_alive': self.alive()}
 
     def image(self, kind):
@@ -174,13 +180,14 @@ class Engine:
                         raise RuntimeError('摄像头读取失败，可能已拔出')
                     rgb = letterbox(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), settings.width, settings.height)
                 captured = time.monotonic()
+                captured_wall_ns = time.time_ns()
                 if stop.is_set():
                     break
                 self.rates['capture'].add(frames=1)
                 with self.lock:
                     self.original, self.original_seq = rgb, self.original_seq + 1
                 if settings.mode != 'capture':
-                    queue.put((captured, rgb))
+                    queue.put((captured, captured_wall_ns, rgb))
                 index += 1
                 deadline += 1 / settings.fps
                 if deadline < captured:
@@ -220,6 +227,8 @@ class Engine:
                     sock.connect((settings.peer, settings.port))
                     sock.settimeout(120)
                     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                    if self.clock_sync_enabled:
+                        self._sync_clock(sock)
             if stop.is_set():
                 return
             with self.lock:
@@ -252,7 +261,7 @@ class Engine:
                 start = time.monotonic()
                 batch_wait_ms = (start - batch[0][0]) * 1000
                 batch_span_ms = (batch[-1][0] - batch[0][0]) * 1000
-                packet = encoder.encode([item[1] for item in batch], settings.qp)
+                packet = encoder.encode([item[2] for item in batch], settings.qp)
                 encoded_at = time.monotonic()
                 self.rates['encode'].add(frames=len(batch), size=len(packet[1]))
                 if stop.is_set():
@@ -268,7 +277,10 @@ class Engine:
                     pending.put((batch[0][0], batch[-1][0], encode_ms, len(batch),
                                  batch_wait_ms, batch_span_ms))
                     metadata = {**packet[0], 'fps': settings.fps, 'encode_ms': encode_ms,
-                                'encode_fps': self.rates['encode'].snapshot()['fps']}
+                                'encode_fps': self.rates['encode'].snapshot()['fps'],
+                                'capture_times_ns': [item[1] + self.clock_offset_ns for item in batch]}
+                    if self.clock_sync:
+                        metadata['clock_sync'] = dict(self.clock_sync)
                     send_packet(sock, metadata, packet[1])
                 first = False
             if errors:
@@ -301,6 +313,38 @@ class Engine:
                     close()
             from .codec import release_workspace
             release_workspace()
+
+    def _sync_clock(self, sock):
+        """Estimate decoder_clock - encoder_clock with NTP-style round trips."""
+        samples = []
+        for index in range(12):
+            sent = time.time_ns()
+            send_packet(sock, {'type': 'clock_sync', 't0': sent}, b'')
+            meta, payload = recv_packet(sock)
+            received = time.time_ns()
+            if payload or meta.get('type') != 'clock_sync' or meta.get('t0') != sent:
+                raise ValueError('解码端时钟校准响应无效')
+            remote_received, remote_sent = meta.get('t1'), meta.get('t2')
+            if (type(remote_received) is not int or type(remote_sent) is not int or
+                    remote_received <= 0 or remote_sent < remote_received):
+                raise ValueError('解码端时钟校准时间无效')
+            remote_work = remote_sent - remote_received
+            round_trip = received - sent - remote_work
+            if 0 <= round_trip <= 1_000_000_000:
+                offset = ((remote_received - sent) + (remote_sent - received)) // 2
+                if index >= 3:
+                    samples.append((round_trip, offset))
+        if not samples:
+            raise RuntimeError('无法测量跨机时钟偏移')
+        samples.sort(key=lambda item: item[0])
+        best = samples[:min(5, len(samples))]
+        offsets = sorted(item[1] for item in best)
+        self.clock_offset_ns = offsets[len(offsets) // 2]
+        self.clock_sync = {'offset_ms': self.clock_offset_ns / 1e6,
+                           'rtt_ms': sorted(item[0] for item in best)[len(best) // 2] / 1e6,
+                           'samples': len(best)}
+        with self.lock:
+            self.clock_sync = dict(self.clock_sync)
 
     def _receive(self, sock, pending, slots, playback, settings, stop, errors):
         try:

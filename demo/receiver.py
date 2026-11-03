@@ -15,7 +15,17 @@ from .display_ipc import PreviewMailbox
 from .transport import recv_packet, send_packet
 
 
-_PREVIEW_ENCODERS = ThreadPoolExecutor(max_workers=4, thread_name_prefix='preview-jpeg')
+_PREVIEW_ENCODERS = ThreadPoolExecutor(max_workers=8, thread_name_prefix='preview-jpeg')
+
+
+def _capture_times(meta, count):
+    values = meta.get('capture_times_ns')
+    if values is None:
+        return [None] * count
+    if (not isinstance(values, list) or len(values) != count or
+            any(type(value) is not int or value <= 0 for value in values)):
+        raise ValueError('无效的采集时间戳')
+    return values
 
 
 def _encode_preview(rgb):
@@ -32,9 +42,18 @@ def handle_connection(conn, codec, progress=None, preview_queue=None):
     display_dropped = 0
     while True:
         packet = recv_packet(conn)
+        if packet[0].get('type') == 'clock_sync':
+            sent = packet[0].get('t0')
+            if packet[1] or type(sent) is not int or sent <= 0:
+                raise ValueError('无效的时钟校准请求')
+            received = time.time_ns()
+            send_packet(conn, {'type': 'clock_sync', 't0': sent,
+                               't1': received, 't2': time.time_ns()}, b'')
+            continue
         validate_packet(*packet)
         started = time.monotonic()
         frames = codec.decode(packet)
+        capture_times_ns = _capture_times(packet[0], len(frames))
         if progress is not None:
             progress.send(None)
         elapsed = (time.monotonic() - started) * 1000
@@ -55,7 +74,8 @@ def handle_connection(conn, codec, progress=None, preview_queue=None):
             if type(encode_fps) not in (int, float) or not math.isfinite(encode_fps) or not 0 <= encode_fps <= 10000:
                 encode_fps = 0.
             info = {**totals, 'width':meta['width'], 'height':meta['height'], 'qp':meta['qp'],
-                    'fps':fps, 'encode_fps':encode_fps, 'ipc_dropped':display_dropped}
+                    'fps':fps, 'encode_fps':encode_fps, 'ipc_dropped':display_dropped,
+                    'capture_times_ns':capture_times_ns}
             if not preview_queue.publish(info, previews):
                 display_dropped += len(frames)
         print(f'decoded={len(frames)}, decode_ms={elapsed:.2f}, compressed_bytes={len(packet[1])}', flush=True)
@@ -89,7 +109,7 @@ def serve_session(conn, context=None, silence_timeout=180, monitor=None):
             if item is not None:
                 sequence, info, images = item
                 monitor.accept(info, images)
-            if bridge_stop.wait(.01):
+            if bridge_stop.wait(.002):
                 # The child has exited: consume its final atomic publication once.
                 item = previews.read(sequence)
                 if item is not None:

@@ -1,9 +1,11 @@
+import socket
 import threading
 import time
 import unittest
 
 from demo.config import Settings
 from demo.engine import Engine, LatestFrames
+from demo.transport import recv_packet, send_packet
 
 
 class EngineTests(unittest.TestCase):
@@ -112,6 +114,30 @@ class EngineTests(unittest.TestCase):
         time.sleep(.1)
         engine.stop()
         self.assertEqual(engine.snapshot()['state'], 'idle')
+
+    def test_clock_sync_estimates_near_zero_offset_on_socket_pair(self):
+        left, right = socket.socketpair()
+        self.addCleanup(left.close)
+        def peer():
+            try:
+                for _ in range(12):
+                    meta, payload = recv_packet(right)
+                    received = time.time_ns()
+                    self.assertFalse(payload)
+                    self.assertEqual(meta['type'], 'clock_sync')
+                    send_packet(right, {'type':'clock_sync', 't0':meta['t0'],
+                                        't1':received, 't2':time.time_ns()}, b'')
+            finally:
+                right.close()
+        thread = threading.Thread(target=peer)
+        thread.start()
+        engine = Engine(clock_sync=True)
+        engine._sync_clock(left)
+        thread.join(2)
+        self.assertFalse(thread.is_alive())
+        self.assertLess(abs(engine.clock_sync['offset_ms']), 20)
+        self.assertLess(engine.clock_sync['rtt_ms'], 50)
+        self.assertGreaterEqual(engine.clock_sync['samples'], 5)
 
 
 if __name__ == '__main__':
