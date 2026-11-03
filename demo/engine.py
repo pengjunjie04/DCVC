@@ -59,6 +59,45 @@ def letterbox(rgb, width, height):
     return result
 
 
+CAMERA_FORMAT = 'YUYV'
+
+
+def fourcc_text(value):
+    return ''.join(chr((int(value) >> (8 * index)) & 0xff) for index in range(4)).strip('\x00')
+
+
+def camera_capture_size(settings):
+    if settings.width <= 640 and settings.height <= 480:
+        return 640, 480
+    return settings.width, settings.height
+
+
+def open_yuyv_camera(settings, cv2):
+    width, height = camera_capture_size(settings)
+    cap = cv2.VideoCapture(settings.camera, cv2.CAP_V4L2)
+    try:
+        if not cap.isOpened():
+            raise RuntimeError(f'无法打开 {settings.camera}，请插入 USB 摄像头后重新检测')
+        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*CAMERA_FORMAT))
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        cap.set(cv2.CAP_PROP_FPS, settings.fps)
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+        actual_format = fourcc_text(cap.get(cv2.CAP_PROP_FOURCC))
+        actual_width = int(round(cap.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        actual_height = int(round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        actual_fps = float(cap.get(cv2.CAP_PROP_FPS))
+        if (actual_format != CAMERA_FORMAT or actual_width != width or actual_height != height or
+                abs(actual_fps - settings.fps) > .5):
+            raise RuntimeError(
+                f'摄像头返回 {actual_format or "未知"} {actual_width}x{actual_height}@{actual_fps:.1f}fps；'
+                f'需要 YUYV {width}x{height}@{settings.fps}fps，已拒绝 MJPG 或其他隐式回退')
+        return cap
+    except Exception:
+        cap.release()
+        raise
+
+
 class Engine:
     def __init__(self, codec_factory=None, clock_sync=False):
         if codec_factory is None:
@@ -162,14 +201,7 @@ class Engine:
         cap = None
         try:
             if settings.source == 'camera':
-                cap = cv2.VideoCapture(settings.camera, cv2.CAP_V4L2)
-                cap.set(cv2.CAP_PROP_FRAME_WIDTH, settings.width)
-                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, settings.height)
-                cap.set(cv2.CAP_PROP_FPS, settings.fps)
-                # Two buffers allow USB transfer and frame reading to overlap on UVC cameras.
-                cap.set(cv2.CAP_PROP_BUFFERSIZE, 2)
-                if not cap.isOpened():
-                    raise RuntimeError(f'无法打开 {settings.camera}，请插入 USB 摄像头后重新检测')
+                cap = open_yuyv_camera(settings, cv2)
             index, deadline = 0, time.monotonic()
             while not stop.is_set():
                 if cap is None:

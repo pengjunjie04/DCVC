@@ -1,0 +1,37 @@
+{
+  "scope": "Real /dev/video0 format negotiation and engine capture path; no camera images, video or screenshots saved.",
+  "power_mode": "NV Power Mode: 25W\n3",
+  "requested_capture_size": [
+    640,
+    480
+  ],
+  "requested_model_size": [
+    640,
+    360
+  ],
+  "requested_fps": 30,
+  "negotiated": {
+    "format": "YUYV",
+    "width": 640,
+    "height": 480,
+    "fps": 30.0
+  },
+  "engine_frame_shape": [
+    360,
+    640,
+    3
+  ],
+  "capture_frames_observed": 3,
+  "capture_state": "running",
+  "overcurrent_before": {
+    "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+  },
+  "overcurrent_after": {
+    "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+  },
+  "status": "passed"
+}
