@@ -1,6 +1,6 @@
 # 当前状态（2026-11-03）
 
-项目`~/Desktop/dcvc-jetson-demo`已部署两端独立环境、官方HT-S权重和原生扩展。编码端`./launch.sh`打开7860，解码端`./launch_decoder.sh`打开7861，在第二台屏幕播放并展示两端实时速度。41项CPU自动化测试通过；编码/解码吞吐、处理fps及ms/帧、浏览器实际绘制fps、统计导出和启停均已实现。
+项目`~/Desktop/dcvc-jetson-demo`已部署两端独立环境、官方HT-S权重和原生扩展。编码端`./launch.sh`打开7860，解码端`./launch_decoder.sh`打开7861，在第二台屏幕播放并展示两端实时速度。44项CPU自动化测试通过；编码/解码吞吐、处理fps及ms/帧、浏览器实际绘制fps、统计导出和启停均已实现。
 
 2026-11-03 可复现性补强：新增 `tools/fetch_dcvc.sh` 和 `tools/bootstrap.sh`，从固定 DCVC/CUTLASS 提交重建上游源码并应用补丁；`requirements-lock.txt` 已移除本机绝对路径。GitHub 仓库仍不包含环境、权重、测试视频和 `vendor/`。
 
@@ -11,6 +11,8 @@
 2026-11-03 低延迟改造：整组一次性 H2D/颜色转换、解码端整组 GPU 输出后一次拷贝、FP16 颜色转换、接收端八线程并行 JPEG 预览，并补充组帧等待、最老帧和最新帧分解。真实双机摄像头连续40个稳态样本：返回预览口径最老帧中位数478.9ms、最大490.8ms，已低于500ms；最新帧中位数245.3ms。采集丢帧增量为0，两端OC计数为0。报告`reports/dual-host-latency-25w.json`。
 
 完整显示口径已实现：编码端给每帧记录采集完成时间，NTP式往返校准跨机时钟，第二台浏览器在`drawImage()`返回后上报`performance.timeOrigin + performance.now()`。解码预览以60fps排空突发组、IPC轮询2ms、浏览器轮询8ms；超过475ms的过期帧在解码前跳过后再绘制，并单独计入展示丢帧。40秒真实摄像头双机测试得到1049个绘制样本：中位数425.8ms、p95 475.2ms、最大479.8ms；模型编解码约30fps，实际canvas绘制约24.3fps，显示端丢弃247个过期帧，采集丢帧增量4，两端OC计数0，浏览器无JS错误。报告`reports/browser-display-latency-25w.json`。该口径不含摄像头曝光和物理屏幕扫描。
+
+2026-11-03 编解码器对比：新增`tools/compare_codecs.py`，在单台25W Orin NX上以同一640×360公开片段、同一640帧参考、顺序运行DCVC-RT与NVENC/NVDEC H.264/H.265。DCVC QP32为32.99dB/42.7kbps/编码90.7fps/解码67.1fps；同质量插值所需H.264/H.265码率约322.2/328.2kbps。10个硬件测量点均完成，两端OC计数0。该结果仅代表单段内容和单QP点的PSNR对比，不是感知质量、网络延迟或摄像头场景验收。报告`reports/codec-comparison-25w.json`，方法见`docs/codec-comparison.md`。
 
 **尚未完成：** 需要光电测量或拍摄计时器才能验证曝光到物理屏幕的glass-to-glass延迟；长时间运行、不同动态场景与其他参数组合仍需迭代验收。
 

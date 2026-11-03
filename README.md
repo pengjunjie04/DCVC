@@ -2,7 +2,7 @@
 
 两台 Jetson Orin NX 16GB 的 DCVC-UF HT-S 视频压缩演示。首期目标为 **640×360、30fps、端到端延迟 ≤500ms**；目标是否达标须以真实模型和双机测试为准。
 
-两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。41项自动化测试通过。最新性能与限制见下方“实机结果”及 `reports/browser-display-latency-25w.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
+两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。44项自动化测试通过。最新性能与限制见下方“实机结果”、[编解码器对比](docs/codec-comparison.md)及 `reports/browser-display-latency-25w.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
 
 ## 打开软件
 
@@ -93,6 +93,14 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 
 构建默认并发 1，减少 16GB 内存压力。基准以 640×360 移动测试图案生成真实码流，排除 3 个预热组，保存墙钟编码/解码速度及实际字节数。它不代表真实摄像头内容的压缩效率，也不能替代双机验收。GPU 扩展是否成功请查看 `reports/build-cuda.log` 和项目进度文档。
 
+与 Jetson 硬件 H.264/H.265 的同内容、同质量对比使用系统 Python：
+
+```bash
+python3 tools/compare_codecs.py --frames 640 --bitrates 32,64,128,256,512
+```
+
+计时边界、完整结果和局限见 [编解码器对比](docs/codec-comparison.md)。
+
 ## 第二台接入
 
 本次两台设备已完成部署：编码端192.168.50.1、解码端192.168.50.2。解码端可直接从第4步启动接收服务；第1–3步供重新部署参考：
@@ -165,5 +173,7 @@ PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s tests/browser_smoke.py
 2026-11-03 低延迟优化后，同样两端25W、640×360/30fps/QP32的真实摄像头复测：40个连续稳态样本中，组内最老帧到编码端收到返回预览的中位数478.9ms、最大490.8ms，**该返回预览口径已低于500ms**；同组最新帧中位数245.3ms。典型分解为组帧等待234.1ms、编码98.8ms、远端解码133.3ms；稳态采集丢帧增量为0，两端OC计数仍为0。报告见 `reports/dual-host-latency-25w.json`。这个结果不包含浏览器绘制和摄像头曝光。
 
 随后在第二台实际桌面 Chromium 完成 40 秒完整显示口径验收：跨机时钟偏移约-14.7ms、RTT约0.71ms；1049个实际绘制样本的中位时延425.8ms、p95 475.2ms、最大479.8ms，采集→canvas软件时延低于500ms。模型编码/解码仍约30fps，浏览器实际绘制约24.3fps；为控制延迟，显示端丢弃247个过期帧。编码端采集丢帧增量4，两端OC计数均为0。报告见 `reports/browser-display-latency-25w.json`。该口径不含摄像头曝光和物理屏幕扫描，不是glass-to-glass测量。
+
+同内容离线对比中，DCVC-RT QP32 在 640 帧公开视频上为 32.99dB、42.7kbps；匹配该 PSNR 的 H.264/H.265 实测码率约为322.2/328.2kbps。DCVC处理速度约90.7/67.1fps，硬件编解码器约900–1100/575–730fps。该结果说明低码率优势和处理余量，不是网络延迟或摄像头场景质量结论，详见 [编解码器对比](docs/codec-comparison.md)。
 
 当前实际场景的模型码率很低，不能据此代表复杂动态场景。返回预览和采集→canvas两个软件口径均已验收，但摄像头曝光、屏幕扫描和不同动态场景仍需单独测量。

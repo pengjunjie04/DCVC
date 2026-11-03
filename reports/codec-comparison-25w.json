@@ -1,0 +1,226 @@
+{
+  "scope": "Public vtest.avi only; same 640x360 BGR reference, same Orin NX and 25W, sequential runs; no camera images or video saved. Hardware encode timing excludes process startup via pad probes and includes JPEG-free BGRx conversion only for quality decode; decode speed uses fakesink. DCVC is a local single-process independent encoder/decoder pair with three warmup groups excluded.",
+  "input": {
+    "path": "/home/jetson/Desktop/dcvc-jetson-demo/tools/testdata/vtest.avi",
+    "sha256": "45cddc9490be69345cbdab64ca583be65987e864ca408038e648db99e10516cf",
+    "source_fps": 10.0,
+    "playback_fps": 30,
+    "width": 640,
+    "height": 360,
+    "frames": 640,
+    "warmup_frames": 17
+  },
+  "power_mode": "NV Power Mode: 25W\n3",
+  "overcurrent_before": {
+    "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+  },
+  "hardware": [
+    {
+      "codec": "H264",
+      "target_kbps": 32,
+      "actual_kbps": 55.0065,
+      "psnr_db": 24.857381506929983,
+      "mse": 212.49181701208045,
+      "bytes": 146684,
+      "encode_s": 0.586595296,
+      "decode_s": 1.081213834,
+      "encode_fps": 1091.0418211059093,
+      "decode_fps": 591.9273134272531,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H264",
+      "target_kbps": 64,
+      "actual_kbps": 65.0205,
+      "psnr_db": 25.73277606955058,
+      "mse": 173.70117407000507,
+      "bytes": 173388,
+      "encode_s": 0.674061805,
+      "decode_s": 1.114151508,
+      "encode_fps": 949.467831069289,
+      "decode_fps": 574.4281593702245,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H264",
+      "target_kbps": 128,
+      "actual_kbps": 121.027875,
+      "psnr_db": 28.69334171398398,
+      "mse": 87.85089482738354,
+      "bytes": 322741,
+      "encode_s": 0.632123943,
+      "decode_s": 1.095399105,
+      "encode_fps": 1012.4596720108734,
+      "decode_fps": 584.2619343750514,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H264",
+      "target_kbps": 256,
+      "actual_kbps": 251.647125,
+      "psnr_db": 31.8887967210917,
+      "mse": 42.09210923258463,
+      "bytes": 671059,
+      "encode_s": 0.699287148,
+      "decode_s": 1.05665992,
+      "encode_fps": 915.2177354187553,
+      "decode_fps": 605.6821006327183,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H264",
+      "target_kbps": 512,
+      "actual_kbps": 503.466375,
+      "psnr_db": 34.97020531824846,
+      "mse": 20.70426554135923,
+      "bytes": 1342577,
+      "encode_s": 0.62711843,
+      "decode_s": 0.878031535,
+      "encode_fps": 1020.5408889035521,
+      "decode_fps": 728.9032050540189,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H265",
+      "target_kbps": 32,
+      "actual_kbps": 38.8155,
+      "psnr_db": 24.824164807704406,
+      "mse": 214.1232763965748,
+      "bytes": 103508,
+      "encode_s": 0.634767715,
+      "decode_s": 0.891379736,
+      "encode_fps": 1008.2428341523324,
+      "decode_fps": 717.9880517274851,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H265",
+      "target_kbps": 64,
+      "actual_kbps": 59.596125,
+      "psnr_db": 26.062449858994192,
+      "mse": 161.00352144820602,
+      "bytes": 158923,
+      "encode_s": 0.65640362,
+      "decode_s": 1.031620647,
+      "encode_fps": 975.0098575020047,
+      "decode_fps": 620.3830854502081,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H265",
+      "target_kbps": 128,
+      "actual_kbps": 119.95125,
+      "psnr_db": 29.09036900403347,
+      "mse": 80.17582924623842,
+      "bytes": 319870,
+      "encode_s": 0.667367301,
+      "decode_s": 0.884294389,
+      "encode_fps": 958.9921457659192,
+      "decode_fps": 723.7408808210814,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H265",
+      "target_kbps": 256,
+      "actual_kbps": 250.73325,
+      "psnr_db": 31.901093227838118,
+      "mse": 41.97309923412182,
+      "bytes": 668622,
+      "encode_s": 0.557709382,
+      "decode_s": 0.894293596,
+      "encode_fps": 1147.5510734728864,
+      "decode_fps": 715.6486447656503,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    },
+    {
+      "codec": "H265",
+      "target_kbps": 512,
+      "actual_kbps": 505.852875,
+      "psnr_db": 34.73183589549433,
+      "mse": 21.87241670509621,
+      "bytes": 1348941,
+      "encode_s": 0.612663134,
+      "decode_s": 1.04008425,
+      "encode_fps": 1044.6197338846243,
+      "decode_fps": 615.3347673517794,
+      "overcurrent": {
+        "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+        "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+      }
+    }
+  ],
+  "dcvc": {
+    "encode_fps": 90.73394839281794,
+    "decode_fps": 67.05426371710652,
+    "actual_kbps": 42.706875,
+    "bytes": 113885,
+    "frames": 640,
+    "psnr_db": 32.98736421488019,
+    "qp": 32,
+    "encode_s": 7.053589217006447,
+    "decode_s": 9.54450864899627
+  },
+  "matched_quality": {
+    "H264": {
+      "bitrate_kbps": 322.23042040929045,
+      "target_psnr_db": 32.98736421488019,
+      "lower_bitrate_kbps": 251.647125,
+      "upper_bitrate_kbps": 503.466375,
+      "lower_psnr_db": 31.8887967210917,
+      "upper_psnr_db": 34.97020531824846
+    },
+    "H265": {
+      "bitrate_kbps": 328.23190441718896,
+      "target_psnr_db": 32.98736421488019,
+      "lower_bitrate_kbps": 250.73325,
+      "upper_bitrate_kbps": 505.852875,
+      "lower_psnr_db": 31.901093227838118,
+      "upper_psnr_db": 34.73183589549433
+    }
+  },
+  "overcurrent_after": {
+    "/sys/class/hwmon/hwmon3/oc3_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc1_event_cnt": 0,
+    "/sys/class/hwmon/hwmon3/oc2_event_cnt": 0
+  },
+  "status": "passed"
+}
