@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
+if [[ ! -d vendor/DCVC/src ]]; then
+  ./tools/fetch_dcvc.sh
+fi
 export PYTHONNOUSERSITE=1
 export PYTHONPATH="$PWD"
 export CUDA_HOME=/usr/local/cuda-12.6

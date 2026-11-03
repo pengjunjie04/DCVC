@@ -2,6 +2,8 @@
 
 项目`~/Desktop/dcvc-jetson-demo`已部署两端独立环境、官方HT-S权重和原生扩展。编码端`./launch.sh`打开7860，解码端`./launch_decoder.sh`打开7861，在第二台屏幕播放并展示两端实时速度。39项CPU自动化测试通过；编码/解码吞吐、处理fps及ms/帧、浏览器实际绘制fps、统计导出和启停均已实现。
 
+2026-11-03 可复现性补强：新增 `tools/fetch_dcvc.sh` 和 `tools/bootstrap.sh`，从固定 DCVC/CUTLASS 提交重建上游源码并应用补丁；`requirements-lock.txt` 已移除本机绝对路径。GitHub 仓库仍不包含环境、权重、测试视频和 `vendor/`。
+
 编码端启动顺序故障已修复并验证：nvpmodel先于CDI GPU探测运行，两端实际硬件限制均匹配25W。此前用户看到的水流样画质异常已复现并定位到两端cuDNN9.20/9.6不一致。仅为项目进程统一到9.20后，257帧公开视频画质稳定，末组RGB PSNR31.34dB、最差单帧30.48dB（含JPEG75）。没有替换系统CUDA/Torch或解码端系统库，没有保存摄像头画面。首I帧现在检查推理环境，缺失或不匹配即拒绝原生解码。细节及证据见`quality-consistency.md`。
 
 最终真实摄像头双屏复测：69.35秒稳态，编码/解码29.99fps，第二台实际桌面浏览器绘制中位数29.9fps；三个稳态丢帧计数均0、两端OC计数均0。处理速度中位数编码50.37fps/解码47.74fps；启停、恢复新帧及导出通过。报告`reports/dual-display-camera-browser-quality-fixed.json`。公开视频画质回归与摄像头吞吐验收分别计量，摄像头主观观感仍可由用户确认。

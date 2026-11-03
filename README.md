@@ -38,6 +38,35 @@ conda activate "$HOME/Desktop/dcvc-jetson-demo/.env"
 
 源码固定为 Microsoft DCVC `cbdae87a5445114cdc7f48816da63ea80bdeac40`，CUTLASS v4.4.1。原始代码放在 `vendor/DCVC`，编译兼容改动记录于 `patches/jetson-build.patch`。上游要求 Python ≥3.12；当前适配选择 3.10 以复用 NVIDIA 可用 wheel，已检查模型模块语法，实际支持范围仍以编译与运行结果为准。没有更改模型结构。
 
+## 从 GitHub 克隆后重新部署
+
+GitHub 仓库只保存源码、测试、文档和验证报告。以下内容体积过大或与设备相关，默认不进入 Git：
+
+- `.env/`：项目 Conda 环境
+- `vendor/`：Microsoft DCVC 上游源码、CUTLASS 和编译产物
+- `checkpoints/`：官方模型权重
+- `tools/testdata/`、`tools/*.whl`、`runs/` 和日志文件
+
+在已安装 Miniforge、JetPack/CUDA 12.6 的 Jetson 上，克隆仓库后执行：
+
+```bash
+git clone git@github.com:pengjunjie04/DCVC.git
+cd DCVC
+./tools/bootstrap.sh
+```
+
+`tools/bootstrap.sh` 会依次：
+
+1. 拉取固定提交的 DCVC 和 CUTLASS 到 `vendor/DCVC`；
+2. 应用 `patches/jetson-build.patch`；
+3. 从 `environment.yml` 创建项目 `.env`；
+4. 安装 `requirements-lock.txt` 中的可移植依赖和官方 Jetson Torch；
+5. 执行 `tools/build_codec.sh` 编译原生扩展。
+
+如果已经创建 `.env`，只想拉取上游源码和补丁，可执行 `./tools/fetch_dcvc.sh`；不准备本轮编译时可运行 `./tools/bootstrap.sh --no-build`。脚本不会覆盖已有上游修改，发现不兼容状态会停止并提示。
+
+Miniforge 不在默认位置时，通过 `CONDA_BIN=/path/to/conda ./tools/bootstrap.sh` 指定。`requirements-lock.txt` 不再包含本机绝对路径；原生扩展由构建脚本单独安装。
+
 ## 模型权重与构建
 
 从 [Microsoft 官方仓库](https://github.com/microsoft/DCVC#readme) 的 Pretrained models 下载：
@@ -48,6 +77,14 @@ checkpoints/cvpr2026_video_hts.pth.tar
 ```
 
 两份官方权重已下载并记录 SHA256，见 `reports/official-weight-downloads.json`。换设备时请一并复制，或从官方链接重新下载。请勿把其他变体的文件重命名为 HT-S。未提供权重时，界面仍可用于采集检查并显示缺失项。自动获取辅助脚本 `tools/fetch_weights_browser.py` 依赖 Playwright、系统 Chromium 和本机代理端口7897；无需在普通运行时使用。
+
+下载或复制完成后运行：
+
+```bash
+PYTHONNOUSERSITE=1 .env/bin/python -s tools/check_weights.py
+```
+
+校验器会检查文件大小和 SHA256，避免误用其他 DCVC 变体。自动下载脚本可通过 `DCVC_CHROMIUM` 指定 Chromium 路径，通过 `DCVC_PROXY` 指定代理；不需要代理时设置 `DCVC_PROXY=''`。
 
 ```bash
 ./tools/build_codec.sh
@@ -60,16 +97,15 @@ PYTHONNOUSERSITE=1 PYTHONPATH="$PWD" .env/bin/python -s tools/benchmark.py --gro
 
 本次两台设备已完成部署：编码端192.168.50.1、解码端192.168.50.2。解码端可直接从第4步启动接收服务；第1–3步供重新部署参考：
 
-1. 将项目源码、固定版本的 `vendor/DCVC`（包含 CUTLASS）和两份权重复制到第二台。不要复制本机 `.env` 当作通用安装包。第二台安装 Miniforge 后，若也是相同 JetPack/CUDA12.6，在项目目录运行：
+1. 在第二台克隆仓库并准备固定版本上游源码。不要复制本机 `.env` 当作通用安装包。第二台安装 Miniforge 后，若也是相同 JetPack/CUDA12.6，在项目目录运行：
 
    ```bash
-   ~/miniforge3/bin/conda env create -p ./.env -f environment.yml
-   PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s -m pip install \
-     'https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl'
-   ./tools/build_codec.sh
+   git clone git@github.com:pengjunjie04/DCVC.git
+   cd DCVC
+   ./tools/bootstrap.sh
    ```
 
-   若系统/CUDA 版本不同，先匹配环境，避免直接覆盖系统组件。
+   两份官方权重仍需按下一节说明放入 `checkpoints/`。若系统/CUDA 版本不同，先匹配环境，避免直接覆盖系统组件。
 2. 两台网线直接连接。有线网卡各设一个同网段静态地址，例如编码端 `192.168.50.1/24`、解码端 `192.168.50.2/24`。此网段应与现有 Wi-Fi 网段不同；有线连接不设置默认网关，保留 Wi-Fi 联网。程序不会自动修改系统网络。
 3. 用 `ip -4 addr` 核对有线地址；两端通过有线地址互相 ping。
 4. 在解码端运行：

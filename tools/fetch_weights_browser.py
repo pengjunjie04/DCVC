@@ -1,6 +1,7 @@
 """Download only the two requested official files, using anonymous public OneDrive UI."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import urllib.request
 import urllib.parse
@@ -17,8 +18,15 @@ folder = ROOT / 'checkpoints'
 folder.mkdir(exist_ok=True)
 records = []
 with sync_playwright() as p:
-    browser = p.chromium.launch(executable_path='/snap/bin/chromium', headless=True,
-        args=['--no-sandbox', '--disable-gpu'], proxy={'server':'http://127.0.0.1:7897'})
+    launch_options = {
+        'executable_path': os.environ.get('DCVC_CHROMIUM', '/snap/bin/chromium'),
+        'headless': True,
+        'args': ['--no-sandbox', '--disable-gpu'],
+    }
+    proxy = os.environ.get('DCVC_PROXY', 'http://127.0.0.1:7897').strip()
+    if proxy:
+        launch_options['proxy'] = {'server': proxy}
+    browser = p.chromium.launch(**launch_options)
     page = browser.new_page(accept_downloads=True)
     download_requests = {}
     def remember_download(request):

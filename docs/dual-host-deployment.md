@@ -12,6 +12,18 @@
 
 实际conda清单与pip版本分别保存在`reports/decoder-conda-explicit-aarch64.txt`、`reports/decoder-runtime-pins.txt`。解码端`pip check`通过。安装后磁盘约剩7.5GiB，项目含环境约4.1GiB。最初两端为MAXN_SUPER；编码端出现OC3限速后，两端现已验证25W（nvpmodel模式3）实际限制生效，编码端启动顺序问题通过文末补丁修复。未锁定时钟，未修改保护阈值。
 
+## 从 GitHub 重建项目
+
+仓库不包含 `.env`、`vendor/DCVC`、CUTLASS、模型权重和测试视频。新设备执行：
+
+```bash
+git clone git@github.com:pengjunjie04/DCVC.git
+cd DCVC
+./tools/bootstrap.sh
+```
+
+脚本会拉取固定提交 `cbdae87a5445114cdc7f48816da63ea80bdeac40` 的 DCVC 和 `v4.4.1` CUTLASS，应用 `patches/jetson-build.patch`，创建项目环境并编译原生扩展。权重仍需按 README 放入 `checkpoints/`。如果已有 `.env`，可单独运行 `./tools/fetch_dcvc.sh`；脚本不会覆盖已修改的上游工作区。
+
 ## 日常启动
 
 解码端终端：
