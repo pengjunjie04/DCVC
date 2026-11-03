@@ -64,6 +64,11 @@ class SendPipelineTests(unittest.TestCase):
             release.wait(3)
         engine, thread, errors = self.run_peer(peer)
         self.assertTrue(self.wait_for(lambda: engine.snapshot()['decode']['frames'] >= 9), str(errors))
+        timing = engine.snapshot()['timing']
+        for key in ('oldest_to_host_ms', 'newest_to_host_ms', 'batch_wait_ms', 'batch_span_ms'):
+            self.assertIsInstance(timing[key], float)
+        self.assertGreaterEqual(timing['batch_span_ms'], 0)
+        self.assertLessEqual(timing['newest_to_host_ms'], timing['oldest_to_host_ms'])
         engine.stop()
         release.set()
         thread.join(3)

@@ -250,6 +250,8 @@ class Engine:
                 if not batch:
                     break
                 start = time.monotonic()
+                batch_wait_ms = (start - batch[0][0]) * 1000
+                batch_span_ms = (batch[-1][0] - batch[0][0]) * 1000
                 packet = encoder.encode([item[1] for item in batch], settings.qp)
                 encoded_at = time.monotonic()
                 self.rates['encode'].add(frames=len(batch), size=len(packet[1]))
@@ -263,7 +265,8 @@ class Engine:
                     self._publish(output, playback, batch[0][0], encode_ms, decode_ms, remote=False)
                 else:
                     # FIFO metadata precedes the wire write; one reader owns all replies.
-                    pending.put((batch[0][0], encode_ms, len(batch)))
+                    pending.put((batch[0][0], batch[-1][0], encode_ms, len(batch),
+                                 batch_wait_ms, batch_span_ms))
                     metadata = {**packet[0], 'fps': settings.fps, 'encode_ms': encode_ms,
                                 'encode_fps': self.rates['encode'].snapshot()['fps']}
                     send_packet(sock, metadata, packet[1])
@@ -303,14 +306,17 @@ class Engine:
         try:
             while not stop.is_set():
                 try:
-                    captured, encode_ms, count = pending.get(timeout=.05)
+                    captured, newest_captured, encode_ms, count, batch_wait_ms, batch_span_ms = pending.get(timeout=.05)
                 except Empty:
                     continue
                 meta, jpeg_bytes = recv_packet(sock)
+                reply_at = time.monotonic()
                 output, decode_ms = decode_preview(meta, jpeg_bytes, count, settings.width, settings.height)
                 if stop.is_set():
                     return
-                self._publish(output, playback, captured, encode_ms, decode_ms, remote=True)
+                self._publish(output, playback, captured, encode_ms, decode_ms, remote=True,
+                              newest_captured=newest_captured, batch_wait_ms=batch_wait_ms,
+                              batch_span_ms=batch_span_ms, reply_at=reply_at)
                 slots.release()
         except Exception as exc:
             if not stop.is_set():
@@ -323,14 +329,23 @@ class Engine:
                 except OSError:
                     pass
 
-    def _publish(self, output, playback, captured, encode_ms, decode_ms, remote):
+    def _publish(self, output, playback, captured, encode_ms, decode_ms, remote,
+                 newest_captured=None, batch_wait_ms=None, batch_span_ms=None, reply_at=None):
         self.rates['decode'].add(frames=len(output))
         self.processing['decode'].add(len(output), decode_ms)
         with self.lock:
-            self.timing = {'encode_group_ms': encode_ms,
-                           'decode_group_ms': decode_ms,
-                           'oldest_to_host_ms': (time.monotonic() - captured) * 1000,
-                           'scope': '编码端采集至返回解码预览（往返，非单向）' if remote else '本机采集至本机解码完成'}
+            now = reply_at or time.monotonic()
+            timing = {'encode_group_ms': encode_ms,
+                      'decode_group_ms': decode_ms,
+                      'oldest_to_host_ms': (now - captured) * 1000,
+                      'scope': '编码端采集至返回解码预览（往返，非单向）' if remote else '本机采集至本机解码完成'}
+            if newest_captured is not None:
+                timing['newest_to_host_ms'] = (now - newest_captured) * 1000
+            if batch_wait_ms is not None:
+                timing['batch_wait_ms'] = batch_wait_ms
+            if batch_span_ms is not None:
+                timing['batch_span_ms'] = batch_span_ms
+            self.timing = timing
         for frame in output:
             playback.put(frame)
         self.preview_dropped = playback.dropped

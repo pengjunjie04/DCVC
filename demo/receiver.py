@@ -8,14 +8,26 @@ import multiprocessing
 import math
 import threading
 import webbrowser
+from concurrent.futures import ThreadPoolExecutor
 
 from .codec import Codec, validate_packet
 from .display_ipc import PreviewMailbox
 from .transport import recv_packet, send_packet
 
 
-def handle_connection(conn, codec, progress=None, preview_queue=None):
+_PREVIEW_ENCODERS = ThreadPoolExecutor(max_workers=4, thread_name_prefix='preview-jpeg')
+
+
+def _encode_preview(rgb):
     import cv2
+    ok, jpeg = cv2.imencode('.jpg', cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR),
+                            [cv2.IMWRITE_JPEG_QUALITY, 75])
+    if not ok:
+        raise RuntimeError('无法生成解码预览')
+    return jpeg.tobytes()
+
+
+def handle_connection(conn, codec, progress=None, preview_queue=None):
     totals = {'total_frames':0, 'total_bytes':0, 'encode_ms':0., 'decode_ms':0.}
     display_dropped = 0
     while True:
@@ -26,12 +38,7 @@ def handle_connection(conn, codec, progress=None, preview_queue=None):
         if progress is not None:
             progress.send(None)
         elapsed = (time.monotonic() - started) * 1000
-        previews = []
-        for rgb in frames:
-            ok, jpeg = cv2.imencode('.jpg', cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 75])
-            if not ok:
-                raise RuntimeError('无法生成解码预览')
-            previews.append(jpeg.tobytes())
+        previews = list(_PREVIEW_ENCODERS.map(_encode_preview, frames))
         send_packet(conn, {'type': 'preview', 'count': len(frames), 'sizes': list(map(len, previews)),
                            'decode_ms': elapsed}, b''.join(previews))
         if preview_queue is not None:

@@ -27,4 +27,4 @@
 
 后续检查发现：编码端`nvpmodel -q`虽显示25W，`-q --verbose`却显示GPU上限1173MHz（配置应408MHz）、CPU上限1984MHz（应1497.6MHz）、TPC/FBP掩码未匹配。开机nvpmodel服务因GPU context已创建、要求重启而失败。此次短测OC3由0增至6，保护脚本已停止，未取得25W稳态结果；解码端实际限制正确且OC为0。验收脚本现进一步校验CPU/GPU上限及TPC/FBP掩码，避免只相信模式名称。详见`reports/dual-display-camera-browser-25w-incomplete.json`。
 
-后续结果：编码端安装启动顺序drop-in并重启后，实际限制匹配25W。跨机cuDNN差异造成的画质漂移亦经独立回归修复，详见`quality-consistency.md`。最终两端25W摄像头复测编码/解码29.99fps、第二台浏览器29.9fps、两端OC0；处理速度50.37/47.74fps，返回预览时延中位数604.0ms。旧速度报告的画质未验收，不能单独作为有效画质下的模型对照。
+后续结果：编码端安装启动顺序drop-in并重启后，实际限制匹配25W。跨机cuDNN差异造成的画质漂移亦经独立回归修复，详见`quality-consistency.md`。最终两端25W摄像头复测编码/解码29.99fps、第二台浏览器29.9fps、两端OC0；处理速度50.37/47.74fps。旧速度报告的画质未验收，不能单独作为有效画质下的模型对照。2026-11-03低延迟优化后，返回预览时延（组内最老帧）中位数478.9ms、最大490.8ms，最新帧中位数245.3ms，见`reports/dual-host-latency-25w.json`；该口径不含浏览器绘制。
