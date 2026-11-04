@@ -22,7 +22,7 @@
               seq = frameSeq;
               const receivedUs = Math.round((performance.timeOrigin + performance.now()) * 1e3);
               const stale = kind === 'decoded' && Number.isSafeInteger(captureUs) && captureUs > 0 &&
-                            receivedUs - captureUs > 475_000;
+                            receivedUs - captureUs > 495_000;
               if (stale) {
                 staleDropped++;
               } else {

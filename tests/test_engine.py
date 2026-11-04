@@ -165,6 +165,24 @@ class EngineTests(unittest.TestCase):
         self.assertLess(engine.clock_sync['rtt_ms'], 50)
         self.assertGreaterEqual(engine.clock_sync['samples'], 5)
 
+    def test_periodic_clock_update_tracks_drift_and_rejects_implausible_jumps(self):
+        engine = Engine(clock_sync=True)
+        sent = 1_000_000_000
+        # 0.5 ms each way + 0.5 ms decoder work, decoder clock 0.25 ms ahead.
+        meta = {'type':'clock_sync', 't0':sent, 't1':sent + 750_000, 't2':sent + 1_250_000}
+        received = sent + 1_500_000
+        engine._update_clock(sent, meta, received)
+        self.assertAlmostEqual(engine.clock_sync['offset_ms'], 0.25, places=3)
+        self.assertEqual(engine.clock_sync['updates'], 2)
+        # A 500 ms jump is a bad sample, not real drift; keep the last offset.
+        bad = {'type':'clock_sync', 't0':sent, 't1':sent + 500_000_000, 't2':sent + 500_500_000}
+        engine._update_clock(sent, bad, received)
+        self.assertAlmostEqual(engine.clock_sync['offset_ms'], 0.25, places=3)
+        # A sample that queued behind a group decode (slow round trip) is discarded.
+        slow = {'type':'clock_sync', 't0':sent, 't1':sent + 750_000, 't2':sent + 1_250_000}
+        self.assertFalse(engine._update_clock(sent, slow, sent + 200_000_000))
+        self.assertAlmostEqual(engine.clock_sync['offset_ms'], 0.25, places=3)
+
 
 def fake_fourcc(value):
     return sum(ord(char) << (8 * index) for index, char in enumerate(value))

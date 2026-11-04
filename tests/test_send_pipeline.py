@@ -55,7 +55,7 @@ class SendPipelineTests(unittest.TestCase):
         self.addCleanup(release.set)
         def peer(conn):
             batches = [recv_packet(conn)[0], recv_packet(conn)[0]]
-            self.assertEqual([len(batch['capture_times_ns']) for batch in batches], [1, 8])
+            self.assertEqual([len(batch['capture_ages_ns']) for batch in batches], [1, 8])
             ok, jpeg = cv2.imencode('.jpg', np.zeros((64, 64, 3), np.uint8))
             self.assertTrue(ok)
             for batch in batches:

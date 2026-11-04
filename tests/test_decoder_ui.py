@@ -26,30 +26,56 @@ class DecoderDisplayTests(unittest.TestCase):
             self.assertEqual(response.headers['X-Sequence'], '7')
             self.assertEqual(client.get('/api/frame/other').status_code, 404)
 
-    def test_eight_frame_burst_is_drained_without_building_display_backlog(self):
+    def test_eight_frame_burst_is_paced_at_capture_rate_without_backlog(self):
         monitor = DecoderMonitor()
         self.addCleanup(monitor.close)
         monitor.begin_session()
         frames = [b'jpeg-' + bytes([i]) for i in range(8)]
-        capture_ns = [time.time_ns() - 100_000_000 + index * 1_000_000 for index in range(8)]
+        capture_ages = [100_000_000 - index * 1_000_000 for index in range(8)]
         started = time.monotonic()
         monitor.accept({'width':640,'height':360,'fps':30,'qp':32,'encode_fps':30,
                         'encode_ms':40,'decode_ms':80,'total_frames':8,'total_bytes':128,
-                        'capture_times_ns':capture_ns}, frames)
-        deadline = time.monotonic() + 1
+                        'capture_ages_ns':capture_ages}, frames)
+        deadline = time.monotonic() + 2
         while monitor.snapshot()['preview']['frames'] < 8 and time.monotonic() < deadline:
             time.sleep(.01)
         elapsed = time.monotonic() - started
         state = monitor.snapshot()
         self.assertEqual(state['decode']['frames'], 8)
         self.assertEqual(state['preview']['frames'], 8)
-        self.assertLess(elapsed, .22)
+        # Paced at the 30 fps capture cadence: 8 frames spread over ~233 ms, not a
+        # 133 ms burst followed by a freeze.
+        self.assertGreater(elapsed, .18)
+        self.assertLess(elapsed, .45)
         self.assertEqual(monitor.image()[1], frames[-1])
-        self.assertEqual(monitor.image()[2], capture_ns[-1])
+        age_ns = time.time_ns() - monitor.image()[2]
+        self.assertGreaterEqual(age_ns, capture_ages[-1])
+        self.assertLess(age_ns, capture_ages[-1] + 400_000_000)
         self.assertAlmostEqual(state['processing']['encode']['fps'], 200)
         self.assertAlmostEqual(state['processing']['decode']['fps'], 100)
         monitor.end_session(0)
         self.assertEqual(monitor.snapshot()['state'], 'waiting')
+
+    def test_late_burst_drops_leading_frames_to_hold_the_display_budget(self):
+        monitor = DecoderMonitor()
+        self.addCleanup(monitor.close)
+        monitor.begin_session()
+        frames = [b'jpeg-' + bytes([i]) for i in range(8)]
+        # Oldest frame is 620 ms old, spread over a 233 ms burst.
+        capture_ages = [620_000_000 - index * 33_000_000 for index in range(8)]
+        monitor.accept({'width':640,'height':360,'fps':30,'qp':32,'encode_ms':40,
+                        'decode_ms':80,'total_frames':8,'total_bytes':128,
+                        'capture_ages_ns':capture_ages}, frames)
+        deadline = time.monotonic() + 2
+        while monitor.snapshot()['preview']['frames'] < 3 and time.monotonic() < deadline:
+            time.sleep(.01)
+        time.sleep(.05)
+        state = monitor.snapshot()
+        self.assertGreaterEqual(state['preview_dropped'], 1)
+        # 620 ms > 460 ms budget -> five 33 ms frames are skipped from the front,
+        # and the newest frame is still delivered.
+        self.assertEqual(monitor.image()[1], frames[-1])
+        self.assertLessEqual(state['preview']['frames'], 8)
 
     def test_decoder_api_waits_without_camera_and_serves_actual_latest_jpeg(self):
         monitor = DecoderMonitor()
@@ -60,7 +86,7 @@ class DecoderDisplayTests(unittest.TestCase):
             monitor.begin_session()
             monitor.accept({'width':64,'height':64,'fps':30,'qp':32,
                             'encode_ms':None,'decode_ms':1,'total_frames':1,'total_bytes':5,
-                            'capture_times_ns':[time.time_ns()-400_000_000]}, [b'actual-jpeg'])
+                            'capture_ages_ns':[400_000_000]}, [b'actual-jpeg'])
             deadline = time.monotonic() + 1
             while monitor.image()[1] is None and time.monotonic() < deadline:
                 time.sleep(.01)

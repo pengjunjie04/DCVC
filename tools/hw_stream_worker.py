@@ -478,6 +478,12 @@ def run_encoder(args):
 def run_decoder(args):
     reporter = StatsReporter('decoder')
     reporter.start()
+    # A restart must not re-serve the previous session's last frame from /dev/shm.
+    for codec in ('h264', 'h265'):
+        try:
+            frame_path(codec).unlink()
+        except FileNotFoundError:
+            pass
     streams = {}
     for codec, port in (('h264', args.h264_port), ('h265', args.h265_port)):
         streams[codec] = DecoderStream(codec, args.bind, port, reporter)

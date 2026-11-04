@@ -1,6 +1,7 @@
 """Independent receiver, bound explicitly to its Ethernet IPv4 address."""
 import argparse
 import ipaddress
+import queue
 import signal
 import socket
 import time
@@ -19,13 +20,14 @@ from .transport import recv_packet, send_packet
 _PREVIEW_ENCODERS = ThreadPoolExecutor(max_workers=8, thread_name_prefix='preview-jpeg')
 
 
-def _capture_times(meta, count):
-    values = meta.get('capture_times_ns')
+def _capture_ages(meta, count):
+    """Per-frame age measured on the encoder's monotonic clock at send time."""
+    values = meta.get('capture_ages_ns')
     if values is None:
         return [None] * count
     if (not isinstance(values, list) or len(values) != count or
-            any(type(value) is not int or value <= 0 for value in values)):
-        raise ValueError('无效的采集时间戳')
+            any(type(value) is not int or value < 0 for value in values)):
+        raise ValueError('无效的采集年龄')
     return values
 
 
@@ -38,11 +40,27 @@ def _encode_preview(rgb):
     return jpeg.tobytes()
 
 
-def handle_connection(conn, codec, progress=None, preview_queue=None):
+def handle_connection(conn, codec_factory, progress=None, preview_queue=None):
     totals = {'total_frames':0, 'total_bytes':0, 'encode_ms':0., 'decode_ms':0.}
     display_dropped = 0
+    codec = None
+    # Read the socket on its own thread so a packet that arrives during a group
+    # decode is timestamped on arrival, not after the decode finishes. Frame age
+    # therefore stays a duration on one clock and never depends on wall-clock
+    # agreement between the two Jetsons.
+    inbox = queue.Queue(maxsize=2)
+    def reader():
+        try:
+            while True:
+                packet = recv_packet(conn)
+                inbox.put((time.monotonic(), packet))
+        except Exception as exc:  # surfaced in the decoder loop
+            inbox.put((time.monotonic(), exc))
+    threading.Thread(target=reader, daemon=True).start()
     while True:
-        packet = recv_packet(conn)
+        received_mono, packet = inbox.get()
+        if isinstance(packet, BaseException):
+            raise packet
         if packet[0].get('type') == 'clock_sync':
             sent = packet[0].get('t0')
             if packet[1] or type(sent) is not int or sent <= 0:
@@ -51,10 +69,15 @@ def handle_connection(conn, codec, progress=None, preview_queue=None):
             send_packet(conn, {'type': 'clock_sync', 't0': sent,
                                't1': received, 't2': time.time_ns()}, b'')
             continue
+        if codec is None:
+            # Load the model only once real video arrives.
+            codec = codec_factory()
+            if progress is not None:
+                progress.send(None)
         validate_packet(*packet)
         started = time.monotonic()
         frames = codec.decode(packet)
-        capture_times_ns = _capture_times(packet[0], len(frames))
+        capture_ages_ns = _capture_ages(packet[0], len(frames))
         if progress is not None:
             progress.send(None)
         elapsed = (time.monotonic() - started) * 1000
@@ -74,9 +97,13 @@ def handle_connection(conn, codec, progress=None, preview_queue=None):
             encode_fps = meta.get('encode_fps', 0.)
             if type(encode_fps) not in (int, float) or not math.isfinite(encode_fps) or not 0 <= encode_fps <= 10000:
                 encode_fps = 0.
+            # Age now = age at send + everything that happened locally since arrival.
+            aged = time.monotonic() - received_mono
+            capture_ages_ns = [None if age is None else age + int(aged * 1e9)
+                               for age in capture_ages_ns]
             info = {**totals, 'width':meta['width'], 'height':meta['height'], 'qp':meta['qp'],
                     'fps':fps, 'encode_fps':encode_fps, 'ipc_dropped':display_dropped,
-                    'capture_times_ns':capture_times_ns}
+                    'capture_ages_ns':capture_ages_ns}
             if not preview_queue.publish(info, previews):
                 display_dropped += len(frames)
         print(f'decoded={len(frames)}, decode_ms={elapsed:.2f}, compressed_bytes={len(packet[1])}', flush=True)
@@ -87,10 +114,7 @@ def run_session(conn, progress=None, preview_queue=None):
     with conn:
         conn.settimeout(120)
         try:
-            codec = Codec()
-            if progress is not None:
-                progress.send(None)
-            handle_connection(conn, codec, progress, preview_queue)
+            handle_connection(conn, Codec, progress, preview_queue)
         except (EOFError, ConnectionResetError, BrokenPipeError) as exc:
             print(f'会话结束：{type(exc).__name__}: {exc}', flush=True)
         except Exception as exc:

@@ -25,6 +25,15 @@ class LatestFrames:
             self.items.append(frame)
             self.changed.notify_all()
 
+    def trim(self, keep):
+        """Drop the oldest frames so a slow consumer cannot build latency."""
+        with self.changed:
+            dropped = max(0, len(self.items) - keep)
+            for _ in range(dropped):
+                self.items.popleft()
+            self.dropped += dropped
+            return dropped
+
     def take(self, count, stop):
         with self.changed:
             while len(self.items) < count and not stop.is_set():
@@ -106,6 +115,7 @@ class Engine:
         self.codec_factory = codec_factory
         self.lock = threading.RLock()
         self.control = threading.RLock()
+        self.send_lock = threading.Lock()
         self.worker = None
         self.capture_thread = None
         self.cancel = threading.Event()
@@ -123,6 +133,7 @@ class Engine:
         self.clock_sync_enabled = clock_sync
         self.clock_offset_ns = 0
         self.clock_sync = {}
+        self.next_clock_sync = 0.
         self.hardware = None
 
     def alive(self):
@@ -146,6 +157,7 @@ class Engine:
                 self.preview_dropped = 0
                 self.clock_offset_ns = 0
                 self.clock_sync = {}
+                self.next_clock_sync = 0.
                 self.hardware = None
                 self.original = self.decoded = None
                 self.worker = threading.Thread(target=self._run, args=(settings, self.cancel), daemon=True)
@@ -271,6 +283,7 @@ class Engine:
                     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                     if self.clock_sync_enabled:
                         self._sync_clock(sock)
+                        self.next_clock_sync = time.monotonic() + 10.
                     if settings.compare_hardware:
                         from .hardware_compare import HardwareEncoder
                         self.hardware = HardwareEncoder(settings.peer, settings.width, settings.height,
@@ -320,15 +333,18 @@ class Engine:
                     decode_ms = (time.monotonic() - encoded_at) * 1000
                     self._publish(output, playback, batch[0][0], encode_ms, decode_ms, remote=False)
                 else:
-                    # FIFO metadata precedes the wire write; one reader owns all replies.
-                    pending.put((batch[0][0], batch[-1][0], encode_ms, len(batch),
-                                 batch_wait_ms, batch_span_ms))
+                    sent = time.monotonic()
                     metadata = {**packet[0], 'fps': settings.fps, 'encode_ms': encode_ms,
                                 'encode_fps': self.rates['encode'].snapshot()['fps'],
-                                'capture_times_ns': [item[1] + self.clock_offset_ns for item in batch]}
+                                'capture_ages_ns': [max(0, int((sent - item[0]) * 1e9))
+                                                    for item in batch]}
                     if self.clock_sync:
                         metadata['clock_sync'] = dict(self.clock_sync)
-                    send_packet(sock, metadata, packet[1])
+                    # Marker order must match wire order for the single reply reader.
+                    with self.send_lock:
+                        pending.put(('data', batch[0][0], batch[-1][0], encode_ms, len(batch),
+                                     batch_wait_ms, batch_span_ms))
+                        send_packet(sock, metadata, packet[1])
                 first = False
             if errors:
                 raise errors[0]
@@ -365,26 +381,58 @@ class Engine:
             from .codec import release_workspace
             release_workspace()
 
+    def _clock_sample(self, sent, meta, received):
+        """One NTP-style round trip -> (round_trip_ns, decoder_minus_encoder_ns)."""
+        if meta.get('type') != 'clock_sync' or meta.get('t0') != sent:
+            raise ValueError('解码端时钟校准响应无效')
+        remote_received, remote_sent = meta.get('t1'), meta.get('t2')
+        if (type(remote_received) is not int or type(remote_sent) is not int or
+                remote_received <= 0 or remote_sent < remote_received):
+            raise ValueError('解码端时钟校准时间无效')
+        remote_work = remote_sent - remote_received
+        round_trip = received - sent - remote_work
+        if not 0 <= round_trip <= 1_000_000_000:
+            return None
+        offset = ((remote_received - sent) + (remote_sent - received)) // 2
+        return round_trip, offset
+
+    def _update_clock(self, sent, meta, received, max_rtt_ns=5_000_000):
+        sample = self._clock_sample(sent, meta, received)
+        if sample is None:
+            return False
+        round_trip, offset = sample
+        if round_trip > max_rtt_ns:
+            return False
+        previous = self.clock_offset_ns
+        if previous and abs(offset - previous) > 250_000_000:
+            return False
+        self.clock_offset_ns = offset
+        with self.lock:
+            self.clock_sync = {'offset_ms': offset / 1e6, 'rtt_ms': round_trip / 1e6,
+                               'samples': self.clock_sync.get('samples', 0) + 1,
+                               'updates': self.clock_sync.get('updates', 1) + 1}
+        return True
+
     def _sync_clock(self, sock):
-        """Estimate decoder_clock - encoder_clock with NTP-style round trips."""
+        """Estimate decoder_clock - encoder_clock with NTP-style round trips.
+
+        A request that queues behind the decoder's startup or a group decode biases
+        the estimate by half the queue time, so only low-RTT samples are accepted.
+        """
         samples = []
-        for index in range(12):
-            sent = time.time_ns()
-            send_packet(sock, {'type': 'clock_sync', 't0': sent}, b'')
-            meta, payload = recv_packet(sock)
-            received = time.time_ns()
-            if payload or meta.get('type') != 'clock_sync' or meta.get('t0') != sent:
-                raise ValueError('解码端时钟校准响应无效')
-            remote_received, remote_sent = meta.get('t1'), meta.get('t2')
-            if (type(remote_received) is not int or type(remote_sent) is not int or
-                    remote_received <= 0 or remote_sent < remote_received):
-                raise ValueError('解码端时钟校准时间无效')
-            remote_work = remote_sent - remote_received
-            round_trip = received - sent - remote_work
-            if 0 <= round_trip <= 1_000_000_000:
-                offset = ((remote_received - sent) + (remote_sent - received)) // 2
-                if index >= 3:
-                    samples.append((round_trip, offset))
+        for _ in range(3):
+            for index in range(12):
+                sent = time.time_ns()
+                send_packet(sock, {'type': 'clock_sync', 't0': sent}, b'')
+                meta, payload = recv_packet(sock)
+                received = time.time_ns()
+                if payload:
+                    raise ValueError('解码端时钟校准响应无效')
+                sample = self._clock_sample(sent, meta, received)
+                if sample is not None and sample[0] <= 5_000_000:
+                    samples.append(sample)
+            if len(samples) >= 5:
+                break
         if not samples:
             raise RuntimeError('无法测量跨机时钟偏移')
         samples.sort(key=lambda item: item[0])
@@ -393,7 +441,7 @@ class Engine:
         self.clock_offset_ns = offsets[len(offsets) // 2]
         self.clock_sync = {'offset_ms': self.clock_offset_ns / 1e6,
                            'rtt_ms': sorted(item[0] for item in best)[len(best) // 2] / 1e6,
-                           'samples': len(best)}
+                           'samples': len(best), 'updates': 1}
         with self.lock:
             self.clock_sync = dict(self.clock_sync)
 
@@ -401,9 +449,17 @@ class Engine:
         try:
             while not stop.is_set():
                 try:
-                    captured, newest_captured, encode_ms, count, batch_wait_ms, batch_span_ms = pending.get(timeout=.05)
+                    item = pending.get(timeout=.05)
                 except Empty:
                     continue
+                if item[0] == 'clock':
+                    meta, payload = recv_packet(sock)
+                    if payload:
+                        raise ValueError('解码端时钟校准响应无效')
+                    applied = self._update_clock(item[1], meta, time.time_ns())
+                    self.next_clock_sync = time.monotonic() + (10. if applied else 1.)
+                    continue
+                _, captured, newest_captured, encode_ms, count, batch_wait_ms, batch_span_ms = item
                 meta, jpeg_bytes = recv_packet(sock)
                 reply_at = time.monotonic()
                 output, decode_ms = decode_preview(meta, jpeg_bytes, count, settings.width, settings.height)
@@ -413,6 +469,16 @@ class Engine:
                               newest_captured=newest_captured, batch_wait_ms=batch_wait_ms,
                               batch_span_ms=batch_span_ms, reply_at=reply_at)
                 slots.release()
+                # The decoder is idle again right after it answers, so a calibration
+                # request sent now gets a clean round trip instead of queueing behind
+                # a group decode. Both writers share send_lock, keeping marker order
+                # identical to wire order.
+                if self.clock_sync_enabled and time.monotonic() >= self.next_clock_sync:
+                    self.next_clock_sync = time.monotonic() + 10.
+                    sent = time.time_ns()
+                    with self.send_lock:
+                        pending.put(('clock', sent))
+                        send_packet(sock, {'type': 'clock_sync', 't0': sent}, b'')
         except Exception as exc:
             if not stop.is_set():
                 errors.append(exc)

@@ -14,6 +14,10 @@ from .engine import LatestFrames
 from .metrics import ProcessingStats, WindowStats
 
 ROOT = Path(__file__).resolve().parents[1]
+# Every displayed frame must stay under the 500 ms software-latency target. The
+# budget is measured when the burst arrives, before browser fetch/decode/draw, so
+# it sits below 500 ms to leave room for that final hop.
+DISPLAY_BUDGET_MS = 478
 
 
 class DecoderMonitor:
@@ -39,7 +43,9 @@ class DecoderMonitor:
         self.processing = {name:ProcessingStats() for name in ('encode', 'decode')}
         self.ipc_dropped = 0
         self.stale_dropped = 0
+        self.trim_dropped = 0
         self.encode_fps = 0.
+        self.last_oldest_age_ms = None
         self.totals = {'frames':0, 'bytes':0, 'encode_ms':0., 'decode_ms':0.}
         self.draw_samples.clear()
 
@@ -53,13 +59,17 @@ class DecoderMonitor:
                 self.queue.dropped = 0
 
     def accept(self, info, previews):
-        capture_times = info.get('capture_times_ns')
-        if capture_times is None:
-            capture_times = [None] * len(previews)
-        if (not isinstance(capture_times, list) or len(capture_times) != len(previews) or
-                any(value is not None and (type(value) is not int or value <= 0)
-                    for value in capture_times)):
-            raise ValueError('解码预览的采集时间戳无效')
+        capture_ages = info.get('capture_ages_ns')
+        if capture_ages is None:
+            capture_ages = [None] * len(previews)
+        if (not isinstance(capture_ages, list) or len(capture_ages) != len(previews) or
+                any(value is not None and (type(value) is not int or value < 0)
+                    for value in capture_ages)):
+            raise ValueError('解码预览的采集年龄无效')
+        # Convert the encoder-side age into a decoder-local capture timestamp once,
+        # so the browser's draw timestamp stays on the decoder clock.
+        now_ns = time.time_ns()
+        capture_times = [None if age is None else now_ns - age for age in capture_ages]
         with self.lock:
             self.settings = {name:info[name] for name in ('width','height','fps','qp')} | {'mode':'send'}
             frames = info['total_frames'] - self.totals['frames']
@@ -74,9 +84,24 @@ class DecoderMonitor:
             self.encode_fps = info.get('encode_fps', 0.)
             self.ipc_dropped += max(0, frames - len(previews))
             self.state, self.message = 'running', '正在第二台解码并显示 · 编码速度由第一台实时传入'
-            display_fps = max(60, self.settings['fps'])
-            for jpeg, capture_ns in zip(previews, capture_times):
+            # HT-S delivers eight frames at once. Play them at the capture cadence
+            # instead of a 60 fps burst, which reads as a stutter followed by a gap.
+            display_fps = max(1, self.settings['fps'])
+            # Pacing preserves each frame's age, so a burst that is already late would
+            # stay late for its whole playback. Skip its oldest frames instead: every
+            # remaining frame is then displayed at the budgeted age.
+            budget_ns = int(DISPLAY_BUDGET_MS * 1e6)
+            skip = 0
+            if capture_times and capture_times[0] is not None:
+                oldest_age = time.time_ns() - capture_times[0]
+                if oldest_age > budget_ns:
+                    skip = min(len(previews) - 1,
+                               math.ceil((oldest_age - budget_ns) / (1e9 / display_fps)))
+            self.trim_dropped += skip
+            self.last_oldest_age_ms = max(0., (time.time_ns() - capture_times[0]) / 1e6) if capture_times[0] is not None else None
+            for jpeg, capture_ns in zip(previews[skip:], capture_times[skip:]):
                 self.queue.put((self.epoch, jpeg, display_fps, capture_ns))
+            self.queue.trim(max(10, len(previews) + 2))
 
     def end_session(self, code):
         with self.lock:
@@ -86,6 +111,7 @@ class DecoderMonitor:
 
     def _play(self):
         deadline = time.monotonic()
+        budget_ns = int(DISPLAY_BUDGET_MS * 1e6)
         while not self.closed.is_set():
             items = self.queue.take(1, self.closed)
             if not items:
@@ -96,8 +122,16 @@ class DecoderMonitor:
                 deadline = now
             if self.closed.wait(max(0, deadline - now)):
                 return
+            # Check the age at the moment of display: a backlog left by a slow
+            # stretch is skipped instead of being shown late.
+            if capture_ns is not None and time.time_ns() - capture_ns > budget_ns:
+                with self.lock:
+                    self.trim_dropped += 1
+                deadline = time.monotonic()
+                continue
             with self.lock:
                 if epoch != self.epoch:
+                    deadline += 1 / fps
                     continue
                 self.jpeg, self.seq, self.capture_unix_ns = jpeg, self.seq + 1, capture_ns
                 self.preview.add(frames=1)
@@ -151,7 +185,9 @@ class DecoderMonitor:
                               'capture_to_canvas_p95_ms':latency['p95_ms'],
                               'capture_to_canvas_max_ms':latency['max_ms'],
                               'capture_to_canvas_samples':latency['count']},
-                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped,
+                    'display_queue':len(self.queue.items),
+                    'display_oldest_age_ms':self.last_oldest_age_ms,
+                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped + self.trim_dropped,
                     'hardware':hardware}
 
     def image(self):
