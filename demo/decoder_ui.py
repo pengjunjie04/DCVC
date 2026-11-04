@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # Every displayed frame must stay under the 500 ms software-latency target. The
 # budget is measured when the burst arrives, before browser fetch/decode/draw, so
 # it sits below 500 ms to leave room for that final hop.
-DISPLAY_BUDGET_MS = 478
+DISPLAY_BUDGET_MS = 470
 
 
 class DecoderMonitor:
@@ -298,7 +298,7 @@ def create_decoder_app(monitor, mount_ui=True):
                     + monitor_html('h264', 'H.264 硬件解码', 'NVENC / NVDEC · 独立 ASIC', '02')
                     + monitor_html('h265', 'H.265 硬件解码', 'NVENC / NVDEC · 独立 ASIC', '03')
                     + '</div>')
-            gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。**采集→canvas** 由本机浏览器绘制完成后回报，仅在本机打开本页有效；不是物理屏幕光电测量。最近 2 秒更新，初始包含预热。', elem_classes=['metric-note'])
+            gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。**采集→canvas** 由本机浏览器绘制完成后回报，仅在本机打开本页有效；不是物理屏幕光电测量。最近 2 秒更新，初始包含预热。DCVC 的实际码率通常远低于硬件目标码率（QP32 下常见个位数到几十 kbps），因此两者画面清晰度不能直接对比，等质量结论见 `docs/codec-comparison.md`。', elem_classes=['metric-note'])
             with gr.Row(elem_classes=['utility-actions']):
                 export = gr.Button('保存本次统计')
                 quit_button = gr.Button('退出接收程序')

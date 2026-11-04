@@ -2,7 +2,7 @@
 
 两台 Jetson Orin NX 16GB 的 DCVC-UF HT-S 视频压缩演示。首期目标为 **640×360、30fps、端到端延迟 ≤500ms**；目标是否达标须以真实模型和双机测试为准。
 
-两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。53项自动化测试通过。解码端页面新增同一摄像头输入的 DCVC、H.264、H.265 三路实时画面及码率/时延指标。最新性能与限制见下方“实机结果”、[编解码器对比](docs/codec-comparison.md)及 `reports/browser-display-latency-25w.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
+两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。56项自动化测试通过。解码端页面新增同一摄像头输入的 DCVC、H.264、H.265 三路实时画面及码率/时延指标。最新性能与限制见下方“实机结果”、[编解码器对比](docs/codec-comparison.md)及 `reports/browser-display-latency-25w.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
 
 ## 一键启动（推荐）
 
@@ -125,7 +125,7 @@ python3 tools/compare_codecs.py --frames 640 --bitrates 32,64,128,256,512
 
 编码端页面勾选 **实时 H.264/H.265 对比** 后，同一帧图像会同时送入 DCVC-RT、NVENC H.264 和 NVENC H.265。两种硬件码流分别通过 `9861`/`9862` 端口发到解码端，由 NVDEC 解码为 JPEG；解码端页面因此可同时看到原始画面、DCVC 重建、H.264 重建和 H.265 重建，并显示硬件码率、吞吐及采集到解码完成的时延。码率滑块控制两路硬件编码器的目标码率，DCVC 仍由 QP 控制。
 
-这一页用于实时观察画面和链路行为，**不是同质量 PSNR 对比**：DCVC 的 QP 与硬件编码器的目标 kbps 不是同一个质量尺度。等质量码率结论仍以离线测试和 [编解码器对比](docs/codec-comparison.md) 为准。实时指标也不包含浏览器绘制、摄像头曝光和屏幕扫描。
+这一页用于实时观察画面和链路行为，**不是同质量 PSNR 对比**：DCVC 的 QP 与硬件编码器的目标 kbps 不是同一个质量尺度。等质量码率结论仍以离线测试和 [编解码器对比](docs/codec-comparison.md) 为准，模型结构与延迟取舍见 [DCVC-UF 论文要点](docs/paper-review.md)。实时指标也不包含浏览器绘制、摄像头曝光和屏幕扫描。
 
 2026-11-04 在两端 25W、真实 USB 摄像头下连续采样 15 秒（640×360/30fps/QP32、硬件目标 300kbps）：H.264/H.265 编码端实测约 298.5/300.4kbps、30.05/30.09fps，编码端采集到编码完成中位数 12.3/13.4ms；解码端硬件吞吐约 30.21/30.18fps，采集到 NVDEC 生成 JPEG 的中位数 4.6/5.4ms。两条连接全程正常，页面 DCVC 预览约 30.5fps、采集→canvas 中位数 465.7ms、p95 481.0ms。这里的硬件时延含跨机时钟校准，且与 DCVC 的显示口径不同，不应直接当作同质量画质结论。原始统计见 `reports/realtime-hardware-comparison-25w.json`。
 
@@ -170,7 +170,7 @@ USB 摄像头路径显式请求未压缩 YUYV：先设置格式，再请求 640�
 - **画面角落 FPS**：浏览器完成图像解码和 canvas 绘制后的计数，不用目标 FPS 或后端推送次数代替。
 - **压缩 Mbps**：模型实际码流载荷的在线吞吐，**不包含**分包头、原始预览或返回 JPEG 预览；不是总网卡流量，也不是承诺的恒定码率。初版 QP 调节，尚无目标 Mbps 自动控制。
 - **丢帧**：分别统计尚未编码的采集帧和展示队列丢帧。已编码的 P 帧不随意丢弃。
-- **延迟**：本机模式统计采集至解码完成；双机模式统计采集至收到返回预览的往返耗时。第二台页面另显示经 NTP 式跨机时钟校准的“采集完成→canvas drawImage 完成”软件时延，包含 JPEG 预览 IPC 与浏览器绘制，但不包含摄像头曝光和物理屏幕扫描。为避免显示过期画面，浏览器在解码前跳过采集年龄超过 475ms 的帧并计入展示丢帧；模型编解码仍保持原有 30fps 处理。
+- **延迟**：本机模式统计采集至解码完成；双机模式统计采集至收到返回预览的往返耗时。解码页把同一组 8 帧按采集节奏（30fps）播放，而不是一次闪出；超过 500ms 显示预算的帧会被跳过并计入展示丢帧，因此显示年龄始终有界。跨机时钟每 3 秒用低 RTT 样本重新校准，硬件时延不会因为时钟漂移变成负数。第二台页面另显示“采集完成→canvas drawImage 完成”的软件时延：帧年龄由编码端单调时钟在发送时测得、解码端用本地单调时钟累加，再换算成绘制时刻的年龄，因此不依赖两机墙钟一致；口径包含 JPEG 预览 IPC 与浏览器绘制，不包含摄像头曝光和物理屏幕扫描。为避免显示过期画面，服务器端先按显示预算跳帧，浏览器再对超过 495ms 的帧做最后一道丢弃。
 - **H.264/H.265 实时指标**：码率为对应 NVENC 实际发送载荷；端到端为采集时间到本机 NVDEC 解码并生成 JPEG 的时间，不含浏览器绘制；吞吐为最近 2 秒实际解码帧率。它们与 DCVC 的 500ms 显示口径分开显示，不能直接混用。
 
 HT-S 每组 8 帧，30fps 时组内首帧等待其余帧约 233ms，另加编码、传输、解码和展示时间。
@@ -190,6 +190,8 @@ PYTHONNOUSERSITE=1 PYTHONPATH='' .env/bin/python -s tests/browser_smoke.py
 `tools/check_restart.py` 使用正式模型检查三轮启停和 GPU 张量回收；`tools/smoke_independent_processes.py --pretrained` 先编码并退出，再在全新进程解码真实码流，适合在单台16GB设备上验证状态独立性。同一台设备同时启动两个独立 CUDA 进程曾出现内存不足，因此本机编解码采用单进程两组模型状态，双机仍各自独立运行。
 
 另用 [OpenCV 官方示例 vtest.avi](https://github.com/opencv/opencv/blob/master/samples/data/vtest.avi) 的行人场景完成纹理更复杂的补充测试：QP32、160个计量帧、640×360缩放补边，编码约148fps、解码约130fps，见 `reports/natural-clip-benchmark.json`。原片为10fps，未改写为摄像头30fps的验收结果；文件读取不计入编码耗时。可用 `tools/benchmark.py --input-video 文件路径 --output reports/自定义报告.json` 复现。
+
+论文与改进评估：[DCVC-UF 论文要点](docs/paper-review.md)。
 
 参考：[DCVC 官方仓库](https://github.com/microsoft/DCVC)、[NVIDIA Jetson PyTorch 安装说明](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)、[用户提供的 Jetson 文档](https://github.com/MaxwellJay256/Jetson_Orin_NX_guide)、[Ponytail](https://github.com/dietrichgebert/ponytail)。
 
