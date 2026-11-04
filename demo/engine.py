@@ -283,7 +283,7 @@ class Engine:
                     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                     if self.clock_sync_enabled:
                         self._sync_clock(sock)
-                        self.next_clock_sync = time.monotonic() + 10.
+                        self.next_clock_sync = time.monotonic() + 3.
                     if settings.compare_hardware:
                         from .hardware_compare import HardwareEncoder
                         self.hardware = HardwareEncoder(settings.peer, settings.width, settings.height,
@@ -404,7 +404,7 @@ class Engine:
         if round_trip > max_rtt_ns:
             return False
         previous = self.clock_offset_ns
-        if previous and abs(offset - previous) > 250_000_000:
+        if previous and abs(offset - previous) > 1_000_000_000:
             return False
         self.clock_offset_ns = offset
         with self.lock:
@@ -457,7 +457,7 @@ class Engine:
                     if payload:
                         raise ValueError('解码端时钟校准响应无效')
                     applied = self._update_clock(item[1], meta, time.time_ns())
-                    self.next_clock_sync = time.monotonic() + (10. if applied else 1.)
+                    self.next_clock_sync = time.monotonic() + (3. if applied else 1.)
                     continue
                 _, captured, newest_captured, encode_ms, count, batch_wait_ms, batch_span_ms = item
                 meta, jpeg_bytes = recv_packet(sock)
@@ -474,7 +474,7 @@ class Engine:
                 # a group decode. Both writers share send_lock, keeping marker order
                 # identical to wire order.
                 if self.clock_sync_enabled and time.monotonic() >= self.next_clock_sync:
-                    self.next_clock_sync = time.monotonic() + 10.
+                    self.next_clock_sync = time.monotonic() + 3.
                     sent = time.time_ns()
                     with self.send_lock:
                         pending.put(('clock', sent))

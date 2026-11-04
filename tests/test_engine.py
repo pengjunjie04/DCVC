@@ -174,8 +174,9 @@ class EngineTests(unittest.TestCase):
         engine._update_clock(sent, meta, received)
         self.assertAlmostEqual(engine.clock_sync['offset_ms'], 0.25, places=3)
         self.assertEqual(engine.clock_sync['updates'], 2)
-        # A 500 ms jump is a bad sample, not real drift; keep the last offset.
-        bad = {'type':'clock_sync', 't0':sent, 't1':sent + 500_000_000, 't2':sent + 500_500_000}
+        # A 2 s jump is a bad sample; keep the last offset. Genuine NTP steps below
+        # the guard are followed on the next low-RTT calibration.
+        bad = {'type':'clock_sync', 't0':sent, 't1':sent + 2_000_000_000, 't2':sent + 2_500_000_000}
         engine._update_clock(sent, bad, received)
         self.assertAlmostEqual(engine.clock_sync['offset_ms'], 0.25, places=3)
         # A sample that queued behind a group decode (slow round trip) is discarded.

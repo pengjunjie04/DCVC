@@ -27,7 +27,7 @@ class DecoderMonitor:
         self.exit_requested = threading.Event()
         self.queue = LatestFrames(limit=16)
         self.jpeg = None
-        self.capture_unix_ns = None
+        self.capture_mono = None
         self.seq = self.epoch = 0
         self.draw_samples = deque(maxlen=1800)
         self.state, self.message = 'waiting', '等待编码端连接；请在第一台点击开始'
@@ -66,10 +66,11 @@ class DecoderMonitor:
                 any(value is not None and (type(value) is not int or value < 0)
                     for value in capture_ages)):
             raise ValueError('解码预览的采集年龄无效')
-        # Convert the encoder-side age into a decoder-local capture timestamp once,
-        # so the browser's draw timestamp stays on the decoder clock.
-        now_ns = time.time_ns()
-        capture_times = [None if age is None else now_ns - age for age in capture_ages]
+        # Convert the encoder-side age into a decoder-local monotonic capture time.
+        # Monotonic time cannot be stepped by NTP, so a clock correction on this
+        # board cannot make a stale frame look fresh.
+        now_mono = time.monotonic()
+        capture_times = [None if age is None else now_mono - age / 1e9 for age in capture_ages]
         with self.lock:
             self.settings = {name:info[name] for name in ('width','height','fps','qp')} | {'mode':'send'}
             frames = info['total_frames'] - self.totals['frames']
@@ -93,12 +94,12 @@ class DecoderMonitor:
             budget_ns = int(DISPLAY_BUDGET_MS * 1e6)
             skip = 0
             if capture_times and capture_times[0] is not None:
-                oldest_age = time.time_ns() - capture_times[0]
-                if oldest_age > budget_ns:
+                oldest_age = time.monotonic() - capture_times[0]
+                if oldest_age * 1e9 > budget_ns:
                     skip = min(len(previews) - 1,
-                               math.ceil((oldest_age - budget_ns) / (1e9 / display_fps)))
+                               math.ceil((oldest_age * 1e9 - budget_ns) / (1e9 / display_fps)))
             self.trim_dropped += skip
-            self.last_oldest_age_ms = max(0., (time.time_ns() - capture_times[0]) / 1e6) if capture_times[0] is not None else None
+            self.last_oldest_age_ms = max(0., (time.monotonic() - capture_times[0]) * 1000) if capture_times[0] is not None else None
             for jpeg, capture_ns in zip(previews[skip:], capture_times[skip:]):
                 self.queue.put((self.epoch, jpeg, display_fps, capture_ns))
             self.queue.trim(max(10, len(previews) + 2))
@@ -124,7 +125,7 @@ class DecoderMonitor:
                 return
             # Check the age at the moment of display: a backlog left by a slow
             # stretch is skipped instead of being shown late.
-            if capture_ns is not None and time.time_ns() - capture_ns > budget_ns:
+            if capture_ns is not None and (time.monotonic() - capture_ns) * 1e9 > budget_ns:
                 with self.lock:
                     self.trim_dropped += 1
                 deadline = time.monotonic()
@@ -133,7 +134,7 @@ class DecoderMonitor:
                 if epoch != self.epoch:
                     deadline += 1 / fps
                     continue
-                self.jpeg, self.seq, self.capture_unix_ns = jpeg, self.seq + 1, capture_ns
+                self.jpeg, self.seq, self.capture_mono = jpeg, self.seq + 1, capture_ns
                 self.preview.add(frames=1)
             deadline += 1 / fps
 
@@ -192,7 +193,11 @@ class DecoderMonitor:
 
     def image(self):
         with self.lock:
-            return self.seq, self.jpeg, self.capture_unix_ns
+            # Report the age against the wall clock at serve time; the age itself
+            # came from monotonic clocks on both hosts.
+            capture_ns = (None if self.capture_mono is None else
+                          time.time_ns() - int((time.monotonic() - self.capture_mono) * 1e9))
+            return self.seq, self.jpeg, capture_ns
 
     def export(self):
         path = ROOT / 'runs' / f'decoder-report-{time.time_ns()}.json'
