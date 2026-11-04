@@ -1,0 +1,37 @@
+{
+  "scope": "DCVC-HT-S 解码页显示流畅度：同一 USB 摄像头输入，编码端 192.168.50.1，解码端 192.168.50.2，640x360@30fps，QP32，硬件对比目标 300kbps。测量浏览器运行在解码端本机（通过 CDP 连接解码端的 headless Chromium），因此采集时间戳与绘制时间戳处于同一时钟域。软件计时，不是光电测量。",
+  "method": {
+    "browser": "decoder-local Chromium 156 headless --disable-gpu, page http://127.0.0.1:7861/",
+    "samples": 1800,
+    "seconds": 75.3,
+    "latency_source": "页面 canvas drawImage 完成后回报 /api/preview/drawn，由解码端本地单调时钟换算帧年龄",
+    "frame_arrival_probe": "每 8ms 轮询 /api/frame/{decoded,h264,h265}，记录到达间隔与年龄"
+  },
+  "before": {
+    "browser_draw_fps": 23.6,
+    "frame_gap_p50_ms": 22.1,
+    "frame_gap_p95_ms": 157.3,
+    "frame_gap_max_ms": 411.2,
+    "note": "旧实现按 max(60, fps) 播放 8 帧，133ms 闪完再空等，用户感知为卡顿"
+  },
+  "after": {
+    "browser_draw_fps": 28.8,
+    "frame_gap_p50_ms": 36.6,
+    "frame_gap_p95_ms": 72.8,
+    "capture_to_canvas_median_ms": 463.4,
+    "capture_to_canvas_p95_ms": 484.2,
+    "capture_to_canvas_min_ms": 417.1,
+    "capture_to_canvas_max_ms": 590.1,
+    "preview_fps": 27.5,
+    "decode_fps": 28.0,
+    "display_dropped": 306,
+    "hardware_latency_ms": {"h264": 22.7, "h265": 20.2},
+    "hardware_latency_negative_samples": 0,
+    "window_ms": 470
+  },
+  "caveats": [
+    "max 590ms 是 headless 软件渲染下的一次调度尖峰，p95 484ms；真实桌面 Chromium 的绘制开销更低，需要按项目原有 CDP 验收脚本复测。",
+    "空闲帧率仍比 H.264/H.265 低约 2-5fps，原因是 470ms 显示预算下主动丢弃了少量过期帧，用流畅度换 500ms 上限。",
+    "DCVC QP32 当前场景实测约 2.6kbps，硬件目标 300kbps，画面清晰度不能直接对比。"
+  ]
+}

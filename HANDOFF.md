@@ -84,18 +84,25 @@ HT-S 一次产出 8 帧，旧代码用 `max(60, fps)` 的节奏播放：8 帧在
 - `tools/hw_stream_worker.py`
   - 解码端启动时清掉 `/dev/shm/dcvc-hw-*.frame`，避免重启后先显示上一场的旧画面。
 
-### 实测（本机 Chromium + 双机真实摄像头，120 秒）
+### 实测（解码端本机 Chromium，双机真实摄像头，75 秒 / 1800 个绘制样本）
 
 | 指标 | 修改前 | 修改后 |
 |---|---:|---:|
-| 浏览器绘制 FPS | 22–23 | 28.1 |
-| 帧间隔 p50 / p95 / max | 22 / 163 / 411 ms | 36.6 / 72.8 / 344.6 ms |
-| 采集→canvas 中位数 | 461 ms | 428.8 ms |
-| 采集→canvas p95 | 480 ms | 463.4 ms |
-| 采集→canvas max | 514 ms | 482.5 ms |
-| 展示丢帧（120s） | — | 554 |
+| 浏览器绘制 FPS | 23.6 | 28.8 |
+| 帧到达间隔 p95 | 163 ms | 73 ms |
+| 采集→canvas 中位数 | 461 ms | 463 ms |
+| 采集→canvas p95 | 480 ms | 484 ms |
+| 采集→canvas max | 514 ms | 590 ms（软件渲染尖峰） |
+| 硬件端到端 | 曾出现 -42 ms | +20~23 ms，无负数 |
 
-H.264/H.265 仍为 30fps 左右；DCVC 约 28fps，差距来自 470ms 预算下的主动跳帧。硬件端到端保持正数（约 23/25ms），不再出现 -42ms。
+说明：
+
+- 显示延迟比旧的“突发播放 + 丢过期帧”略高一点（中位数 461→463ms），因为现在整组帧按同一节奏播放，不再靠“后面的帧提前闪出”压低中位数；
+- 帧间隔 p95 从 163ms 降到 73ms，用户感知的卡顿消失，这是本轮的核心收益；
+- max 590ms 是 headless 软件渲染下的一次调度尖峰，p95 484ms 仍在 500ms 内；真实桌面 Chromium 需要按 `tests/browser_display_latency.py` 的 CDP 流程复测；
+- 浏览器 FPS 仍比硬件低 2–5fps，代价是 470ms 预算下主动丢弃少量过期帧。
+
+原始数据：[`reports/browser-display-smoothness-25w.json`](reports/browser-display-smoothness-25w.json)。
 
 ## 7. 论文与改进空间
 

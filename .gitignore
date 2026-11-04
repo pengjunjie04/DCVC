@@ -48,3 +48,6 @@ data/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local agent configuration (not part of the demo)
+opencode.jsonc

@@ -82,8 +82,8 @@ def handle_connection(conn, codec_factory, progress=None, preview_queue=None):
             progress.send(None)
         elapsed = (time.monotonic() - started) * 1000
         previews = list(_PREVIEW_ENCODERS.map(_encode_preview, frames))
-        send_packet(conn, {'type': 'preview', 'count': len(frames), 'sizes': list(map(len, previews)),
-                           'decode_ms': elapsed}, b''.join(previews))
+        # Publish locally before the reply write so the decoder's own display never
+        # waits on the encoder's TCP read.
         if preview_queue is not None:
             meta = packet[0]
             totals['total_frames'] += len(frames)
@@ -106,6 +106,8 @@ def handle_connection(conn, codec_factory, progress=None, preview_queue=None):
                     'capture_ages_ns':capture_ages_ns}
             if not preview_queue.publish(info, previews):
                 display_dropped += len(frames)
+        send_packet(conn, {'type': 'preview', 'count': len(frames), 'sizes': list(map(len, previews)),
+                           'decode_ms': elapsed}, b''.join(previews))
         print(f'decoded={len(frames)}, decode_ms={elapsed:.2f}, compressed_bytes={len(packet[1])}', flush=True)
 
 
