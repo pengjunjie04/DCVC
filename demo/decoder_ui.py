@@ -244,17 +244,19 @@ def create_decoder_app(monitor, mount_ui=True):
                    css=(ROOT/'demo/style.css').read_text(), js=(ROOT/'demo/preview.js').read_text()) as ui:
         gr.HTML(header_html('解码端 · 第二台 Jetson'))
         with gr.Column(elem_id='decoder-console'):
-            gr.HTML('<div class="session-bar"><div id="live-status" role="status">等待编码端连接</div><span class="session-role">DECODER / DISPLAY</span></div>')
+            gr.HTML('<div class="session-bar"><div id="live-status" role="status">等待编码端连接</div><span class="session-role">DECODER / DISPLAY</span></div>'
+                    '<div class="session-path" id="session-path">在第一台点击开始后，这里会显示链路与画面参数</div>')
             with gr.Row(elem_id='decoder-workspace'):
                 with gr.Column(scale=2, min_width=360):
-                    gr.HTML(monitor_html('decoded', '解码输出', '第二台 Jetson · 重建画面'))
+                    gr.HTML(monitor_html('decoded', 'DCVC 重建画面', '第二台 Jetson · HT-S 解码输出', '01'))
                 with gr.Column(scale=1, min_width=280):
-                    gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>实时吞吐 / 处理速度</span></div><div class="metric-grid" id="live-metrics"></div>')
-            with gr.Row(elem_id='hardware-comparison'):
-                with gr.Column(scale=1, min_width=300):
-                    gr.HTML(monitor_html('h264', 'H.264 硬件解码', '同一摄像头输入 · NVENC / NVDEC', '03'))
-                with gr.Column(scale=1, min_width=300):
-                    gr.HTML(monitor_html('h265', 'H.265 硬件解码', '同一摄像头输入 · NVENC / NVDEC', '04'))
+                    gr.HTML('<div id="live-metrics"></div>')
+            gr.HTML('<div class="section-heading compare-heading"><h2>同源硬件对照</h2>'
+                    '<span>同一摄像头输入 · NVENC → NVDEC</span></div>'
+                    '<div id="hardware-comparison">'
+                    + monitor_html('h264', 'H.264 硬件解码', 'NVENC / NVDEC · 独立 ASIC', '02')
+                    + monitor_html('h265', 'H.265 硬件解码', 'NVENC / NVDEC · 独立 ASIC', '03')
+                    + '</div>')
             gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。**采集→canvas** 由本机浏览器绘制完成后回报，仅在本机打开本页有效；不是物理屏幕光电测量。最近 2 秒更新，初始包含预热。', elem_classes=['metric-note'])
             with gr.Row(elem_classes=['utility-actions']):
                 export = gr.Button('保存本次统计')

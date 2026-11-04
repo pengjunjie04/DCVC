@@ -129,7 +129,7 @@ def create_app(engine=None, mount_ui=True):
         gr.HTML(header_html())
         with gr.Row(elem_id='workspace'):
             with gr.Column(scale=1, min_width=280, elem_id='settings-panel'):
-                gr.HTML('<div class="panel-heading"><span class="eyebrow">CONFIGURATION</span><h2>运行设置</h2><p>设置视频源与本次实验参数</p></div>')
+                gr.HTML('<div class="panel-heading"><span class="eyebrow">CONFIGURATION</span><h2>运行设置</h2><p>视频源、分辨率与本次实验参数</p></div>')
                 mode = gr.Dropdown(list(MODES), value=list(MODES)[1], label='运行模式')
                 source = gr.Dropdown(list(SOURCES), value=list(SOURCES)[1], label='视频源')
                 resolution = gr.Dropdown(list(RESOLUTIONS), value=list(RESOLUTIONS)[0], label='处理分辨率')
@@ -151,9 +151,9 @@ def create_app(engine=None, mount_ui=True):
                     pause = gr.Button('Ⅱ 暂停')
                     resume = gr.Button('▷ 继续')
                     stop = gr.Button('■ 结束', variant='stop')
-                gr.HTML('<div class="previews">' + monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案') +
-                        monitor_html('decoded', '解码画面', '输出 · 真实压缩码流重建') + '</div>')
-                gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>最近 2 秒 · 实际测量</span></div><div class="metric-grid" id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。kbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
+                gr.HTML('<div class="previews">' + monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案', '01') +
+                        monitor_html('decoded', 'DCVC 重建画面', '输出 · HT-S 真实码流重建', '02') + '</div>')
+                gr.HTML('<div id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。kbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
                 with gr.Row(elem_classes=['utility-actions']):
                     apply = gr.Button('应用并重启')
                     refresh = gr.Button('重新检测设备')
