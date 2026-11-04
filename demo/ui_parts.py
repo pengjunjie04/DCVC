@@ -6,8 +6,8 @@ def header_html(role='编码端 · 第一台 Jetson'):
 
 
 
-def monitor_html(kind, title, subtitle):
-    index = '01' if kind == 'original' else '02'
+def monitor_html(kind, title, subtitle, index=None):
+    index = index or ('01' if kind == 'original' else '02')
     return f'''<section class="video-monitor"><div class="preview-title"><div><span class="monitor-index">{index}</span><b>{title}</b></div>
     <span class="fps-badge" id="fps-{kind}">0.0 fps</span></div><div class="video-surface"><canvas id="preview-{kind}" width="640" height="360" aria-label="{'原始' if kind == 'original' else '解码'}视频画面"></canvas>
     <div class="video-empty" id="empty-{kind}"><svg width="38" height="38" viewBox="0 0 38 38" fill="none" aria-hidden="true"><rect x="5" y="8" width="28" height="22" rx="5" stroke="currentColor" stroke-width="1.5"/><path d="m16 14 8 5-8 5V14Z" fill="currentColor"/></svg>

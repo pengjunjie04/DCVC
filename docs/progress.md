@@ -1,6 +1,6 @@
 # 当前状态（2026-11-03）
 
-项目`~/Desktop/dcvc-jetson-demo`已部署两端独立环境、官方HT-S权重和原生扩展。编码端`./start_encoder.sh`打开7860，解码端`./start_decoder.sh`打开7861；原有`./launch.sh`和`./launch_decoder.sh`保留为手动入口。49项CPU自动化测试通过；编码/解码吞吐、处理fps及ms/帧、浏览器实际绘制fps、统计导出和启停均已实现。
+项目`~/Desktop/dcvc-jetson-demo`已部署两端独立环境、官方HT-S权重和原生扩展。编码端`./start_encoder.sh`打开7860，解码端`./start_decoder.sh`打开7861；原有`./launch.sh`和`./launch_decoder.sh`保留为手动入口。53项CPU自动化测试通过；编码/解码吞吐、处理fps及ms/帧、浏览器实际绘制fps、统计导出和启停均已实现。
 
 2026-11-03 可复现性补强：新增 `tools/fetch_dcvc.sh` 和 `tools/bootstrap.sh`，从固定 DCVC/CUTLASS 提交重建上游源码并应用补丁；`requirements-lock.txt` 已移除本机绝对路径。GitHub 仓库仍不包含环境、权重、测试视频和 `vendor/`。
 
@@ -17,6 +17,8 @@
 2026-11-03 摄像头采集格式：USB路径改为显式请求未压缩YUYV，先设置FOURCC再请求640×480@30，并读回格式、尺寸、帧率校验；MJPG或其他隐式回退会直接报错。真实`/dev/video0`协商为YUYV640×480@30，引擎保持比例补边后输出640×360，25W下OC计数0。新增4项格式协商与拒绝回退回归测试，报告`reports/camera-yuyv-640x480-30fps.json`。这消除了DCVC-RT之前额外一轮摄像头MJPEG压缩/解码，但不改变模型码流和显示预览链路的统计口径。
 
 2026-11-04 一键启动：新增`start_encoder.sh`和`start_decoder.sh`，复用现有启动器并增加项目环境、25W、有线地址和端口检查；地址缺失时按机器尝试启用已有`DCVC-Direct`/`DCVC-Decoder`连接，服务已运行时只打开页面而不重复启动。两入口支持`--check`、`--no-browser`，解码端另支持`--headless`。
+
+2026-11-04 实时H.264/H.265对比：新增`tools/hw_stream_worker.py`和`demo/hardware_compare.py`。同一摄像头帧并行送入DCVC、NVENC H.264和NVENC H.265；硬件码流分别经`9861`/`9862`发送到解码端，由NVDEC解码并通过`/dev/shm`共享帧供页面读取。解码页新增原始、DCVC、H.264、H.265四路画面及硬件码率、吞吐、采集到解码时延。`disable-dpb=true`消除H.264旧帧滞留；编码端本地采集时间与跨机校准时间分开传递，避免时钟偏移把NVENC耗时错误截成0；解码端按实际fps生成时间戳。双机真实摄像头15秒采样中，H.264/H.265约为30.05/30.09fps编码、30.21/30.18fps解码，实测码率298.5/300.4kbps（目标300），编码时延中位数12.3/13.4ms、解码生成JPEG时延4.6/5.4ms，两路连接全程正常。同期DCVC预览30.5fps、采集→canvas中位数465.7ms、p95 481.0ms。该实时页用于同源画面和链路观察，不是等质量PSNR对比；同质量码率仍以离线报告为准。报告`reports/realtime-hardware-comparison-25w.json`。回归测试53项全部通过。
 
 **尚未完成：** 需要光电测量或拍摄计时器才能验证曝光到物理屏幕的glass-to-glass延迟；长时间运行、不同动态场景与其他参数组合仍需迭代验收。
 

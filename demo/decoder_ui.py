@@ -28,6 +28,7 @@ class DecoderMonitor:
         self.draw_samples = deque(maxlen=1800)
         self.state, self.message = 'waiting', '等待编码端连接；请在第一台点击开始'
         self.settings = {'mode':'send', 'width':640, 'height':360, 'fps':30, 'qp':32}
+        self.hardware = None
         self._reset_rates()
         self.player = threading.Thread(target=self._play, daemon=True)
         self.player.start()
@@ -140,6 +141,7 @@ class DecoderMonitor:
         with self.lock:
             decode = self.decode.snapshot()
             latency = self.latency_summary()
+            hardware = self.hardware.snapshot() if self.hardware is not None else None
             return {'role':'decoder', 'state':self.state, 'message':self.message,
                     'settings':dict(self.settings), 'capture':{'fps':0},
                     'encode':{'fps':self.encode_fps if decode['fps'] else 0., 'mbps':decode['mbps']},
@@ -149,7 +151,8 @@ class DecoderMonitor:
                               'capture_to_canvas_p95_ms':latency['p95_ms'],
                               'capture_to_canvas_max_ms':latency['max_ms'],
                               'capture_to_canvas_samples':latency['count']},
-                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped}
+                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped,
+                    'hardware':hardware}
 
     def image(self):
         with self.lock:
@@ -164,6 +167,14 @@ class DecoderMonitor:
     def close(self):
         self.closed.set()
         self.player.join(timeout=1)
+
+    def attach_hardware(self, hardware):
+        with self.lock:
+            self.hardware = hardware
+
+    def hardware_frame(self, codec):
+        hardware = self.hardware
+        return hardware.frame(codec) if hardware is not None else None
 
 
 def create_decoder_app(monitor, mount_ui=True):
@@ -182,6 +193,20 @@ def create_decoder_app(monitor, mount_ui=True):
         if capture_ns is not None:
             headers['X-Capture-Unix-Ns'] = str(capture_ns)
         return Response(jpeg, media_type='image/jpeg', headers=headers)
+
+    @api.get('/api/frame/{kind}')
+    def hardware_frame(kind: str, after: int = -1):
+        if kind not in ('h264', 'h265'):
+            raise HTTPException(404)
+        item = monitor.hardware_frame(kind)
+        if item is None:
+            return Response(status_code=204, headers={'Cache-Control':'no-store'})
+        sequence, capture_ns, jpeg = item
+        if sequence == after:
+            return Response(status_code=204, headers={'Cache-Control':'no-store'})
+        return Response(jpeg, media_type='image/jpeg',
+                        headers={'X-Sequence':str(sequence), 'Cache-Control':'no-store',
+                                 'X-Capture-Unix-Ns':str(capture_ns)})
 
     @api.get('/api/latency')
     def latency():
@@ -225,6 +250,11 @@ def create_decoder_app(monitor, mount_ui=True):
                     gr.HTML(monitor_html('decoded', '解码输出', '第二台 Jetson · 重建画面'))
                 with gr.Column(scale=1, min_width=280):
                     gr.HTML('<div class="section-heading"><h2>实时性能</h2><span>实时吞吐 / 处理速度</span></div><div class="metric-grid" id="live-metrics"></div>')
+            with gr.Row(elem_id='hardware-comparison'):
+                with gr.Column(scale=1, min_width=300):
+                    gr.HTML(monitor_html('h264', 'H.264 硬件解码', '同一摄像头输入 · NVENC / NVDEC', '03'))
+                with gr.Column(scale=1, min_width=300):
+                    gr.HTML(monitor_html('h265', 'H.265 硬件解码', '同一摄像头输入 · NVENC / NVDEC', '04'))
             gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。**采集→canvas** 由本机浏览器绘制完成后回报，仅在本机打开本页有效；不是物理屏幕光电测量。最近 2 秒更新，初始包含预热。', elem_classes=['metric-note'])
             with gr.Row(elem_classes=['utility-actions']):
                 export = gr.Button('保存本次统计')

@@ -1,0 +1,73 @@
+{
+  "captured_at": "2026-11-04T17:20:00+08:00",
+  "setup": {
+    "hosts": [
+      "encoder 192.168.50.1",
+      "decoder 192.168.50.2"
+    ],
+    "power": "25W",
+    "input": "USB YUYV 640x480@30, letterbox to 640x360",
+    "resolution": "640x360",
+    "fps": 30,
+    "qp": 32,
+    "hardware_target_kbps": 300,
+    "samples": 15
+  },
+  "encoder": {
+    "h264": {
+      "fps_median": 30.053,
+      "fps_max": 30.293,
+      "kbps_median": 298.48,
+      "kbps_max": 319.034,
+      "latency_ms_median": 12.348,
+      "latency_ms_max": 13.516,
+      "target_kbps": 300,
+      "connected": true
+    },
+    "h265": {
+      "fps_median": 30.087,
+      "fps_max": 30.254,
+      "kbps_median": 300.425,
+      "kbps_max": 314.413,
+      "latency_ms_median": 13.427,
+      "latency_ms_max": 15.372,
+      "target_kbps": 300,
+      "connected": true
+    }
+  },
+  "decoder": {
+    "h264": {
+      "fps_median": 30.21,
+      "fps_max": 30.489,
+      "kbps_median": 301.131,
+      "kbps_max": 334.755,
+      "latency_ms_median": 4.616,
+      "latency_ms_max": 8.317,
+      "target_kbps": null,
+      "connected": true
+    },
+    "h265": {
+      "fps_median": 30.177,
+      "fps_max": 30.522,
+      "kbps_median": 302.64,
+      "kbps_max": 308.112,
+      "latency_ms_median": 5.362,
+      "latency_ms_max": 10.182,
+      "target_kbps": null,
+      "connected": true
+    }
+  },
+  "dcvc": {
+    "capture_fps_median": 30.0,
+    "encode_fps_median": 32.0,
+    "decode_fps_median": 32.0,
+    "preview_fps_median": 30.5,
+    "capture_to_canvas_median_ms": 465.721,
+    "capture_to_canvas_p95_ms": 481.007
+  },
+  "limitations": [
+    "实时硬件指标不是PSNR等质量对比",
+    "不含浏览器绘制、摄像头曝光和物理屏幕扫描",
+    "单次短时摄像头场景，不能外推到所有内容"
+  ]
+}

@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from .codec import Codec, validate_packet
 from .display_ipc import PreviewMailbox
+from .hardware_compare import HardwareDecoder
 from .transport import recv_packet, send_packet
 
 
@@ -160,12 +161,14 @@ def main():
     parser.add_argument('--headless', action='store_true', help='只接收解码，不启动本机展示页')
     parser.add_argument('--web-host', default='127.0.0.1')
     parser.add_argument('--web-port', type=int, default=7861)
+    parser.add_argument('--h264-port', type=int, default=9861)
+    parser.add_argument('--h265-port', type=int, default=9862)
     parser.add_argument('--no-browser', action='store_true')
     args = parser.parse_args()
     address = ipaddress.IPv4Address(args.bind)
     if address.is_unspecified or address.is_multicast or not 1 <= args.port <= 65535:
         parser.error('请指定有效的有线 IPv4 地址和端口')
-    monitor = web_server = None
+    monitor = web_server = hardware = None
     if not args.headless:
         import uvicorn
         from .decoder_ui import DecoderMonitor, create_decoder_app
@@ -180,6 +183,10 @@ def main():
         if not web_server.started:
             monitor.close()
             raise RuntimeError('解码端展示服务未能启动，请检查网页端口')
+        hardware = HardwareDecoder(args.bind, args.h264_port, args.h265_port)
+        hardware.start()
+        monitor.attach_hardware(hardware)
+        print(f'硬件对比接收端口：{args.bind}:{args.h264_port}/{args.h265_port}', flush=True)
         if not args.no_browser:
             host = '127.0.0.1' if args.web_host == '0.0.0.0' else args.web_host
             webbrowser.open(f'http://{host}:{args.web_port}')
@@ -199,6 +206,8 @@ def main():
                 code = serve_session(conn, monitor=monitor)
                 print(f'会话进程退出（{code}）；继续等待下一次连接', flush=True)
     finally:
+        if hardware is not None:
+            hardware.stop()
         if monitor is not None:
             monitor.close()
             web_server.should_exit = True

@@ -82,6 +82,8 @@ button:focus-visible,summary:focus-visible {outline:3px solid #69ad99 !important
 
 #decoder-workspace {align-items:flex-start;gap:22px;}
 #decoder-workspace .section-heading {margin-top:0;}
+#hardware-comparison {gap:16px;align-items:stretch;}
+#hardware-comparison .video-monitor {max-width:none;margin:0;}
 .video-empty svg path {fill:#6a8393 !important;} .video-empty svg rect {stroke:#6a8393 !important;}
 
 .compute-detail {font-size:9px !important;color:#4b8875 !important;} .compute-detail[hidden] {display:none;}

@@ -7,7 +7,7 @@
   const pendingDraws = [];
   let staleDropped = 0;
   const pause = ms => new Promise(r => setTimeout(r, ms));
-  for (const kind of ['original', 'decoded']) {
+  for (const kind of ['original', 'decoded', 'h264', 'h265']) {
     (async () => {
       let seq = -1, drawn = 0, started = performance.now();
       while (!signal.aborted) {
@@ -85,13 +85,20 @@
         }
         const remote = s.role === 'decoder';
         const processing = s.processing || {};
+        const hardware = s.hardware || {};
         const cards = [
           [remote ? '显示吞吐' : '采集吞吐', remote ? s.preview.fps : s.capture.fps, 2, 'fps'],
           ['编码吞吐',s.encode.fps,2,'fps'],['解码吞吐',s.decode.fps,2,'fps'],['模型码率',s.encode.mbps == null ? null : s.encode.mbps * 1000,2,'kbps'],
           ['编码处理速度',processing.encode?.fps,1,'fps','compute'],['解码处理速度',processing.decode?.fps,1,'fps','compute'],
           remote ? ['采集→canvas 中位数',s.timing.capture_to_canvas_median_ms,1,'ms'] :
             [s.settings.mode === 'send' ? '往返预览耗时' : '采集至解码',s.timing.oldest_to_host_ms,1,'ms'],
-          [remote ? '展示丢帧 · 累计' : '采集丢帧 · 累计',remote ? s.preview_dropped : s.dropped,0,'帧']
+          [remote ? '展示丢帧 · 累计' : '采集丢帧 · 累计',remote ? s.preview_dropped : s.dropped,0,'帧'],
+          ['H.264 码率',hardware.h264?.kbps,0,'kbps'],
+          ['H.264 端到端',hardware.h264?.latency_ms,0,'ms'],
+          ['H.265 码率',hardware.h265?.kbps,0,'kbps'],
+          ['H.265 端到端',hardware.h265?.latency_ms,0,'ms'],
+          ['H.264 吞吐',hardware.h264?.fps,1,'fps'],
+          ['H.265 吞吐',hardware.h265?.fps,1,'fps']
         ];
         const el = document.getElementById('live-metrics');
         if (el) {

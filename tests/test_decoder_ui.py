@@ -5,6 +5,27 @@ from demo.decoder_ui import DecoderMonitor, create_decoder_app
 
 
 class DecoderDisplayTests(unittest.TestCase):
+    def test_hardware_frames_and_stats_are_exposed_without_touching_dcvc_state(self):
+        class Hardware:
+            def snapshot(self):
+                return {'h264':{'fps':30., 'kbps':250.},
+                        'h265':{'fps':30., 'kbps':220.}, 'messages':[], 'error':None}
+
+            def frame(self, codec):
+                return (7, time.time_ns(), b'jpeg-' + codec.encode())
+
+        monitor = DecoderMonitor()
+        self.addCleanup(monitor.close)
+        monitor.attach_hardware(Hardware())
+        with TestClient(create_decoder_app(monitor, mount_ui=False)) as client:
+            state = client.get('/api/state').json()
+            self.assertEqual(state['hardware']['h264']['kbps'], 250.)
+            response = client.get('/api/frame/h264')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.content, b'jpeg-h264')
+            self.assertEqual(response.headers['X-Sequence'], '7')
+            self.assertEqual(client.get('/api/frame/other').status_code, 404)
+
     def test_eight_frame_burst_is_drained_without_building_display_backlog(self):
         monitor = DecoderMonitor()
         self.addCleanup(monitor.close)

@@ -99,13 +99,15 @@ def create_app(engine=None, mount_ui=True):
         return api
     import gradio as gr
 
-    def operate(action, mode, source, resolution, fps, qp, camera, bind, peer, port):
+    def operate(action, mode, source, resolution, fps, qp, compare, hardware_kbps,
+                camera, bind, peer, port):
         try:
             if action in ('start', 'apply'):
                 width, height = RESOLUTIONS[resolution]
                 settings = Settings(width=width, height=height, fps=int(fps), qp=int(qp),
                                     mode=MODES[mode], source=SOURCES[source], camera=camera,
-                                    bind=bind.strip(), peer=peer.strip(), port=int(port))
+                                    bind=bind.strip(), peer=peer.strip(), port=int(port),
+                                    compare_hardware=bool(compare), hardware_kbps=int(hardware_kbps))
                 engine.start(settings)
             elif action == 'pause':
                 engine.pause()
@@ -133,6 +135,9 @@ def create_app(engine=None, mount_ui=True):
                 resolution = gr.Dropdown(list(RESOLUTIONS), value=list(RESOLUTIONS)[0], label='处理分辨率')
                 fps = gr.Slider(1, 60, value=30, step=1, label='目标帧率 / fps')
                 qp = gr.Slider(0, 63, value=32, step=1, label='量化参数 QP（非目标 kbps）')
+                compare = gr.Checkbox(value=True, label='实时 H.264/H.265 对比')
+                hardware_kbps = gr.Slider(32, 2000, value=250, step=1,
+                                          label='H.264/H.265 目标码率 / kbps')
                 with gr.Accordion('设备与有线网络', open=False):
                     camera = gr.Textbox('/dev/video0', label='摄像头节点')
                     bind = gr.Textbox('192.168.50.1', label='本机有线 IPv4', placeholder='例如 192.168.50.1')
@@ -159,7 +164,8 @@ def create_app(engine=None, mount_ui=True):
                 with gr.Accordion('详细指标与运行记录', open=False):
                     status = gr.JSON(value=engine.snapshot())
                 report = gr.File(label='统计报告（不含视频）', interactive=False, visible=False)
-        inputs = [mode, source, resolution, fps, qp, camera, bind, peer, port]
+        inputs = [mode, source, resolution, fps, qp, compare, hardware_kbps,
+                  camera, bind, peer, port]
         for button, action in [(start, 'start'), (pause, 'pause'), (resume, 'resume'), (stop, 'stop'), (apply, 'apply'), (quit_button, 'quit')]:
             def callback(*args, action=action):
                 return operate(action, *args)

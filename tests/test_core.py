@@ -29,7 +29,8 @@ class ConfigTests(unittest.TestCase):
     def test_reject_invalid_before_allocating_resources(self):
         for fields in ({'fps': 0}, {'fps': 121}, {'qp': 64}, {'width': 0},
                        {'width': 10000}, {'mode': 'unknown'}, {'port': 0},
-                       {'source': 'unknown'}, {'fps': float('nan')}, {'qp': 1.5}):
+                       {'source': 'unknown'}, {'fps': float('nan')}, {'qp': 1.5},
+                       {'hardware_kbps': 0}, {'compare_hardware': 'yes'}):
             with self.subTest(fields=fields), self.assertRaises(ValueError):
                 Settings(**fields).validate()
 
