@@ -2,9 +2,29 @@
 
 两台 Jetson Orin NX 16GB 的 DCVC-UF HT-S 视频压缩演示。首期目标为 **640×360、30fps、端到端延迟 ≤500ms**；目标是否达标须以真实模型和双机测试为准。
 
-两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。48项自动化测试通过。最新性能与限制见下方“实机结果”、[编解码器对比](docs/codec-comparison.md)及 `reports/browser-display-latency-25w.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
+两台实机已通过网线连接，USB摄像头和解码端独立Miniforge环境均已部署；官方权重、原生扩展和真实HT-S码流已验证。49项自动化测试通过。最新性能与限制见下方“实机结果”、[编解码器对比](docs/codec-comparison.md)及 `reports/browser-display-latency-25w.json`，部署详情见 [双机记录](docs/dual-host-deployment.md)。
 
-## 打开软件
+## 一键启动（推荐）
+
+开机后分别打开两台 Jetson 的终端，进入项目目录并运行对应入口。脚本会检查项目环境、25W 实际 CPU/GPU 限制和有线地址；地址缺失时会尝试启用已有的 `DCVC-Direct`/`DCVC-Decoder` 有线连接。服务已经运行时不会重复启动，只打开现有页面。
+
+解码端先运行：
+
+```bash
+cd ~/Desktop/dcvc-jetson-demo
+./start_decoder.sh
+```
+
+编码端再运行：
+
+```bash
+cd ~/Desktop/dcvc-jetson-demo
+./start_encoder.sh
+```
+
+浏览器会分别打开 `http://127.0.0.1:7861` 和 `http://127.0.0.1:7860`。只检查环境、不启动服务可加 `--check`；无图形界面可加 `--no-browser`，解码端还支持 `--headless`。
+
+## 手动启动与高级参数
 
 ```bash
 cd ~/Desktop/dcvc-jetson-demo

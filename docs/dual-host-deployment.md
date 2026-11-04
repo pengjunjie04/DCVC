@@ -26,7 +26,19 @@ cd DCVC
 
 ## 日常启动
 
-解码端终端：
+开机后在两端项目目录分别运行一键入口，先解码端、后编码端：
+
+```bash
+./start_decoder.sh
+```
+
+```bash
+./start_encoder.sh
+```
+
+入口会检查 `.env`、25W 实际 CPU/GPU 限制和有线地址，地址缺失时尝试启用已有的 `DCVC-Direct`/`DCVC-Decoder` 有线连接；服务已运行时只打开现有页面，不会重复占用端口。默认页面分别为 `http://127.0.0.1:7861` 和 `http://127.0.0.1:7860`。`--check` 只做检查，`--no-browser` 不打开页面。
+
+如需手动控制参数，解码端终端：
 
 ```bash
 cd ~/Desktop/dcvc-jetson-demo
