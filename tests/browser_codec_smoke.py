@@ -32,7 +32,8 @@ with sync_playwright() as p:
     for _ in range(10):
         samples.append(page.request.get('http://127.0.0.1:7860/api/state').json())
         page.wait_for_timeout(500)
-    browser_fps = {'original': page.locator('#fps-original').inner_text(), 'decoded': page.locator('#fps-decoded').inner_text()}
+    browser_fps = {'original': page.locator('#fps-original').inner_text()}
+    assert page.locator('#fps-decoded').count() == 0, 'encoder page must not show a DCVC reconstruction monitor'
     page.screenshot(path=str(ROOT / 'reports' / 'ui-codec.png'), full_page=True)
     page.get_by_role('button', name='保存本次统计', exact=True).click()
     page.get_by_text('统计报告（不含视频）', exact=True).wait_for()

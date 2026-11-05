@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 BASE='http://127.0.0.1:7860'
 DECODER=os.environ.get('DCVC_DECODER_URL', 'http://127.0.0.1:17861')
-result={'scope':'Encoder USB camera -> official DCVC-UF HT-S encoder on 192.168.50.1 -> TCP eno1 -> independent decoder on 192.168.50.2 -> JPEG preview -> encoder browser; second Jetson also plays decoded frames on its own Gradio page. No video or screenshots saved. Latency is camera capture to returned preview, excluding browser rendering; not one-way glass-to-glass.', 'settings':{'width':640,'height':360,'fps':30,'qp':32}, 'samples':[], 'browser_errors':[]}
+result={'scope':'Encoder USB camera -> official DCVC-UF HT-S encoder on 192.168.50.1 -> TCP eno1 -> independent decoder on 192.168.50.2 -> JPEG preview returned for timing; decoder browser shows the reconstructed frame, encoder browser only shows the source. No video or screenshots saved. Latency is camera capture to returned preview, excluding browser rendering; not one-way glass-to-glass.', 'settings':{'width':640,'height':360,'fps':30,'qp':32}, 'samples':[], 'browser_errors':[]}
 def overcurrent_counts():
     return {path:int(Path(path).read_text()) for path in glob.glob('/sys/class/hwmon/hwmon*/oc*_event_cnt')}
 
@@ -80,7 +80,7 @@ with sync_playwright() as p:
             check_overcurrent()
             s=state()
             if s['state']=='error': raise RuntimeError(s['message'])
-            result['samples'].append({'elapsed':time.monotonic()-t0,'state':s,'browser_fps':{k:page.locator('#fps-'+k).inner_text() for k in ('original','decoded')}})
+            result['samples'].append({'elapsed':time.monotonic()-t0,'state':s,'browser_fps':{'original':page.locator('#fps-original').inner_text()}})
             result['decoder_samples'].append({'state':decoder_state(), 'browser_fps':decoder_page.locator('#fps-decoded').inner_text()})
             if i%10==9: print(json.dumps({'second':i+1,'capture_fps':s['capture']['fps'],'decode_fps':s['decode']['fps'],'latency_ms':s['timing'].get('oldest_to_host_ms'),'drops':s['dropped'],'browser':result['samples'][-1]['browser_fps']}),flush=True)
         last=state(); elapsed=time.monotonic()-t0

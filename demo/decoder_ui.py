@@ -289,7 +289,7 @@ def create_decoder_app(monitor, mount_ui=True):
                     '<div class="session-path" id="session-path">在第一台点击开始后，这里会显示链路与画面参数</div>')
             with gr.Row(elem_id='decoder-workspace'):
                 with gr.Column(scale=2, min_width=360):
-                    gr.HTML(monitor_html('decoded', 'DCVC 重建画面', '第二台 Jetson · HT-S 解码输出', '01'))
+                    gr.HTML(monitor_html('decoded', '重建画面', '第二台 Jetson · HT-S 解码输出', '01'))
                 with gr.Column(scale=1, min_width=280):
                     gr.HTML('<div id="live-metrics"></div>')
             gr.HTML('<div class="section-heading compare-heading"><h2>同源硬件对照</h2>'

@@ -10,7 +10,7 @@
 - NVENC H.264，经 `9861` 发往解码端；
 - NVENC H.265，经 `9862` 发往解码端。
 
-解码端由 NVDEC 分别解码 H.264/H.265，转换成 BGRx 后编码成 JPEG，再通过 `/dev/shm/dcvc-hw-h264.frame` 和 `/dev/shm/dcvc-hw-h265.frame` 交给网页进程。页面上的四路画面依次为原始输入、DCVC 重建、H.264 重建和 H.265 重建；H.264/H.265 共用编码端设置的硬件目标码率，DCVC 仍使用界面上的 QP。
+解码端由 NVDEC 分别解码 H.264/H.265，转换成 BGRx 后编码成 JPEG，再通过 `/dev/shm/dcvc-hw-h264.frame` 和 `/dev/shm/dcvc-hw-h265.frame` 交给网页进程。编码端页面只显示原始输入；解码端页面显示重建画面、H.264 重建和 H.265 重建。H.264/H.265 共用编码端设置的硬件目标码率，DCVC 仍使用界面上的 QP。
 
 实时指标口径：
 

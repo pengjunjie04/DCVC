@@ -151,8 +151,8 @@ def create_app(engine=None, mount_ui=True):
                     pause = gr.Button('Ⅱ 暂停')
                     resume = gr.Button('▷ 继续')
                     stop = gr.Button('■ 结束', variant='stop')
-                gr.HTML('<div class="previews">' + monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案', '01') +
-                        monitor_html('decoded', 'DCVC 重建画面', '输出 · HT-S 真实码流重建', '02') + '</div>')
+                gr.HTML('<div class="previews single">' +
+                        monitor_html('original', '采集原始画面', '输入 · USB 摄像头 / 测试图案', '01') + '</div>')
                 gr.HTML('<div id="live-metrics"></div><p class="metric-note">吞吐 FPS 含等待；处理速度 = 帧数 ÷ 编解码方法耗时（含转换与拷贝）。kbps 仅含模型载荷。返回预览时延不含浏览器显示。</p>')
                 with gr.Row(elem_classes=['utility-actions']):
                     apply = gr.Button('应用并重启')
