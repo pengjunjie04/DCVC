@@ -1,4 +1,4 @@
-/* DCVC Lab console. Local assets only; no external fonts or libraries. */
+/* Video console. Local assets only; no external fonts or libraries. */
 :root {
   color-scheme: dark;
   --bg: #070b0f;
@@ -77,6 +77,7 @@ a { color: var(--accent); text-decoration: none; }
   font: 700 15px/1 var(--mono);
   letter-spacing: -1px;
 }
+.brand-mark svg { width: 20px; height: 20px; }
 .brand-mark::after {
   content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%;
   right: 7px; bottom: 7px; background: var(--accent); box-shadow: 0 0 0 4px rgba(118,227,180,.08);

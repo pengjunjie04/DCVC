@@ -1,5 +1,5 @@
 /* Shared browser helpers for the encoder and decoder consoles. */
-const DCVC = window.DCVC = window.DCVC || {running: false, state: null};
+const APP = window.APP = window.APP || {running: false, state: null};
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
@@ -108,7 +108,7 @@ async function downloadReport() {
   const matched = /filename=\"?([^\";]+)\"?/.exec(disposition);
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = matched ? matched[1] : 'dcvc-report.json';
+  link.download = matched ? matched[1] : 'video-report.json';
   document.body.append(link);
   link.click();
   link.remove();
@@ -311,7 +311,7 @@ function startFrameLoop({kind, canvasId, fpsId, stale = false, onDraw = null}) {
             drawn += 1;
             if (onDraw) onDraw({sequence: frameSequence, captureUs, drawUs});
           }
-        } else if (response.status === 204 && !DCVC.running) {
+        } else if (response.status === 204 && !APP.running) {
           sequence = 0;
         }
       } catch (error) {
@@ -324,7 +324,7 @@ function startFrameLoop({kind, canvasId, fpsId, stale = false, onDraw = null}) {
         started = now;
         reportDraws();
       }
-      await sleep(Math.max(0, (DCVC.running ? 8 : 120) - (performance.now() - tick)));
+      await sleep(Math.max(0, (APP.running ? 8 : 120) - (performance.now() - tick)));
     }
   })();
 }
@@ -423,7 +423,7 @@ function setupDialogs() {
     if (dialog) {
       if (button.dataset.dialogOpen === 'details-dialog') {
         const pre = document.getElementById('details-json');
-        if (pre) pre.textContent = JSON.stringify(DCVC.state || {}, null, 2);
+        if (pre) pre.textContent = JSON.stringify(APP.state || {}, null, 2);
       }
       dialog.showModal();
     }

@@ -6,7 +6,7 @@ const RESOLUTIONS = {
   '720p': [1280, 720],
   '1080p': [1920, 1080],
 };
-const STORAGE_KEY = 'dcvc.encoder.settings.v2';
+const STORAGE_KEY = 'video.encoder.settings.v2';
 const MODE_LABELS = {send: '双机发送', local: '本机编解码', capture: '仅采集检查'};
 
 const sparkCapture = new Sparkline('spark-capture', '#76e3b4');
@@ -95,8 +95,8 @@ function setPipe(id, value) {
 }
 
 function updateState(state) {
-  DCVC.state = state;
-  DCVC.running = state.state === 'running' || state.state === 'starting';
+  APP.state = state;
+  APP.running = state.state === 'running' || state.state === 'starting';
   const settings = state.settings || {};
   const capture = state.capture || {};
   const encode = state.encode || {};

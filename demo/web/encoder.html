@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>DCVC Lab · 编码控制台</title>
+  <title>视频传输控制台</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
@@ -12,11 +12,11 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark" aria-hidden="true">DC</div>
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="3.5"/><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none"/></svg></div>
         <div class="brand-copy">
-          <span class="eyebrow">JETSON ORIN NX · DCVC HT-S</span>
-          <h1>Neural Video Link</h1>
-          <p>低码率神经视频压缩 · 双机有线链路 · 端到端延迟实验台</p>
+          <span class="eyebrow">JETSON ORIN NX · REAL-TIME VIDEO</span>
+          <h1>低延迟视频传输</h1>
+          <p>实时采集 · 编码 · 有线传输 · 双机解码 · 端到端延迟实验台</p>
         </div>
       </div>
       <div class="top-meta">
@@ -189,7 +189,7 @@
               <div class="pipeline-bar"><span class="wait" id="pipe-wait" style="width:0"></span><span class="encode" id="pipe-encode" style="width:0"></span><span class="decode" id="pipe-decode" style="width:0"></span></div>
               <div class="pipeline-legend">
                 <div><small>组帧等待</small><b id="lat-wait">—</b></div>
-                <div><small>DCVC 编码</small><b id="lat-encode">—</b></div>
+                <div><small>模型编码</small><b id="lat-encode">—</b></div>
                 <div><small>远端解码</small><b id="lat-decode">—</b></div>
               </div>
             </div>
@@ -217,7 +217,7 @@
     </main>
 
     <footer class="app-footer">
-      <span>DCVC Lab · 本地运行 · 不自动录制 · 统计数据不含视频</span>
+      <span>视频传输实验台 · 本地运行 · 不自动录制 · 统计数据不含视频</span>
       <span>© <span id="footer-year">2026</span> · SOFTWARE TIMING, NOT GLASS-TO-GLASS</span>
     </footer>
   </div>

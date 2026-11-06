@@ -9,8 +9,8 @@ const chartLatency = new SeriesChart('chart-latency', [
 ], {limit: 90});
 
 function updateState(state) {
-  DCVC.state = state;
-  DCVC.running = state.state === 'running' || state.state === 'starting';
+  APP.state = state;
+  APP.running = state.state === 'running' || state.state === 'starting';
   const settings = state.settings || {};
   const preview = state.preview || {};
   const encode = state.encode || {};

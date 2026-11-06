@@ -96,7 +96,7 @@ class Codec:
         torch.cuda.set_stream(self.stream)
         with torch.inference_mode():
             if len(frames) != (1 if self.first else 8):
-                raise ValueError('HT-S 首帧需 1 帧，其后每组需 8 帧')
+                raise ValueError('模型首帧需 1 帧，其后每组需 8 帧')
             height, width = frames[0].shape[:2]
             # Copy all frames to one contiguous CPU batch, then transfer once. This
             # avoids a CUDA stream submission for every frame in the group.
