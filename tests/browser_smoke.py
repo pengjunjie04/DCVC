@@ -1,25 +1,25 @@
 """Manual integration command: .env/bin/python -s tests/browser_smoke.py."""
 import json
+import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 root = Path(__file__).resolve().parents[1]
+BASE = os.environ.get('DCVC_ENCODER_URL', 'http://127.0.0.1:7860')
 with sync_playwright() as playwright:
-    browser = playwright.chromium.launch(executable_path='/snap/bin/chromium', headless=True,
+    browser = playwright.chromium.launch(executable_path=os.environ.get('DCVC_CHROMIUM', '/snap/bin/chromium'), headless=True,
                                          args=['--no-sandbox', '--disable-gpu'])
     page = browser.new_page(viewport={'width': 1440, 'height': 1100}, device_scale_factor=1)
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
-    page.goto('http://127.0.0.1:7860/', wait_until='domcontentloaded')
+    page.goto(BASE + '/', wait_until='domcontentloaded')
     page.get_by_text('运行设置', exact=True).wait_for()
-    page.get_by_label('运行模式', exact=True).click()
-    page.get_by_role('option').filter(has_text='仅检查采集').click()
-    page.get_by_label('视频源',exact=True).click()
-    page.get_by_role('option').filter(has_text='测试图案').click()
+    page.get_by_label('运行模式', exact=True).select_option('capture')
+    page.get_by_label('视频源', exact=True).select_option('synthetic')
     page.get_by_role('button', name='▶ 开始', exact=True).click()
     page.wait_for_function("document.getElementById('fps-original').textContent !== '0.0 fps'")
     page.wait_for_timeout(2000)
-    state = page.request.get('http://127.0.0.1:7860/api/state').json()
+    state = page.request.get(BASE + '/api/state').json()
     assert state['capture']['frames'] > 20, state
     assert state['encode']['frames'] == 0, state
     capture_browser_fps = page.locator('#fps-original').inner_text()

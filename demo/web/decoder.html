@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DCVC Lab · 解码显示端</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body data-role="decoder" data-preview-title="重建画面">
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">DC</div>
+        <div class="brand-copy">
+          <span class="eyebrow">JETSON ORIN NX · DCVC HT-S</span>
+          <h1>Neural Video Link</h1>
+          <p>第二台 Jetson · 独立解码 · 重建画面显示与时延测量</p>
+        </div>
+      </div>
+      <div class="top-meta">
+        <span class="meta-chip">DECODER · 192.168.50.2</span>
+        <span class="status-pill" id="connection-pill" data-state="waiting"><i class="dot"></i><span id="connection-text">等待连接</span></span>
+        <button class="icon-btn" type="button" data-action="report">保存统计</button>
+        <button class="icon-btn" type="button" id="quit">退出接收</button>
+      </div>
+    </header>
+
+    <main class="page workspace decoder">
+      <section class="main-column">
+        <div class="session-strip">
+          <div class="live-status" id="live-status" data-state="waiting" role="status">等待编码端连接</div>
+          <div class="session-meta" id="session-path">在第一台点击开始后，这里会显示链路与画面参数</div>
+        </div>
+
+        <article class="stage-card" id="stage-card">
+          <header class="stage-head">
+            <div>
+              <span class="eyebrow">RECONSTRUCTION</span>
+              <h2>重建画面</h2>
+            </div>
+            <div class="stage-tools">
+              <span class="badge" id="stage-res">等待码流</span>
+              <button class="icon-btn" type="button" data-action="expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg>放大</button>
+              <button class="icon-btn" type="button" data-action="fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>全屏</button>
+            </div>
+          </header>
+          <div class="stage-body">
+            <canvas id="preview-decoded" width="640" height="360" aria-label="重建画面"></canvas>
+            <div class="video-empty" id="empty-decoded">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="6" y="10" width="36" height="28" rx="6"/><path d="m20 18 10 6-10 6V18Z" fill="currentColor" stroke="none"/></svg>
+              <b>等待重建画面</b><span>编码端开始发送后，码流会在这里解码显示</span>
+            </div>
+            <div class="stage-hud"><i class="live-dot"></i>LIVE <span class="fps" id="fps-decoded">0.0 fps</span></div>
+          </div>
+          <footer class="stage-foot">
+            <span>输出 · HT-S 真实码流重建 · 30fps 采集节奏播放</span>
+            <span id="stage-clock">浏览器绘制实测</span>
+          </footer>
+        </article>
+
+        <section class="signal-grid" aria-label="解码实时信号">
+          <article class="metric-card accent">
+            <div class="metric-label"><span>显示吞吐</span><i class="dot"></i></div>
+            <div class="metric-value"><span id="metric-preview">—</span><span class="unit">fps</span></div>
+            <div class="metric-sub">浏览器实际绘制</div>
+            <canvas class="sparkline" id="spark-preview"></canvas>
+          </article>
+          <article class="metric-card blue">
+            <div class="metric-label"><span>编码吞吐</span><i class="dot"></i></div>
+            <div class="metric-value"><span id="metric-encode">—</span><span class="unit">fps</span></div>
+            <div class="metric-sub">编码端实时传入</div>
+            <canvas class="sparkline" id="spark-encode"></canvas>
+          </article>
+          <article class="metric-card amber">
+            <div class="metric-label"><span>解码吞吐</span><i class="dot"></i></div>
+            <div class="metric-value"><span id="metric-decode">—</span><span class="unit">fps</span></div>
+            <div class="metric-sub">最近 2 秒</div>
+            <canvas class="sparkline" id="spark-decode"></canvas>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label"><span>模型码率</span><i class="dot"></i></div>
+            <div class="metric-value"><span id="metric-bitrate">—</span><span class="unit">kbps</span></div>
+            <div class="metric-sub">仅模型载荷 · 2 秒窗口</div>
+            <canvas class="sparkline" id="spark-bitrate"></canvas>
+          </article>
+        </section>
+
+        <section class="insight-grid">
+          <article class="panel-card wide">
+            <div class="panel-title">
+              <div><span class="eyebrow">DISPLAY LATENCY</span><h3>采集 → canvas 绘制</h3><p>跨机单调时钟校准后的软件时延，最近 90 秒</p></div>
+              <span class="badge" id="latency-badge">—</span>
+            </div>
+            <div class="chart-wrap tall"><canvas id="chart-latency"></canvas></div>
+            <div class="chart-legend">
+              <span><i style="background:#76e3b4"></i>中位数</span>
+              <span><i style="background:#f3bd63"></i>p95</span>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="panel-title">
+              <div><span class="eyebrow">DISPLAY HEALTH</span><h3>显示健康度</h3><p>绘制时延、队列和过期帧</p></div>
+              <span class="badge">SOFTWARE</span>
+            </div>
+            <div class="stat-list">
+              <div class="stat-row"><span>采集 → canvas 中位数</span><b id="lat-median">—</b></div>
+              <div class="stat-row"><span>采集 → canvas p95</span><b id="lat-p95">—</b></div>
+              <div class="stat-row"><span>采样数</span><b id="lat-samples">—</b></div>
+              <div class="stat-row"><span>显示队列</span><b id="display-queue">—</b></div>
+              <div class="stat-row"><span>最老帧年龄</span><b id="display-age">—</b></div>
+              <div class="stat-row"><span>展示丢帧 / 累计</span><b id="drop-preview">—</b></div>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="panel-title">
+              <div><span class="eyebrow">PROCESSING</span><h3>处理速度</h3><p>方法内耗时，不含组帧等待与网络</p></div>
+              <span class="badge">COMPUTE</span>
+            </div>
+            <div class="stat-list">
+              <div class="stat-row"><span>解码处理速度</span><b id="decode-processing">—</b></div>
+              <div class="stat-row"><span>编码处理速度</span><b id="encode-processing">—</b></div>
+              <div class="stat-row"><span>解码帧数</span><b id="decode-frames">—</b></div>
+              <div class="stat-row"><span>模型码率</span><b id="bitrate-detail">—</b></div>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>DCVC Lab · 第二台 Jetson · 只显示重建画面，不自动录制</span>
+      <span>© <span id="footer-year">2026</span> · SOFTWARE TIMING, NOT GLASS-TO-GLASS</span>
+    </footer>
+  </div>
+
+  <div class="toast-stack" id="toast-stack"></div>
+
+  <dialog id="details-dialog">
+    <div class="dialog-card">
+      <div class="dialog-head"><h2>详细指标与计时范围</h2><button class="icon-btn" type="button" data-dialog-close>关闭</button></div>
+      <div class="dialog-body"><pre class="raw-json" id="details-json">{}</pre></div>
+    </div>
+  </dialog>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <div class="lightbox-head">
+      <div class="lightbox-title"><span class="eyebrow">PREVIEW</span><span id="lightbox-title">重建画面</span><span class="lightbox-hint">滚轮缩放 · 拖动平移</span></div>
+      <div class="lightbox-tools">
+        <button class="icon-btn" type="button" data-zoom="-0.25">−</button>
+        <span class="badge" id="zoom-label">1.0×</span>
+        <button class="icon-btn" type="button" data-zoom="0.25">+</button>
+        <button class="icon-btn" type="button" data-zoom-reset>重置</button>
+        <button class="icon-btn" type="button" data-lightbox-close>关闭</button>
+      </div>
+    </div>
+    <div class="lightbox-stage" id="lightbox-stage"><canvas id="lightbox-canvas" width="640" height="360"></canvas></div>
+  </div>
+
+  <script src="/assets/common.js"></script>
+  <script src="/assets/decoder.js"></script>
+</body>
+</html>

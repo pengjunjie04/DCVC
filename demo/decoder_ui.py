@@ -8,7 +8,8 @@ import threading
 import time
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 from .engine import LatestFrames
 from .metrics import ProcessingStats, WindowStats
@@ -32,7 +33,6 @@ class DecoderMonitor:
         self.draw_samples = deque(maxlen=1800)
         self.state, self.message = 'waiting', '等待编码端连接；请在第一台点击开始'
         self.settings = {'mode':'send', 'width':640, 'height':360, 'fps':30, 'qp':32}
-        self.hardware = None
         self._reset_rates()
         self.player = threading.Thread(target=self._play, daemon=True)
         self.player.start()
@@ -176,7 +176,6 @@ class DecoderMonitor:
         with self.lock:
             decode = self.decode.snapshot()
             latency = self.latency_summary()
-            hardware = self.hardware.snapshot() if self.hardware is not None else None
             return {'role':'decoder', 'state':self.state, 'message':self.message,
                     'settings':dict(self.settings), 'capture':{'fps':0},
                     'encode':{'fps':self.encode_fps if decode['fps'] else 0., 'mbps':decode['mbps']},
@@ -188,8 +187,7 @@ class DecoderMonitor:
                               'capture_to_canvas_samples':latency['count']},
                     'display_queue':len(self.queue.items),
                     'display_oldest_age_ms':self.last_oldest_age_ms,
-                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped + self.trim_dropped,
-                    'hardware':hardware}
+                    'dropped':0, 'preview_dropped':self.queue.dropped + self.ipc_dropped + self.stale_dropped + self.trim_dropped}
 
     def image(self):
         with self.lock:
@@ -209,14 +207,6 @@ class DecoderMonitor:
         self.closed.set()
         self.player.join(timeout=1)
 
-    def attach_hardware(self, hardware):
-        with self.lock:
-            self.hardware = hardware
-
-    def hardware_frame(self, codec):
-        hardware = self.hardware
-        return hardware.frame(codec) if hardware is not None else None
-
 
 def create_decoder_app(monitor, mount_ui=True):
     api = FastAPI(title='视频解码端')
@@ -235,19 +225,12 @@ def create_decoder_app(monitor, mount_ui=True):
             headers['X-Capture-Unix-Ns'] = str(capture_ns)
         return Response(jpeg, media_type='image/jpeg', headers=headers)
 
-    @api.get('/api/frame/{kind}')
-    def hardware_frame(kind: str, after: int = -1):
-        if kind not in ('h264', 'h265'):
-            raise HTTPException(404)
-        item = monitor.hardware_frame(kind)
-        if item is None:
-            return Response(status_code=204, headers={'Cache-Control':'no-store'})
-        sequence, capture_ns, jpeg = item
-        if sequence == after:
-            return Response(status_code=204, headers={'Cache-Control':'no-store'})
-        return Response(jpeg, media_type='image/jpeg',
-                        headers={'X-Sequence':str(sequence), 'Cache-Control':'no-store',
-                                 'X-Capture-Unix-Ns':str(capture_ns)})
+    @api.post('/api/report')
+    def report(request: Request):
+        if request.headers.get('X-Demo-Request') != '1':
+            raise HTTPException(403)
+        path = Path(monitor.export())
+        return FileResponse(path, media_type='application/json', filename=path.name)
 
     @api.get('/api/latency')
     def latency():
@@ -279,34 +262,10 @@ def create_decoder_app(monitor, mount_ui=True):
 
     if not mount_ui:
         return api
-    import gradio as gr
-    from .ui_parts import header_html, monitor_html
-    with gr.Blocks(title='视频解码端', theme=gr.themes.Soft(primary_hue='emerald'),
-                   css=(ROOT/'demo/style.css').read_text(), js=(ROOT/'demo/preview.js').read_text()) as ui:
-        gr.HTML(header_html('解码端 · 第二台 Jetson'))
-        with gr.Column(elem_id='decoder-console'):
-            gr.HTML('<div class="session-bar"><div id="live-status" role="status">等待编码端连接</div><span class="session-role">DECODER / DISPLAY</span></div>'
-                    '<div class="session-path" id="session-path">在第一台点击开始后，这里会显示链路与画面参数</div>')
-            with gr.Row(elem_id='decoder-workspace'):
-                with gr.Column(scale=2, min_width=360):
-                    gr.HTML(monitor_html('decoded', '重建画面', '第二台 Jetson · HT-S 解码输出', '01'))
-                with gr.Column(scale=1, min_width=280):
-                    gr.HTML('<div id="live-metrics"></div>')
-            gr.HTML('<div class="section-heading compare-heading"><h2>同源硬件对照</h2>'
-                    '<span>同一摄像头输入 · NVENC → NVDEC</span></div>'
-                    '<div id="hardware-comparison">'
-                    + monitor_html('h264', 'H.264 硬件解码', 'NVENC / NVDEC · 独立 ASIC', '02')
-                    + monitor_html('h265', 'H.265 硬件解码', 'NVENC / NVDEC · 独立 ASIC', '03')
-                    + '</div>')
-            gr.Markdown('**处理速度** = 帧数 ÷ 编解码方法累计耗时，含颜色转换和设备拷贝；不含组帧等待、网络、JPEG 展示。**采集→canvas** 由本机浏览器绘制完成后回报，仅在本机打开本页有效；不是物理屏幕光电测量。最近 2 秒更新，初始包含预热。DCVC 的实际码率通常远低于硬件目标码率（QP32 下常见个位数到几十 kbps），因此两者画面清晰度不能直接对比，等质量结论见 `docs/codec-comparison.md`。', elem_classes=['metric-note'])
-            with gr.Row(elem_classes=['utility-actions']):
-                export = gr.Button('保存本次统计')
-                quit_button = gr.Button('退出接收程序')
-            report = gr.File(label='解码端统计（不含视频）', interactive=False, visible=False)
-            export.click(lambda: gr.update(value=monitor.export(), visible=True), outputs=report)
-            quit_button.click(lambda: monitor.exit_requested.set())
-            with gr.Accordion('详细指标与计时范围', open=False):
-                detail = gr.JSON()
-                gr.Timer(1).tick(monitor.snapshot, outputs=detail, show_progress='hidden')
-        gr.HTML('<div class="app-footer"><span>在编码端点击开始 / 暂停 / 结束 · 不自动录制</span></div>')
-    return gr.mount_gradio_app(api, ui, path='/', show_error=True)
+    api.mount('/assets', StaticFiles(directory=ROOT / 'demo' / 'web'), name='assets')
+
+    @api.get('/')
+    def index():
+        return FileResponse(ROOT / 'demo' / 'web' / 'decoder.html', media_type='text/html')
+
+    return api

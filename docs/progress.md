@@ -1,4 +1,6 @@
-# 当前状态（2026-11-03）
+# 当前状态（2026-11-06）
+
+2026-11-06 界面与范围调整：移除全部 H.264/H.265 实时与离线对比功能及界面，删除 `demo/hardware_compare.py`、`tools/hw_stream_worker.py`、`tools/compare_codecs.py` 和 `docs/codec-comparison.md`；展示层从 Gradio 改为自定义 FastAPI + HTML/CSS/JavaScript 控制台，编码端全宽原始画面、解码端全宽重建画面，支持影院模式、全屏、放大和滚轮缩放，指标改为实时卡片 + 90 秒曲线 + 流水线分解。完整单元测试 51 项通过。
 
 项目`~/Desktop/dcvc-jetson-demo`已部署两端独立环境、官方HT-S权重和原生扩展。编码端`./start_encoder.sh`打开7860，解码端`./start_decoder.sh`打开7861；原有`./launch.sh`和`./launch_decoder.sh`保留为手动入口。53项CPU自动化测试通过；编码/解码吞吐、处理fps及ms/帧、浏览器实际绘制fps、统计导出和启停均已实现。
 
@@ -12,7 +14,7 @@
 
 完整显示口径已实现：编码端给每帧记录采集完成时间，NTP式往返校准跨机时钟，第二台浏览器在`drawImage()`返回后上报`performance.timeOrigin + performance.now()`。解码预览以60fps排空突发组、IPC轮询2ms、浏览器轮询8ms；超过475ms的过期帧在解码前跳过后再绘制，并单独计入展示丢帧。40秒真实摄像头双机测试得到1049个绘制样本：中位数425.8ms、p95 475.2ms、最大479.8ms；模型编解码约30fps，实际canvas绘制约24.3fps，显示端丢弃247个过期帧，采集丢帧增量4，两端OC计数0，浏览器无JS错误。报告`reports/browser-display-latency-25w.json`。该口径不含摄像头曝光和物理屏幕扫描。
 
-2026-11-03 编解码器对比：新增`tools/compare_codecs.py`，在单台25W Orin NX上以同一640×360公开片段、同一640帧参考、顺序运行DCVC-RT与NVENC/NVDEC H.264/H.265。DCVC QP32为32.99dB/42.7kbps/编码90.7fps/解码67.1fps；同质量插值所需H.264/H.265码率约322.2/328.2kbps。10个硬件测量点均完成，两端OC计数0。该结果仅代表单段内容和单QP点的PSNR对比，不是感知质量、网络延迟或摄像头场景验收。报告`reports/codec-comparison-25w.json`，方法见`docs/codec-comparison.md`。
+2026-11-03 编解码器对比（历史记录，相关工具与文档已于 2026-11-06 删除）：新增`tools/compare_codecs.py`，在单台25W Orin NX上以同一640×360公开片段、同一640帧参考、顺序运行DCVC-RT与NVENC/NVDEC H.264/H.265。DCVC QP32为32.99dB/42.7kbps/编码90.7fps/解码67.1fps；同质量插值所需H.264/H.265码率约322.2/328.2kbps。10个硬件测量点均完成，两端OC计数0。该结果仅代表单段内容和单QP点的PSNR对比，不是感知质量、网络延迟或摄像头场景验收。报告`reports/codec-comparison-25w.json`。
 
 2026-11-03 摄像头采集格式：USB路径改为显式请求未压缩YUYV，先设置FOURCC再请求640×480@30，并读回格式、尺寸、帧率校验；MJPG或其他隐式回退会直接报错。真实`/dev/video0`协商为YUYV640×480@30，引擎保持比例补边后输出640×360，25W下OC计数0。新增4项格式协商与拒绝回退回归测试，报告`reports/camera-yuyv-640x480-30fps.json`。这消除了DCVC-RT之前额外一轮摄像头MJPEG压缩/解码，但不改变模型码流和显示预览链路的统计口径。
 

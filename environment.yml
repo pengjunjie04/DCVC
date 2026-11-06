@@ -13,7 +13,6 @@ dependencies:
       - scipy
       - tqdm
       - pillow
-      - gradio==5.49.1
       - opencv-python-headless==4.11.0.86
       - socksio
 # Install NVIDIA's matching aarch64 cp310 CUDA wheel separately; do not use generic `pip install torch`.

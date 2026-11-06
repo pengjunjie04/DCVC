@@ -14,18 +14,13 @@ class Settings:
     peer: str = ''
     bind: str = ''
     port: int = 9860
-    compare_hardware: bool = False
-    hardware_kbps: int = 250
 
     def validate(self):
         for name, low, high in [('width', 64, 3840), ('height', 64, 2160),
-                                ('fps', 1, 120), ('qp', 0, 63), ('port', 1, 65535),
-                                ('hardware_kbps', 16, 20000)]:
+                                ('fps', 1, 120), ('qp', 0, 63), ('port', 1, 65535)]:
             value = getattr(self, name)
             if type(value) is not int or not low <= value <= high:
                 raise ValueError(f'{name} 必须是 {low}–{high} 之间的整数')
-        if type(self.compare_hardware) is not bool:
-            raise ValueError('实时硬件对比开关必须是布尔值')
         if self.width % 2 or self.height % 2:
             raise ValueError('分辨率宽高必须为偶数')
         if self.mode not in ('local', 'send', 'capture'):

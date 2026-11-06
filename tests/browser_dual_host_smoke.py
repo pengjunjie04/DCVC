@@ -34,7 +34,7 @@ def check_overcurrent():
         raise RuntimeError('New overcurrent event detected; stopping the hardware test')
 
 with sync_playwright() as p:
-    browser=p.chromium.launch(executable_path='/snap/bin/chromium',headless=True,args=['--no-sandbox','--disable-gpu'])
+    browser=p.chromium.launch(executable_path=os.environ.get('DCVC_CHROMIUM', '/snap/bin/chromium'),headless=True,args=['--no-sandbox','--disable-gpu'])
     page=browser.new_page(viewport={'width':1440,'height':1100})
     page.on('pageerror',lambda e:result['browser_errors'].append('encoder: '+str(e)))
     decoder_browser = p.chromium.connect_over_cdp(os.environ['DCVC_DECODER_CDP']) if os.environ.get('DCVC_DECODER_CDP') else browser
@@ -63,13 +63,11 @@ with sync_playwright() as p:
         decoder_page.goto(os.environ.get('DCVC_DECODER_PAGE_URL', DECODER),wait_until='domcontentloaded')
         assert decoder_state()['role']=='decoder'
         page.goto(BASE,wait_until='domcontentloaded')
-        page.get_by_label('运行模式',exact=True).click()
-        page.get_by_role('option').filter(has_text='双机发送').click()
-        page.get_by_label('视频源',exact=True).click()
-        page.get_by_role('option').filter(has_text='USB 摄像头').click()
-        page.get_by_text('设备与有线网络',exact=True).click()
-        page.get_by_label('本机有线 IPv4',exact=True).fill('192.168.50.1')
-        page.get_by_label('解码端有线 IPv4',exact=True).fill('192.168.50.2')
+        page.get_by_label('运行模式', exact=True).select_option('send')
+        page.get_by_label('视频源', exact=True).select_option('camera')
+        page.locator('details.advanced summary').click()
+        page.get_by_label('本机有线 IPv4', exact=True).fill('192.168.50.1')
+        page.get_by_label('解码端有线 IPv4', exact=True).fill('192.168.50.2')
         page.get_by_role('button',name='▶ 开始',exact=True).click()
         wait_frames(121)
         initial=state(); t0=time.monotonic()
@@ -108,8 +106,8 @@ with sync_playwright() as p:
         page.wait_for_function("document.getElementById('live-status').textContent.startsWith('IDLE')")
         idle()
         assert state()['state']=='idle'
-        page.get_by_role('button',name='保存本次统计',exact=True).click()
-        page.get_by_text('统计报告（不含视频）',exact=True).wait_for()
+        page.get_by_role('button',name='保存统计',exact=True).click()
+        page.get_by_text('统计报告已下载',exact=True).wait_for()
         assert not result['browser_errors'],result['browser_errors']
         result['target_checks']={'steady_decode_at_least_29_5fps':result['steady_summary']['decode_fps']>=29.5,
             'all_sampled_return_latencies_at_most_500ms':result['steady_summary']['latency_max_sample_ms']<=500,

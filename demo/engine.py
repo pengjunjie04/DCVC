@@ -134,7 +134,6 @@ class Engine:
         self.clock_offset_ns = 0
         self.clock_sync = {}
         self.next_clock_sync = 0.
-        self.hardware = None
 
     def alive(self):
         return ((self.worker is not None and self.worker.is_alive()) or
@@ -158,16 +157,12 @@ class Engine:
                 self.clock_offset_ns = 0
                 self.clock_sync = {}
                 self.next_clock_sync = 0.
-                self.hardware = None
                 self.original = self.decoded = None
                 self.worker = threading.Thread(target=self._run, args=(settings, self.cancel), daemon=True)
                 self.worker.start()
 
     def _halt(self, state):
         self.cancel.set()
-        hardware = self.hardware
-        if hardware is not None:
-            hardware.stop()
         sock = self.sock
         if sock:
             try:
@@ -198,7 +193,6 @@ class Engine:
                     'dropped': self.queue.dropped, 'preview_dropped': self.preview_dropped,
                     'timing': dict(self.timing), 'clock_sync': dict(self.clock_sync),
                     'processing': {key: value.snapshot() for key, value in self.processing.items()},
-                    'hardware': self.hardware.snapshot() if self.hardware is not None else None,
                     'worker_alive': self.alive()}
 
     def image(self, kind):
@@ -238,10 +232,6 @@ class Engine:
                     self.original, self.original_seq = rgb, self.original_seq + 1
                 if settings.mode != 'capture':
                     queue.put((captured, captured_wall_ns, rgb))
-                    hardware = self.hardware
-                    if hardware is not None:
-                        hardware.push(rgb, captured_wall_ns,
-                                      captured_wall_ns + self.clock_offset_ns)
                 index += 1
                 deadline += 1 / settings.fps
                 if deadline < captured:
@@ -284,11 +274,6 @@ class Engine:
                     if self.clock_sync_enabled:
                         self._sync_clock(sock)
                         self.next_clock_sync = time.monotonic() + 3.
-                    if settings.compare_hardware:
-                        from .hardware_compare import HardwareEncoder
-                        self.hardware = HardwareEncoder(settings.peer, settings.width, settings.height,
-                                                        settings.fps, settings.hardware_kbps)
-                        self.hardware.start()
             if stop.is_set():
                 return
             with self.lock:
@@ -370,10 +355,6 @@ class Engine:
             if sock:
                 sock.close()
             self.sock = None
-            hardware = self.hardware
-            self.hardware = None
-            if hardware is not None:
-                hardware.stop()
             for net in (encoder, decoder):
                 close = getattr(net, 'close', None)
                 if close is not None:

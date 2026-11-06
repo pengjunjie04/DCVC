@@ -42,6 +42,18 @@ class AppTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertFalse(self.engine.alive())
 
+    def test_report_download_and_static_ui(self):
+        response = self.client.post('/api/report', headers={'X-Demo-Request': '1'})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('attachment', response.headers.get('content-disposition', ''))
+        self.assertIn('report-', response.headers.get('content-disposition', ''))
+        app = create_app(self.engine, mount_ui=True)
+        with TestClient(app) as client:
+            page = client.get('/')
+            self.assertEqual(page.status_code, 200)
+            self.assertIn('Neural Video Link', page.text)
+            self.assertEqual(client.get('/assets/style.css').status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()
